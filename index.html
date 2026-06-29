@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1B4D89">
+  <title>ניקי שומרת על הניקיון — טירת כרמל</title>
+  <meta name="description" content="משחק לילדים על שמירה על ניקיון העיר, של עיריית טירת כרמל.">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Friendly rounded Hebrew web font with a system fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Each screen is shown/hidden by game.js -->
+    <section id="screen-menu"  class="screen screen--active" aria-label="תפריט ראשי"></section>
+    <section id="screen-intro" class="screen" aria-label="פתיחת שלב"></section>
+    <section id="screen-play"  class="screen" aria-label="משחק"></section>
+    <section id="screen-win"   class="screen" aria-label="ניצחון"></section>
+  </div>
+
+  <!-- ===== Scripts (load order matters) ===== -->
+  <!-- To swap in the real artwork, set this before the other scripts:
+       <script>window.NICKY_IMAGE = 'assets/nicky.png';</script> -->
+  <script src="js/nicky.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/level1.js"></script>
+  <script src="js/level2.js"></script>
+  <script src="js/level3.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
