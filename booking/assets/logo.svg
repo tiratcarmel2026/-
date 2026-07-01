@@ -1,0 +1,10 @@
+<svg viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="עיריית טירת כרמל">
+  <text x="0" y="34" font-family="'Baloo 2', 'Varela Round', sans-serif" font-weight="800" font-size="30" fill="#12738C">טירת כרמל</text>
+  <text x="0" y="54" font-family="'Varela Round', sans-serif" font-weight="500" font-size="12.5" fill="#12738C">סביבה טובה בין כרמל לים</text>
+
+  <g transform="translate(212,8)">
+    <path d="M0,28 C22,4 58,-2 92,8 C68,17 36,20 14,30 C8,31 3,30 0,28 Z" fill="#F2A73E"/>
+    <path d="M0,31 C26,26 62,27 96,37 C70,43 34,44 9,39 C4,37 0,34 0,31 Z" fill="#A9CC39"/>
+    <path d="M0,33 C23,41 56,49 86,61 C58,60 24,54 4,44 C0,41 0,37 0,33 Z" fill="#29AAD4"/>
+  </g>
+</svg>

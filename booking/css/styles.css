@@ -1,7 +1,10 @@
 :root {
-  --tc-orange: #F47B20;
-  --tc-blue: #1B4D89;
-  --tc-green: #3AA935;
+  /* פלטת המותג הרשמית של עיריית טירת כרמל (לפי לוגו העירייה) */
+  --tc-teal: #12738C;
+  --tc-orange: #F2A73E;
+  --tc-blue: #12738C;
+  --tc-green: #A9CC39;
+  --tc-cyan: #29AAD4;
   --tc-white: #FFFFFF;
   --tc-bg: #F4F7FB;
   --tc-text: #1E2530;
@@ -30,13 +33,26 @@ body {
 
 .site-header__title h1 {
   margin: 0;
-  font-size: 1.3rem;
-  font-family: 'Baloo 2', sans-serif;
+  line-height: 0;
+}
+
+.site-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  background: var(--tc-white);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+
+.site-logo {
+  height: 40px;
+  width: auto;
+  display: block;
 }
 
 .site-header__title p {
-  margin: 2px 0 0;
-  color: var(--tc-orange);
+  margin: 8px 0 0;
+  color: var(--tc-white);
   font-weight: 700;
 }
 
