@@ -40,11 +40,13 @@ window.TCEmail = (function () {
     return `mailto:${encodeURIComponent(to)}?${params.toString()}`;
   }
 
-  async function sendViaEmailJS(templateId, templateParams) {
+  // תבנית EmailJS יחידה, משותפת לשני סוגי המיילים (למחלקה ולתושב) -
+  // מזערי ההגדרה לשלושה שדות בלבד: to_email, subject, message.
+  async function sendViaEmailJS(templateParams) {
     ensureInit();
     if (!cfg.enabled || !initialized) return { sent: false, reason: 'not-configured' };
     try {
-      await window.emailjs.send(cfg.serviceId, templateId, templateParams);
+      await window.emailjs.send(cfg.serviceId, cfg.templateId, templateParams);
       return { sent: true };
     } catch (err) {
       console.error('EmailJS send failed', err);
@@ -60,43 +62,26 @@ window.TCEmail = (function () {
     const summary = summaryText(booking, dept, contact);
     const dateStr = formatDate(booking.dateKey);
 
+    const departmentSubject = `תור חדש: ${booking.citizen.name} - ${dateStr} ${booking.time}`;
+    const departmentMessage = `התקבלה קביעת תור חדשה עבור ${recipientLabel}:\n\n${summary}`;
+
     const departmentResult = recipientEmail
-      ? await sendViaEmailJS(cfg.departmentTemplateId, {
-          to_email: recipientEmail,
-          department_name: recipientLabel,
-          citizen_name: booking.citizen.name,
-          citizen_phone: booking.citizen.phone,
-          citizen_email: booking.citizen.email,
-          appointment_date: dateStr,
-          appointment_time: booking.time,
-          notes: booking.citizen.notes || ''
-        })
+      ? await sendViaEmailJS({ to_email: recipientEmail, subject: departmentSubject, message: departmentMessage })
       : { sent: false, reason: 'no-recipient' };
 
     if (!departmentResult.sent && recipientEmail) {
-      departmentResult.mailto = mailtoLink(
-        recipientEmail,
-        `תור חדש: ${booking.citizen.name} - ${dateStr} ${booking.time}`,
-        `התקבלה קביעת תור חדשה עבור ${recipientLabel}:\n\n${summary}`
-      );
+      departmentResult.mailto = mailtoLink(recipientEmail, departmentSubject, departmentMessage);
     }
 
+    const citizenSubject = `אישור תור - ${recipientLabel}`;
+    const citizenMessage = `שלום ${booking.citizen.name},\n\nהתור שלך נקבע בהצלחה:\n\n${summary}\n\nעיריית טירת כרמל`;
+
     const citizenResult = booking.citizen.email
-      ? await sendViaEmailJS(cfg.citizenTemplateId, {
-          to_email: booking.citizen.email,
-          citizen_name: booking.citizen.name,
-          department_name: recipientLabel,
-          appointment_date: dateStr,
-          appointment_time: booking.time
-        })
+      ? await sendViaEmailJS({ to_email: booking.citizen.email, subject: citizenSubject, message: citizenMessage })
       : { sent: false, reason: 'no-recipient' };
 
     if (!citizenResult.sent && booking.citizen.email) {
-      citizenResult.mailto = mailtoLink(
-        booking.citizen.email,
-        `אישור תור - ${recipientLabel}`,
-        `שלום ${booking.citizen.name},\n\nהתור שלך נקבע בהצלחה:\n\n${summary}\n\nעיריית טירת כרמל`
-      );
+      citizenResult.mailto = mailtoLink(booking.citizen.email, citizenSubject, citizenMessage);
     }
 
     return { departmentResult, citizenResult };
