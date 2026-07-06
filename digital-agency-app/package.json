@@ -1,0 +1,20 @@
+{
+  "name": "tirat-carmel-digital-agency",
+  "version": "1.0.0",
+  "description": "אפליקציית סוכנות דיגיטל אוטומטית עבור עיריית טירת כרמל",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "generate:now": "node server/scripts/generateNow.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

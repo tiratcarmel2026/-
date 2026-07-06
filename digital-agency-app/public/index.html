@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>סוכנות הדיגיטל | עיריית טירת כרמל</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-title">
+      <h1>סוכנות הדיגיטל של טירת כרמל 🌿</h1>
+      <p class="subtitle">רעיונות לתוכן, גרפיקה וניטור רשתות — מתעדכן כל שעה עגולה</p>
+    </div>
+    <button id="generateNowBtn" class="btn-primary">✨ צור תוכן עכשיו</button>
+  </header>
+
+  <section id="statusBar" class="status-bar">טוען סטטוס...</section>
+
+  <main>
+    <section id="latestSection" class="panel">
+      <h2>העדכון האחרון</h2>
+      <div id="latestBatch" class="latest-batch">אין עדיין תוכן. לחצו על "צור תוכן עכשיו".</div>
+    </section>
+
+    <section class="panel">
+      <h2>היסטוריית עדכונים</h2>
+      <div id="history" class="history-list"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
