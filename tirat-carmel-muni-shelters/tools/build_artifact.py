@@ -4,7 +4,7 @@ import base64, pathlib, re, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 html = (ROOT/"index.html").read_text()
 css = (ROOT/"vendor/leaflet.css").read_text() + "\n" + (ROOT/"css/app.css").read_text()
-js = "".join((ROOT/p).read_text() + "\n" for p in ["data/shelters.js", "data/streets.js", "js/app.js"])
+js = "".join((ROOT/p).read_text() + "\n" for p in ["data/config.js", "data/shelters.js", "data/streets.js", "js/app.js"])
 logo = "data:image/png;base64," + base64.b64encode((ROOT/"assets/logo.png").read_bytes()).decode()
 html = re.sub(r"<!--INLINE-CSS-START-->.*?<!--INLINE-CSS-END-->", lambda m: "<style>\n" + css + "\n</style>", html, flags=re.S)
 html = re.sub(r"<!--INLINE-JS-START-->.*?<!--INLINE-JS-END-->", lambda m:

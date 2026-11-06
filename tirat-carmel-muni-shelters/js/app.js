@@ -4,14 +4,18 @@
 
   var SHELTERS = window.SHELTERS || [];
   var STREETS = window.STREETS || {};
+  var CONFIG = window.SHELTER_CONFIG || {};
+  var PROTECTION_SEC = CONFIG.protectionSeconds || 60;
   var MOKED_EMAIL = 'moked@tirat-carmel.muni.il';
+  var IS_ARTIFACT = /claude\.ai|claudeusercontent/.test(location.hostname);
   var CITY_CENTER = [32.7605, 34.9715];
   var WALK_M_PER_MIN = 80;   // ≈4.8 קמ"ש
-  var RUN_M_PER_MIN = 160;   // הליכה מהירה / ריצה קלה
+  var RUN_M_PER_MIN = 120;   // ריצה קלה (2 מ׳ לשנייה): קצב סביר בזמן אזעקה
   var ROUTE_FACTOR = 1.3;    // המרחק ברחובות ארוך מקו אווירי
   var TYPE_LABEL = { shelter: 'מקלט / מחסה', protected: 'מיגונית' };
 
-  var state = { me: null, filter: 'all', q: '', hl: null, edit: /[?&]edit=1/.test(location.search) || location.hash === '#edit', fixes: {} };
+  var state = { me: null, filter: 'all', q: '', hl: null, scanned: null,
+    survey: /[?&](survey|edit)=1/.test(location.search) || /^#(survey|edit)$/.test(location.hash) };
   var $ = function (s) { return document.querySelector(s); };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var store = {
@@ -29,6 +33,11 @@
   function routeMeters(s) { return state.me && s.lat != null ? haversine([state.me.lat, state.me.lng], [s.lat, s.lng]) * ROUTE_FACTOR : null; }
   function fmtDist(m) { return m < 1000 ? Math.round(m / 10) * 10 + ' מ׳' : (m / 1000).toFixed(1) + ' ק״מ'; }
   function fmtMin(m, speed) { var t = m / speed; return t < 1 ? 'פחות מדקה' : Math.round(t) + ' דק׳'; }
+  function runSeconds(m) { return m / (RUN_M_PER_MIN / 60); }
+  function fmtSec(sec) { sec = Math.round(sec / 5) * 5; return sec <= 90 ? sec + ' שנ׳' : Math.floor(sec / 60) + ' דק׳' + (sec % 60 ? ' ו-' + sec % 60 + ' שנ׳' : ''); }
+  var PROT_LABEL = PROTECTION_SEC + ' שניות';
+  function approx(s) { return s.precision === 'street' || s.precision === 'probable'; }
+  function byId(id) { return SHELTERS.find(function (x) { return x.id === id; }); }
   function streetPoint(name) {
     var lines = STREETS[name] || [], pts = [];
     lines.forEach(function (l) { pts = pts.concat(l); });
@@ -38,7 +47,7 @@
   }
 
   /* ---------- links ---------- */
-  function exact(s) { return s.precision === 'landmark' && s.lat != null; }
+  function exact(s) { return (s.precision === 'landmark' || s.precision === 'verified') && s.lat != null; }
   function wazeUrl(s) {
     return exact(s) ? 'https://waze.com/ul?ll=' + s.lat + ',' + s.lng + '&navigate=yes'
       : 'https://waze.com/ul?q=' + encodeURIComponent(s.navAddress) + '&navigate=yes';
@@ -49,7 +58,7 @@
     if (state.me) u += '&origin=' + state.me.lat.toFixed(6) + ',' + state.me.lng.toFixed(6);
     return u;
   }
-  function siteUrl() { return location.href.split('#')[0].replace(/[?&]edit=1/, ''); }
+  function siteUrl() { return IS_ARTIFACT || !/^https?:/.test(location.protocol) ? (CONFIG.siteUrl || location.href.split('#')[0]) : location.origin + location.pathname; }
   function navButtons(s, small) {
     var c = small ? ' btn--sm' : '';
     return '<a class="btn btn--waze' + c + '" target="_blank" rel="noopener" href="' + esc(wazeUrl(s)) + '">ניווט בוויז</a>' +
@@ -58,7 +67,8 @@
   function badges(s) {
     var b = '<span class="badge' + (s.type === 'protected' ? ' badge--p' : '') + '">' + TYPE_LABEL[s.type] + '</span>';
     if (/פתיחה מרחוק/.test(s.note)) b += '<span class="badge badge--warn">פתיחה מרחוק</span>';
-    if (s.precision === 'street') b += '<span class="badge badge--approx">מיקום משוער במפה</span>';
+    if (approx(s)) b += '<span class="badge badge--approx">מיקום משוער במפה</span>';
+    if (s.precision === 'verified') b += '<span class="badge badge--ok">' + (s._local ? 'אומת בטלפון זה' : 'מיקום מאומת') + '</span>';
     if (s.precision === 'none') b += '<span class="badge badge--approx">לא מסומן במפה</span>';
     return '<div class="badges">' + b + '</div>';
   }
@@ -99,27 +109,37 @@
     });
     var bounds = [];
     SHELTERS.forEach(function (s) {
-      if (s.lat == null) return;
-      var icon = L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -24],
-        html: '<div class="pin pin--' + s.type + (s.precision === 'street' ? ' pin--approx' : '') + '"><span>' + (s.type === 'protected' ? 'מג' : 'מ') + '</span></div>' });
-      var m = L.marker([s.lat, s.lng], { icon: icon, title: s.address, draggable: state.edit }).addTo(map);
+      if (s.lat == null && !state.survey) return;
+      var ll = s.lat != null ? [s.lat, s.lng] : CITY_CENTER;   // survey mode: unplaced ones start at the center, ready to drag
+      var m = L.marker(ll, { icon: pinIcon(s), title: s.address, draggable: state.survey }).addTo(map);
       m.bindPopup(function () { return popupHtml(s); });
-      m.on('click', function () { highlight(s.id, false); });
-      if (state.edit) m.on('dragend', function () { var p = m.getLatLng(); state.fixes[s.id] = [+p.lat.toFixed(6), +p.lng.toFixed(6)]; renderEdit(); });
-      markers[s.id] = m; bounds.push([s.lat, s.lng]);
+      m.on('click', function () { highlight(s.id, false); if (state.survey) surveyPick(s.id); });
+      if (state.survey) m.on('dragend', function () { var p = m.getLatLng(); saveFix(s.id, p.lat, p.lng, null, 'drag'); });
+      markers[s.id] = m; if (s.lat != null) bounds.push(ll);
     });
     if (bounds.length) map.fitBounds(bounds, { padding: [24, 24] });
-    map.on('click', function (e) { if (!state.edit && loc.status !== 'live') setMe(e.latlng.lat, e.latlng.lng, 'map'); });
+    map.on('click', function (e) { if (!state.survey && loc.status !== 'live') setMe(e.latlng.lat, e.latlng.lng, 'map'); });
+  }
+  function pinIcon(s) {
+    return L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -24],
+      html: '<div class="pin pin--' + s.type + (approx(s) || s.lat == null ? ' pin--approx' : '') + (s.precision === 'verified' ? ' pin--ok' : '') +
+        '"><span>' + (s.type === 'protected' ? 'מג' : 'מ') + '</span></div>' });
   }
   function popupHtml(s) {
     var m = routeMeters(s);
     return '<b>' + esc(s.address) + '</b><br>' + esc(s.note) +
       (m != null ? '<br>' + fmtDist(m) + ' · ' + fmtMin(m, WALK_M_PER_MIN) + ' הליכה' : '') +
+      (s.lat == null ? '<br><i>לא מסומן במפה, גררו את הסמן למקום הנכון</i>' : '') +
       '<div class="row">' + navButtons(s, true) + '</div>';
   }
+  var reachCircle = null;
   function drawMe() {
     if (!map || !state.me) return;
     var ll = [state.me.lat, state.me.lng];
+    // area reachable within the protection time (light run, street-route factor)
+    var r = PROTECTION_SEC * (RUN_M_PER_MIN / 60) / ROUTE_FACTOR;
+    if (!reachCircle) reachCircle = L.circle(ll, { radius: r, color: '#4E9A1A', weight: 2, dashArray: '4 6', fillColor: '#7DBA2F', fillOpacity: .08, interactive: false }).addTo(map);
+    else reachCircle.setLatLng(ll);
     if (!meMarker) meMarker = L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="me"></div>', iconSize: [20, 20], iconAnchor: [10, 10] }), zIndexOffset: 1000, title: 'המיקום שלי' }).addTo(map);
     else meMarker.setLatLng(ll);
   }
@@ -156,6 +176,8 @@
     if (changed && nearestId != null && src === 'gps') { setStatus('המקלט הקרוב התעדכן לפי המיקום החדש שלך.'); try { navigator.vibrate && navigator.vibrate(80); } catch (e) { } }
     nearestId = top ? top.s.id : null;
     renderNearest(first || changed, first); renderList();
+    // survey: once GPS arrives, jump to the nearest unverified place (unless staff already picked one)
+    if (state.survey && src === 'gps' && !survey.userPicked) { survey.userPicked = true; var n = nextUnverified(); if (n) surveyPick(n.id); }
   }
   function onFix(p) {
     lastFixAt = Date.now();
@@ -241,6 +263,20 @@
       .map(function (s) { return { s: s, m: routeMeters(s) }; })
       .sort(function (a, b) { return a.m - b.m; });
   }
+  function protectionHtml(top) {
+    var sec = runSeconds(top.m), ok = sec <= PROTECTION_SEC, tight = ok && sec > PROTECTION_SEC * 0.75;
+    var est = approx(top.s) ? ' (הערכה: מיקום המקלט במפה משוער)' : '';
+    if (ok) return '<div class="prot prot--' + (tight ? 'tight' : 'ok') + '" id="prot" data-ok="1"><b>' + (tight ? 'אפשר להגיע בזמן, אבל בקושי' : 'אפשר להגיע בזמן ההתגוננות') + '</b>' +
+      '<span>כ-' + fmtSec(sec) + ' בריצה קלה. זמן ההתגוננות בטירת כרמל: ' + PROT_LABEL + est + '.</span>' +
+      (tight ? '<span>צאו מיד עם תחילת האזעקה. אם יש ממ״ד בבית, עדיף להיכנס אליו.</span>' : '') + '</div>';
+    return '<div class="prot prot--far" id="prot" data-ok="0"><b>המקלט הציבורי רחוק מכדי להגיע בזמן</b>' +
+      '<span>כ-' + fmtSec(sec) + ' בריצה קלה, וזמן ההתגוננות בטירת כרמל הוא ' + PROT_LABEL + est + '. בהישמע אזעקה אל תרוצו אליו. היכנסו למקום המוגן הקרוב:</span>' +
+      '<ol><li><b>בבית או בבניין:</b> ממ״ד או מרחב מוגן קומתי (ממ״ק).</li>' +
+      '<li><b>אין ממ״ד:</b> חדר מדרגות פנימי (לא בקומה העליונה). אם אין, חדר פנימי עם מעט חלונות.</li>' +
+      '<li><b>בחוץ:</b> היכנסו למבנה הקרוב. אם אין, שכבו על הקרקע והגנו על הראש בידיים.</li>' +
+      '<li><b>ברכב:</b> עצרו בצד, צאו והיכנסו למבנה. אם אין, שכבו על הקרקע.</li></ol>' +
+      '<span>הישארו במקום המוגן 10 דקות, אלא אם פיקוד העורף הנחה אחרת. ההנחיות המחייבות: <a href="https://www.oref.org.il" target="_blank" rel="noopener">אתר פיקוד העורף</a>.</span></div>';
+  }
   function renderNearest(fly, scroll) {
     var box = $('#nearest');
     if (!state.me) { box.hidden = true; return; }
@@ -251,8 +287,9 @@
       '<div class="nearest__addr">' + esc(s.address) + '</div>' +
       '<div class="nearest__note">' + esc(s.note) + '</div>' + badges(s) +
       '<div class="eta"><div><b>' + fmtMin(top.m, WALK_M_PER_MIN) + '</b><span>בהליכה</span></div>' +
-      '<div><b>' + fmtMin(top.m, RUN_M_PER_MIN) + '</b><span>בהליכה מהירה</span></div>' +
+      '<div><b>' + fmtSec(runSeconds(top.m)) + '</b><span>בריצה קלה</span></div>' +
       '<div><b>' + fmtDist(top.m) + '</b><span>מרחק משוער</span></div></div>' +
+      protectionHtml(top) +
       '<div class="row">' + navButtons(s) + '<button class="btn" type="button" id="share-nearest">שיתוף</button></div>' +
       '<div class="nearest__more"><span class="muted">קרובים נוספים:</span>' +
       r.slice(1, 4).map(function (x) {
@@ -282,7 +319,8 @@
       var s = x.s;
       return '<li class="item' + (state.hl === s.id ? ' is-hl' : '') + '" data-type="' + s.type + '" id="s-' + s.id + '">' +
         '<div class="item__top"><span class="item__addr" data-id="' + s.id + '" role="button" tabindex="0">' + esc(s.address) + '</span>' +
-        (x.m != null ? '<span class="item__dist">' + fmtDist(x.m) + ' · ' + fmtMin(x.m, WALK_M_PER_MIN) + '</span>' : '') + '</div>' +
+        (x.m != null ? '<span class="item__dist' + (runSeconds(x.m) <= PROTECTION_SEC ? ' is-ok' : '') + '">' + fmtDist(x.m) + ' · ' + fmtMin(x.m, WALK_M_PER_MIN) +
+          (runSeconds(x.m) <= PROTECTION_SEC ? ' · בזמן' : '') + '</span>' : '') + '</div>' +
         '<div class="item__note">' + esc(s.note) + '</div>' + badges(s) +
         '<div class="row">' + navButtons(s, true) + '</div></li>';
     }).join('') : '<li class="empty">לא נמצאו תוצאות.</li>';
@@ -292,7 +330,7 @@
   }
   function highlight(id, scrollToItem) {
     state.hl = id; renderList();
-    var s = SHELTERS.find(function (x) { return x.id === id; });
+    var s = byId(id);
     if (map && s && s.lat != null && markers[id]) { map.setView([s.lat, s.lng], Math.max(map.getZoom(), 17)); markers[id].openPopup(); }
     if (scrollToItem) { var el = document.getElementById('s-' + id); if (el && window.innerWidth >= 960) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
     if (window.innerWidth < 960 && map) $('#map').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -331,9 +369,123 @@
     $('#f-loc').addEventListener('change', function () { if (this.checked && !state.me) locate(); });
   }
 
-  /* ---------- edit mode (for the security dept. to pin exact locations) ---------- */
-  function renderEdit() {
-    $('#edit-out').value = JSON.stringify(state.fixes);
+  /* ---------- sign QR deep link: ?s=12 or #s-12 ---------- */
+  function initScanned() {
+    var m = location.search.match(/[?&]s=(\d+)/) || location.hash.match(/^#s-?(\d+)$/);
+    var s = m && byId(+m[1]);
+    if (!s) return;
+    state.scanned = s.id;
+    var remote = /פתיחה מרחוק/.test(s.note);
+    var box = $('#scanned');
+    box.innerHTML =
+      '<div class="nearest__eyebrow">סרקתם את השלט של</div>' +
+      '<div class="nearest__addr">' + esc(s.address) + '</div>' +
+      '<div class="nearest__note">' + esc(s.note) + '</div>' + badges(s) +
+      (remote ? '<p class="scanned__tip">המקום נפתח מרחוק בשעת חירום. אם הוא נעול בזמן אזעקה, חייגו <a href="tel:106">106</a>.</p>' : '') +
+      '<div class="row">' + navButtons(s) + '</div>' +
+      '<div class="row"><button class="btn btn--warn" type="button" id="sc-locked">המקום נעול</button>' +
+      '<button class="btn" type="button" id="sc-report">דיווח על תקלה כאן</button>' +
+      '<a class="btn btn--ghost" href="tel:106">חיוג 106</a></div>';
+    box.hidden = false;
+    function report(topic) {
+      $('#f-shelter').value = String(s.id); if (topic) $('#f-topic').value = topic;
+      if (!$('#f-msg').value.trim()) $('#f-msg').value = topic === 'מקלט / מיגונית נעולים' ? 'המקום נעול. סרקתי את השלט במקום.' : '';
+      $('#f106').scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(function () { $('#f-name').focus(); }, 400);
+    }
+    $('#sc-locked').onclick = function () { report('מקלט / מיגונית נעולים'); };
+    $('#sc-report').onclick = function () { report('מקלט לא תקין או מלוכלך'); };
+    if (map && s.lat != null) { map.setView([s.lat, s.lng], 17); }
+    state.hl = s.id; renderList();
+  }
+
+  /* ---------- survey mode (?survey=1): staff pin each shelter's exact spot in the field ---------- */
+  var survey = { fixes: store.get('survey') || {}, cur: null, pending: null, clearArmed: false, userPicked: false };
+  function applySurveyFixes() {
+    Object.keys(survey.fixes).forEach(function (id) {
+      var s = byId(+id), f = survey.fixes[id]; if (!s) return;
+      s._orig = s._orig || [s.lat, s.lng, s.precision];
+      s.lat = f[0]; s.lng = f[1]; s.precision = 'verified'; s._local = true;
+    });
+  }
+  function saveFix(id, lat, lng, acc, method) {
+    var s = byId(id); if (!s) return;
+    s._orig = s._orig || [s.lat, s.lng, s.precision];
+    survey.fixes[id] = [+lat.toFixed(6), +lng.toFixed(6), acc != null ? Math.round(acc) : null, new Date().toISOString().slice(0, 10), method];
+    store.set('survey', survey.fixes);
+    s.lat = survey.fixes[id][0]; s.lng = survey.fixes[id][1]; s.precision = 'verified'; s._local = true;
+    if (markers[id]) { markers[id].setLatLng([s.lat, s.lng]); markers[id].setIcon(pinIcon(s)); }
+    svStatus('נשמר: ' + s.address + (acc != null ? ' (דיוק ' + Math.round(acc) + ' מ׳)' : ' (לפי גרירה במפה)') + '.');
+    renderSurvey(); renderList(); if (state.me) renderNearest(false);
+  }
+  function svStatus(t, warn) { var el = $('#sv-status'); el.textContent = t; el.classList.toggle('is-err', !!warn); }
+  function nextUnverified() {
+    var list = SHELTERS.filter(function (s) { return s.precision !== 'verified' && (s.id !== survey.cur || !survey.userPicked); });
+    if (state.me) list.sort(function (a, b) { return (routeMeters(a) || 1e9) - (routeMeters(b) || 1e9); });
+    return list[0];
+  }
+  function surveyPick(id) {
+    survey.cur = id; survey.pending = null;
+    var s = byId(id); $('#sv-pick').value = String(id);
+    var ll = s.lat != null ? s.lat + ',' + s.lng : s.navAddress;
+    $('#sv-info').innerHTML = '<b>' + esc(s.address) + '</b> · ' + TYPE_LABEL[s.type] + '<br><span class="muted">' + esc(s.note) + '</span><br>' +
+      '<span class="muted">מצב: ' + ({ verified: 'אומת', landmark: 'לפי מבנה מוכר במפה', probable: 'משוער לפי מבנה סמוך', street: 'משוער: אמצע הרחוב', none: 'לא מסומן' }[s.precision]) +
+      (s.anchor ? ' (' + esc(s.anchor) + ')' : '') + '</span>';
+    $('#sv-sv').href = s.lat != null ? 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + s.lat + ',' + s.lng : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(ll);
+    if (map && markers[id]) { map.setView(markers[id].getLatLng(), 18); markers[id].openPopup(); }
+  }
+  function renderSurvey() {
+    var v = SHELTERS.filter(function (s) { return s.precision === 'verified'; }).length;
+    var lm = SHELTERS.filter(function (s) { return s.precision === 'landmark'; }).length;
+    $('#sv-progress').textContent = v + ' מתוך ' + SHELTERS.length + ' אומתו · ' + lm + ' לפי מבנה מוכר · ' + (SHELTERS.length - v - lm) + ' משוערים';
+    $('#sv-bar').style.width = Math.round(100 * (v + lm) / SHELTERS.length) + '%';
+    var sel = $('#sv-pick'), cur = sel.value;
+    sel.innerHTML = SHELTERS.map(function (s) {
+      return '<option value="' + s.id + '">' + (s.precision === 'verified' ? '✓ ' : s.precision === 'landmark' ? '◐ ' : '○ ') + esc(s.address) + ' · ' + TYPE_LABEL[s.type] + '</option>';
+    }).join('');
+    if (cur) sel.value = cur;
+    $('#sv-out').value = JSON.stringify(survey.fixes);
+  }
+  function initSurvey() {
+    document.body.classList.add('is-survey');
+    $('#survey').hidden = false;
+    renderSurvey();
+    var first = nextUnverified(); if (first) surveyPick(first.id);
+    $('#sv-pick').onchange = function () { survey.userPicked = true; surveyPick(+this.value); };
+    $('#sv-next').onclick = function () { var n = nextUnverified(); if (n) surveyPick(n.id); else svStatus('כל המקומות אומתו.'); };
+    $('#sv-here').onclick = function () {
+      if (!survey.cur) return;
+      if (!state.me || state.me.src !== 'gps' || loc.status !== 'live') { startWatch(true); svStatus('מפעיל GPS… עמדו ליד הכניסה ולחצו שוב כשהמיקום מופיע.', true); return; }
+      var s = byId(survey.cur), acc = state.me.acc != null ? state.me.acc : 999;
+      var far = s.lat != null && s.precision !== 'street' && s.precision !== 'none' ? haversine([s.lat, s.lng], [state.me.lat, state.me.lng]) : 0;
+      if (survey.pending !== survey.cur && (acc > 30 || far > 300)) {
+        survey.pending = survey.cur;
+        svStatus(acc > 30 ? 'הדיוק כרגע ' + Math.round(acc) + ' מ׳. כדאי לחכות כמה שניות בשטח פתוח. לחצו שוב כדי לשמור בכל זאת.'
+          : 'המיקום רחוק ' + Math.round(far) + ' מ׳ מהמיקום הקודם. ודאו שבחרתם את המקום הנכון ולחצו שוב לשמירה.', true);
+        return;
+      }
+      saveFix(survey.cur, state.me.lat, state.me.lng, acc, 'gps');
+      var n = nextUnverified(); if (n) setTimeout(function () { surveyPick(n.id); }, 900);
+    };
+    $('#sv-share').onclick = function () {
+      share('תיקוני מיקום מקלטים', 'תיקוני מיקום מקלטים טירת כרמל (' + Object.keys(survey.fixes).length + '):\n' + JSON.stringify(survey.fixes), '', this);
+    };
+    $('#sv-copy').onclick = function () { copy(JSON.stringify(survey.fixes), flash(this)); };
+    $('#sv-import').onclick = function () {
+      try {
+        var txt = $('#sv-in').value, j = JSON.parse(txt.slice(txt.indexOf('{'), txt.lastIndexOf('}') + 1)), n = 0;
+        Object.keys(j).forEach(function (id) { var f = j[id]; if (byId(+id) && Array.isArray(f) && isFinite(f[0]) && isFinite(f[1])) { survey.fixes[id] = f; n++; } });
+        store.set('survey', survey.fixes); applySurveyFixes();
+        Object.keys(survey.fixes).forEach(function (id) { var s = byId(+id); if (markers[id]) { markers[id].setLatLng([s.lat, s.lng]); markers[id].setIcon(pinIcon(s)); } });
+        renderSurvey(); renderList(); svStatus('יובאו ' + n + ' תיקונים.'); $('#sv-in').value = '';
+      } catch (e) { svStatus('הטקסט לא בפורמט הנכון. הדביקו את מה שנשלח מ„שליחת התיקונים".', true); }
+    };
+    $('#sv-clear').onclick = function () {
+      if (!survey.clearArmed) { survey.clearArmed = true; this.textContent = 'לחצו שוב למחיקה'; var b = this; setTimeout(function () { survey.clearArmed = false; b.textContent = 'מחיקת התיקונים בטלפון'; }, 4000); return; }
+      Object.keys(survey.fixes).forEach(function (id) { var s = byId(+id); if (s && s._orig) { s.lat = s._orig[0]; s.lng = s._orig[1]; s.precision = s._orig[2]; s._local = false;
+        if (markers[id]) { markers[id].setLatLng(s.lat != null ? [s.lat, s.lng] : CITY_CENTER); markers[id].setIcon(pinIcon(s)); } } });
+      survey.fixes = {}; store.set('survey', {}); renderSurvey(); renderList(); svStatus('התיקונים נמחקו מהטלפון.'); this.textContent = 'מחיקת התיקונים בטלפון'; survey.clearArmed = false;
+    };
+    $('#sv-min').onclick = function () { var c = $('#survey').classList.toggle('is-min'); this.textContent = c ? 'הרחבה' : 'הקטנה'; };
   }
 
   /* ---------- boot ---------- */
@@ -350,7 +502,10 @@
       if (p) setMe(p[0], p[1], 'street');
     });
 
+    if (state.survey) applySurveyFixes();
     initMap(); renderList(); initForm();
+    $('#prot-sec').textContent = PROT_LABEL;
+    if (CONFIG.protectionCheckedOn) $('#prot-date').textContent = ' (עודכן ' + CONFIG.protectionCheckedOn.split('-').reverse().join('.') + ')';
 
     initLocation();
     $('#q').addEventListener('input', function () { state.q = this.value; renderList(); });
@@ -372,7 +527,8 @@
       share('המיקום שלי', 'המיקום שלי עכשיו: https://maps.google.com/?q=' + state.me.lat.toFixed(6) + ',' + state.me.lng.toFixed(6), '', btn);
     };
 
-    if (state.edit) { $('#edit-bar').hidden = false; renderEdit(); $('#edit-copy').onclick = function () { copy($('#edit-out').value, flash(this)); }; }
+    if (state.survey) initSurvey();
+    initScanned();
 
 
     if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude\.ai|claudeusercontent/.test(location.hostname)) {

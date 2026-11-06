@@ -29,6 +29,7 @@
 
 <main class="layout">
   <section class="panel" aria-label="איתור מקלט">
+    <div id="scanned" class="nearest scanned" hidden></div>
     <div class="locate">
       <button id="btn-locate" class="btn btn--primary btn--xl" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>
@@ -72,6 +73,7 @@
       <span><i class="dot dot--shelter"></i>מקלט / מחסה</span>
       <span><i class="dot dot--protected"></i>מיגונית</span>
       <span><i class="dot dot--me"></i>המיקום שלי</span>
+      <span><i class="ring"></i>טווח הגעה בזמן ההתגוננות</span>
     </div>
   </section>
 
@@ -125,14 +127,42 @@
         <li><a href="tel:102"><b>102</b>כבאות</a></li>
         <li><a href="tel:104"><b>104</b>פיקוד העורף</a></li>
       </ul>
-      <p class="muted">בהישמע אזעקה: היכנסו למרחב המוגן הקרוב בתוך הזמן שהוגדר לאזורכם והישארו בו 10 דקות, אלא אם פיקוד העורף הנחה אחרת.</p>
+      <p class="prot-line">זמן ההתגוננות בטירת כרמל: <b id="prot-sec">60 שניות</b><span id="prot-date" class="muted"></span></p>
+      <p class="muted">בהישמע אזעקה: היכנסו למרחב המוגן הקרוב בתוך זמן ההתגוננות והישארו בו 10 דקות, אלא אם פיקוד העורף הנחה אחרת. ההנחיות העדכניות באתר ובאפליקציית <a href="https://www.oref.org.il" target="_blank" rel="noopener">פיקוד העורף</a>.</p>
     </div>
   </section>
 </main>
 
-<div id="edit-bar" class="editbar" hidden>
-  <b>מצב עריכת מיקומים</b> · גררו סמן למיקום המדויק. <button id="edit-copy" class="btn" type="button">העתקת התיקונים</button>
-  <textarea id="edit-out" rows="2" readonly aria-label="תיקוני מיקום"></textarea>
+<div id="survey" class="survey" hidden aria-label="סקר מיקומים בשטח">
+  <div class="survey__head">
+    <b>סקר מיקומים בשטח</b>
+    <span id="sv-progress" class="survey__prog"></span>
+    <button id="sv-min" class="linkbtn" type="button">הקטנה</button>
+  </div>
+  <div class="survey__track"><i id="sv-bar"></i></div>
+  <div class="survey__body">
+    <label for="sv-pick" class="survey__lbl">המקום שאתם מאמתים</label>
+    <select id="sv-pick"></select>
+    <div id="sv-info" class="survey__info"></div>
+    <div class="row">
+      <button id="sv-here" class="btn btn--primary" type="button">אני ליד הכניסה: שמירת המיקום</button>
+      <button id="sv-next" class="btn" type="button">הבא שלא אומת</button>
+      <a id="sv-sv" class="btn btn--ghost" target="_blank" rel="noopener">Street View</a>
+    </div>
+    <p id="sv-status" class="muted" role="status" aria-live="polite">עמדו ליד הכניסה למקלט, חכו לדיוק טוב ולחצו „שמירת המיקום". אפשר גם לגרור את הסמן במפה.</p>
+    <details>
+      <summary>שליחת התיקונים לאגף / ייבוא</summary>
+      <div class="row">
+        <button id="sv-share" class="btn btn--sm" type="button">שליחת התיקונים</button>
+        <button id="sv-copy" class="btn btn--sm" type="button">העתקה</button>
+        <button id="sv-clear" class="btn btn--sm btn--ghost" type="button">מחיקת התיקונים בטלפון</button>
+      </div>
+      <textarea id="sv-out" rows="2" readonly aria-label="התיקונים בפורמט לשליחה"></textarea>
+      <label for="sv-in" class="survey__lbl">ייבוא תיקונים מטלפון אחר</label>
+      <textarea id="sv-in" rows="2"></textarea>
+      <button id="sv-import" class="btn btn--sm" type="button">ייבוא</button>
+    </details>
+  </div>
 </div>
 
 <footer class="foot">
@@ -145,6 +175,7 @@
 
 <!--INLINE-JS-START-->
 <script src="vendor/leaflet.js"></script>
+<script src="data/config.js"></script>
 <script src="data/shelters.js"></script>
 <script src="data/streets.js"></script>
 <script src="js/app.js"></script>

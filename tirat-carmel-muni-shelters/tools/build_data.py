@@ -1,6 +1,8 @@
 """Build data/shelters.js from tools/source.tsv + tools/streets.json (OSM street geometry) + landmark overrides.
 No network needed. Re-run after editing source.tsv:  python3 -I tools/build_data.py
-precision: landmark = pinned to a known building/POI (accurate)
+precision: verified = confirmed on site with the survey mode (tools/fixes.json)
+           landmark = pinned to a known building/POI (accurate)
+           probable = inferred from a nearby map feature (approximate)
            street   = middle of the street on the map (approximate; navigation still uses the exact address)
            none     = street not in OpenStreetMap; not used for "nearest" until coordinates are added"""
 import json, math, pathlib
@@ -16,8 +18,27 @@ LANDMARKS = {
     ("ששת הימים", "3"): (32.759388, 34.973042, "קופת חולים כללית"),
     ("נתן אלבז", "36"): (32.752782, 34.972281, "צומת נתן אלבז–גורדון"),
 }
+# per-shelter anchors (by id) where the street+number key is shared or the spot is inferred.
+# "probable" = inferred from a nearby OSM feature; shown as approximate until verified in the field.
+ID_ANCHORS = {
+    44: (32.758299, 34.970500, "landmark", "מגרש הספורט של בי\"ס יגאל אלון"),
+    11: (32.758775, 34.965801, "probable", "בית ספר ברח' נרקיסים, סמוך לרח' הכלניות"),
+    22: ("near", "ז'בוטינסקי", 32.761772, 34.962811, "probable", "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"),
+    46: ("near", "ז'בוטינסקי", 32.761772, 34.962811, "probable", "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"),
+    36: ("near", "האלה", 32.752872, 34.973456, "probable", "קטע הרחוב הסמוך לבית העלמין"),
+}
 # user-confirmed fixes exported from the site's edit mode (?edit=1) go here and win over everything
 FIXES = json.loads((ROOT/"tools/fixes.json").read_text()) if (ROOT/"tools/fixes.json").exists() else {}
+
+def near_on_street(lines, lat, lng):
+    best, bd = None, 1e9
+    for l in lines:
+        for a, b in zip(l, l[1:] or l):
+            dx, dy = b[0]-a[0], b[1]-a[1]; L = dx*dx+dy*dy
+            t = 0 if L == 0 else max(0, min(1, ((lng-a[0])*dx+(lat-a[1])*dy)/L))
+            q = (a[0]+t*dx, a[1]+t*dy); d = (q[0]-lng)**2+(q[1]-lat)**2
+            if d < bd: best, bd = q, d
+    return best[1], best[0]
 
 def street_mid(lines):
     pts = [p for l in lines for p in l]
@@ -38,7 +59,11 @@ for n, line in enumerate((ROOT/"tools/source.tsv").read_text().splitlines(), 1):
     base = street.replace(" מול", "").split(" (")[0]
     lat = lng = None; prec = "none"; src = ""
     if str(n) in FIXES:
-        lat, lng = FIXES[str(n)]; prec = "landmark"; src = "סומן ידנית"
+        lat, lng = FIXES[str(n)][:2]; prec = "verified"; src = "אומת בשטח"
+    elif n in ID_ANCHORS:
+        a = ID_ANCHORS[n]
+        if a[0] == "near": lat, lng = near_on_street(streets[a[1]], a[2], a[3]); prec, src = a[4], a[5]
+        else: lat, lng, prec, src = a
     elif (base, num) in LANDMARKS:
         lat, lng, src = LANDMARKS[(base, num)]; prec = "landmark"
     elif streets.get(osm_street):

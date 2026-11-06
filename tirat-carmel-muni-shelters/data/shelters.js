@@ -117,10 +117,10 @@ window.SHELTERS = [
   "address": "הכלניות 20",
   "navAddress": "הכלניות 20, טירת כרמל",
   "note": "בי\"ס אפרים צמח, מקלט אולם הספורט",
-  "lat": 32.758671,
-  "lng": 34.966856,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.758775,
+  "lng": 34.965801,
+  "precision": "probable",
+  "anchor": "בית ספר ברח' נרקיסים, סמוך לרח' הכלניות"
  },
  {
   "id": 12,
@@ -238,10 +238,10 @@ window.SHELTERS = [
   "address": "ז'בוטינסקי 43",
   "navAddress": "ז'בוטינסקי 43, טירת כרמל",
   "note": "מקלט, מתנ\"ס",
-  "lat": 32.760365,
-  "lng": 34.966442,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.760527,
+  "lng": 34.962789,
+  "precision": "probable",
+  "anchor": "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"
  },
  {
   "id": 23,
@@ -392,10 +392,10 @@ window.SHELTERS = [
   "address": "האלה 17",
   "navAddress": "האלה 17, טירת כרמל",
   "note": "מול בית העלמין הישן",
-  "lat": 32.754843,
-  "lng": 34.974564,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.752718,
+  "lng": 34.974103,
+  "precision": "probable",
+  "anchor": "קטע הרחוב הסמוך לבית העלמין"
  },
  {
   "id": 37,
@@ -480,10 +480,10 @@ window.SHELTERS = [
   "address": "ויצמן 19",
   "navAddress": "ויצמן 19, טירת כרמל",
   "note": "בי\"ס יגאל אלון, חצר מגרש ספורט 2X",
-  "lat": 32.757453,
-  "lng": 34.970295,
+  "lat": 32.758299,
+  "lng": 34.9705,
   "precision": "landmark",
-  "anchor": "בי\"ס יגאל אלון"
+  "anchor": "מגרש הספורט של בי\"ס יגאל אלון"
  },
  {
   "id": 45,
@@ -502,10 +502,10 @@ window.SHELTERS = [
   "address": "ז'בוטינסקי מול 39",
   "navAddress": "ז'בוטינסקי 39, טירת כרמל",
   "note": "רחבת הסקייטפארק",
-  "lat": 32.760365,
-  "lng": 34.966442,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.760527,
+  "lng": 34.962789,
+  "precision": "probable",
+  "anchor": "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"
  },
  {
   "id": 47,
