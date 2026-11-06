@@ -34,7 +34,18 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>
         <span id="btn-locate-label">מצא את המקלט הקרוב אליי</span>
       </button>
+      <div id="live" class="live" hidden>
+        <span class="live__dot" aria-hidden="true"></span>
+        <span id="live-text">מחפש מיקום…</span>
+        <button id="live-stop" type="button">הפסקת מעקב</button>
+      </div>
       <p id="locate-status" class="locate__status" role="status" aria-live="polite">שתפו מיקום ונציג מיד את המקלט הקרוב וזמן ההגעה.</p>
+      <div id="loc-help" class="lochelp" hidden>
+        <b id="loc-help-title">איך מאשרים לאתר את המיקום</b>
+        <ol id="loc-help-steps"></ol>
+        <div class="row"><button id="loc-retry" class="btn btn--sm" type="button">בדיקה חוזרת עכשיו</button>
+        <span class="lochelp__auto"><span class="live__dot" aria-hidden="true"></span> בודק אוטומטית כל כמה שניות</span></div>
+      </div>
       <div class="locate__alt">
         <label for="street-pick">אין מיקום? בחרו רחוב:</label>
         <select id="street-pick"><option value="">— בחירת רחוב —</option></select>

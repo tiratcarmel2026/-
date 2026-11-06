@@ -1,5 +1,5 @@
 // Offline support: the list, map data and app keep working without internet (map tiles excepted).
-const CACHE = 'tc-shelters-v1';
+const CACHE = 'tc-shelters-v2';
 const SHELL = ['./', 'index.html', 'css/app.css', 'js/app.js', 'data/shelters.js', 'data/streets.js',
   'vendor/leaflet.js', 'vendor/leaflet.css', 'assets/logo.png', 'manifest.webmanifest'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));

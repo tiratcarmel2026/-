@@ -109,7 +109,7 @@
       markers[s.id] = m; bounds.push([s.lat, s.lng]);
     });
     if (bounds.length) map.fitBounds(bounds, { padding: [24, 24] });
-    map.on('click', function (e) { if (!state.edit) setMe(e.latlng.lat, e.latlng.lng, 'map'); });
+    map.on('click', function (e) { if (!state.edit && loc.status !== 'live') setMe(e.latlng.lat, e.latlng.lng, 'map'); });
   }
   function popupHtml(s) {
     var m = routeMeters(s);
@@ -124,33 +124,116 @@
     else meMarker.setLatLng(ll);
   }
 
-  /* ---------- location ---------- */
-  var watchId = null;
+  /* ---------- location: live tracking + automatic recovery ----------
+     watchPosition keeps the position (and the nearest shelter) updated while the resident moves.
+     If location is blocked or the phone's location services are off, we show how to turn them on and
+     retry by ourselves: when the permission changes, when the resident returns from Settings to the
+     tab, and every few seconds while the page is visible. No extra tap needed. */
+  var watchId = null, retryTimer = null, lastFixAt = 0, nearestId = null;
+  var loc = { wanted: !!store.get('wanted'), status: 'off' };   // off | waiting | live | blocked | unavailable
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent), isAndroid = /Android/.test(navigator.userAgent);
+
   function setStatus(msg, err) { var el = $('#locate-status'); el.textContent = msg; el.classList.toggle('is-err', !!err); }
+  function setLoc(status) {
+    loc.status = status;
+    $('#live').hidden = status !== 'live' && status !== 'waiting';
+    $('#live').classList.toggle('is-wait', status === 'waiting');
+    if (status === 'waiting') $('#live-text').textContent = 'מחפש מיקום…';
+    $('#loc-help').hidden = !(status === 'blocked' || status === 'unavailable');
+    if (status === 'blocked' || status === 'unavailable') renderHelp(status);
+    $('#btn-locate-label').textContent = status === 'live' ? 'מרכוז המפה עליי' : 'מצא את המקלט הקרוב אליי';
+    scheduleRetry();
+  }
   function setMe(lat, lng, src, acc) {
     var first = !state.me || state.me.src !== src;
     state.me = { lat: lat, lng: lng, src: src, acc: acc };
     var far = haversine([lat, lng], CITY_CENTER) > 6000;
-    setStatus(src === 'gps' ? ('המיקום עודכן' + (acc ? ' (דיוק כ-' + Math.round(acc) + ' מ׳)' : '') + (far ? '. נראה שאתם מחוץ לטירת כרמל.' : '.'))
+    if (src !== 'gps') { stopWatch(); setLoc('off'); }
+    setStatus(src === 'gps' ? ('המיקום מתעדכן אוטומטית' + (acc ? ' (דיוק כ-' + Math.round(acc) + ' מ׳)' : '') + (far ? '. נראה שאתם מחוץ לטירת כרמל.' : '.'))
       : src === 'street' ? 'מחושב לפי אמצע הרחוב שבחרתם.' : 'מחושב לפי הנקודה שסימנתם במפה.', far);
-    $('#btn-locate-label').textContent = 'עדכון המיקום שלי';
-    drawMe(); renderNearest(first); renderList();
+    drawMe();
+    var top = ranked()[0], changed = top && top.s.id !== nearestId;
+    if (changed && nearestId != null && src === 'gps') { setStatus('המקלט הקרוב התעדכן לפי המיקום החדש שלך.'); try { navigator.vibrate && navigator.vibrate(80); } catch (e) { } }
+    nearestId = top ? top.s.id : null;
+    renderNearest(first || changed, first); renderList();
   }
-  function locate(silent) {
+  function onFix(p) {
+    lastFixAt = Date.now();
+    if (loc.status !== 'live') setLoc('live');
+    var c = p.coords;
+    if (!state.me || state.me.src !== 'gps' || haversine([state.me.lat, state.me.lng], [c.latitude, c.longitude]) > 15) setMe(c.latitude, c.longitude, 'gps', c.accuracy);
+    else state.me.acc = c.accuracy;
+    tickLive();
+  }
+  function onErr(e) {
+    if (e.code === 1) { stopWatch(); setLoc('blocked'); setStatus('שיתוף המיקום כבוי. ההוראות להפעלה מופיעות למטה, והאתר יתעדכן לבד ברגע שתפעילו.', true); }
+    else if (e.code === 2) { stopWatch(); setLoc('unavailable'); setStatus('שירותי המיקום בטלפון כבויים או שאין קליטה. הפעילו מיקום והאתר יתעדכן לבד.', true); }
+    else if (loc.status !== 'live') setStatus('עדיין מחפש מיקום… אפשר בינתיים לבחור רחוב או להקיש על המפה.');
+  }
+  function startWatch(fromUser) {
     if (!('geolocation' in navigator)) { setStatus('הדפדפן לא תומך בשיתוף מיקום. בחרו רחוב או הקישו על המפה.', true); return; }
-    if (!silent) setStatus('מאתר את המיקום שלך…');
-    navigator.geolocation.getCurrentPosition(function (p) {
-      setMe(p.coords.latitude, p.coords.longitude, 'gps', p.coords.accuracy);
-      if (watchId == null) watchId = navigator.geolocation.watchPosition(function (q) {
-        if (state.me && state.me.src === 'gps' && haversine([state.me.lat, state.me.lng], [q.coords.latitude, q.coords.longitude]) > 25)
-          setMe(q.coords.latitude, q.coords.longitude, 'gps', q.coords.accuracy);
-      }, function () { }, { enableHighAccuracy: true, maximumAge: 15000 });
-    }, function (e) {
-      if (silent) return;
-      setStatus(e.code === 1 ? 'שיתוף המיקום נחסם. אפשרו מיקום בהגדרות הדפדפן, או בחרו רחוב / הקישו על המפה.'
-        : 'לא הצלחנו לאתר מיקום. בחרו רחוב או הקישו על המפה.', true);
-    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
+    if (fromUser) { loc.wanted = true; store.set('wanted', true); }
+    if (watchId != null) { if (fromUser && state.me && map) map.setView([state.me.lat, state.me.lng], 17); return; }
+    if (loc.status !== 'live') { setLoc('waiting'); if (fromUser) setStatus('מאתר את המיקום שלך…'); }
+    watchId = navigator.geolocation.watchPosition(onFix, onErr, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
   }
+  function stopWatch() { if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; } }
+  function permState(cb) {
+    try { navigator.permissions.query({ name: 'geolocation' }).then(function (p) { cb(p.state, p); }, function () { cb('unknown'); }); }
+    catch (e) { cb('unknown'); }
+  }
+  // retry quietly while blocked/unavailable, without re-prompting the resident in a loop
+  function scheduleRetry() {
+    clearInterval(retryTimer); retryTimer = null;
+    if (loc.status !== 'blocked' && loc.status !== 'unavailable') return;
+    retryTimer = setInterval(function () {
+      if (document.hidden) return;
+      permState(function (st) {
+        if (st === 'granted' || (loc.status === 'unavailable' && st !== 'denied')) startWatch(false);
+      });
+    }, 4000);
+  }
+  function tickLive() {
+    if (loc.status !== 'live') return;
+    var sec = Math.round((Date.now() - lastFixAt) / 1000);
+    $('#live-text').textContent = 'מעקב מיקום חי · עודכן ' + (sec < 5 ? 'עכשיו' : 'לפני ' + (sec < 60 ? sec + ' שנ׳' : Math.round(sec / 60) + ' דק׳')) +
+      (state.me && state.me.acc ? ' · דיוק ' + Math.round(state.me.acc) + ' מ׳' : '');
+  }
+  function renderHelp(status) {
+    var steps;
+    if (isIOS) steps = status === 'unavailable'
+      ? ['פתחו <b>הגדרות</b> ← <b>פרטיות ואבטחה</b> ← <b>שירותי מיקום</b> והפעילו.', 'באותו מסך גללו ל-<b>Safari</b> (או לדפדפן שלכם) ובחרו <b>בזמן השימוש ביישום</b>.', 'חזרו לכאן. האתר יתעדכן לבד.']
+      : ['הקישו על <b>אא</b> או על סמל המנעול בשורת הכתובת ← <b>הגדרות אתר</b> ← <b>מיקום</b> ← <b>אפשר</b>.', 'אם אין אפשרות כזו: <b>הגדרות</b> ← <b>Safari</b> ← <b>מיקום</b> ← <b>שאל</b> או <b>אפשר</b>.', 'חזרו לכאן. האתר יתעדכן לבד.'];
+    else if (isAndroid) steps = status === 'unavailable'
+      ? ['משכו את סרגל ההתראות מלמעלה והקישו על <b>מיקום</b> כדי להפעיל.', 'חזרו לכאן. האתר יתעדכן לבד.']
+      : ['הקישו על סמל המנעול או ההגדרות ליד כתובת האתר ← <b>הרשאות</b> ← <b>מיקום</b> ← <b>אפשר</b>.', 'אם המיקום בטלפון כבוי: משכו את סרגל ההתראות והפעילו <b>מיקום</b>.', 'חזרו לכאן. האתר יתעדכן לבד.'];
+    else steps = ['לחצו על סמל המנעול ליד כתובת האתר ← <b>מיקום</b> ← <b>אפשר</b>.', 'ודאו ששירותי המיקום מופעלים במחשב.', 'האתר יתעדכן לבד.'];
+    $('#loc-help-title').textContent = status === 'unavailable' ? 'איך מפעילים שירותי מיקום בטלפון' : 'איך מאשרים לאתר את המיקום';
+    $('#loc-help-steps').innerHTML = steps.map(function (x) { return '<li>' + x + '</li>'; }).join('');
+  }
+  function initLocation() {
+    $('#btn-locate').onclick = function () { startWatch(true); };
+    $('#live-stop').onclick = function () { stopWatch(); loc.wanted = false; store.set('wanted', false); setLoc('off'); setStatus('המעקב הופסק. אפשר להפעיל שוב בכל רגע.'); };
+    $('#loc-retry').onclick = function () { stopWatch(); startWatch(true); };
+    setInterval(tickLive, 5000);
+    permState(function (st, p) {
+      if (st === 'granted' || (st === 'prompt' && loc.wanted)) startWatch(false);
+      else if (st === 'denied' && loc.wanted) setLoc('blocked');
+      if (p) p.onchange = function () {   // resident changed the permission (e.g. in site settings)
+        if (p.state === 'granted') { stopWatch(); startWatch(false); }
+        else if (p.state === 'denied') { stopWatch(); setLoc('blocked'); }
+      };
+    });
+    // coming back from the phone's Settings app: try again immediately
+    function onReturn() {
+      if (document.hidden || !loc.wanted) return;
+      if (loc.status === 'blocked' || loc.status === 'unavailable' || loc.status === 'off' && !state.me) { stopWatch(); startWatch(false); }
+    }
+    document.addEventListener('visibilitychange', onReturn);
+    window.addEventListener('focus', onReturn);
+    window.addEventListener('pageshow', onReturn);
+  }
+  function locate() { startWatch(true); }
 
   /* ---------- nearest ---------- */
   function ranked() {
@@ -158,7 +241,7 @@
       .map(function (s) { return { s: s, m: routeMeters(s) }; })
       .sort(function (a, b) { return a.m - b.m; });
   }
-  function renderNearest(fly) {
+  function renderNearest(fly, scroll) {
     var box = $('#nearest');
     if (!state.me) { box.hidden = true; return; }
     var r = ranked(), top = r[0]; if (!top) return;
@@ -185,7 +268,7 @@
       routeLine = L.polyline([[state.me.lat, state.me.lng], [s.lat, s.lng]], { color: '#E2462F', weight: 4, dashArray: '6 8' }).addTo(map);
       if (fly) map.fitBounds(routeLine.getBounds(), { padding: [60, 60], maxZoom: 17 });
     }
-    if (fly && window.innerWidth < 960) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (scroll && window.innerWidth < 960) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   /* ---------- list ---------- */
@@ -238,7 +321,7 @@
       e.preventDefault();
       var miss = ['#f-name', '#f-phone', '#f-msg'].filter(function (id) { return !$(id).value.trim(); });
       if (miss.length) { $('#f-status').textContent = 'יש למלא שם, טלפון ופירוט הפנייה.'; $(miss[0]).focus(); return; }
-      if ($('#f-loc').checked && !state.me) locate(true);
+      
       store.set('contact', { name: $('#f-name').value, phone: $('#f-phone').value });
       var r = buildReport();
       location.href = 'mailto:' + MOKED_EMAIL + '?subject=' + encodeURIComponent(r.subject) + '&body=' + encodeURIComponent(r.body);
@@ -269,7 +352,7 @@
 
     initMap(); renderList(); initForm();
 
-    $('#btn-locate').onclick = function () { locate(false); };
+    initLocation();
     $('#q').addEventListener('input', function () { state.q = this.value; renderList(); });
     document.querySelectorAll('.tab').forEach(function (t) {
       t.onclick = function () {
@@ -285,16 +368,12 @@
     $('#wa-site').href = 'https://wa.me/?text=' + encodeURIComponent(shareText + '\n' + siteUrl());
     $('#share-me').onclick = function () {
       var btn = this;
-      if (!state.me) { locate(false); setStatus('מאתר מיקום… לחצו שוב על „שיתוף המיקום שלי" אחרי שהמיקום יופיע.'); return; }
+      if (!state.me) { locate(); setStatus('מאתר מיקום… לחצו שוב על „שיתוף המיקום שלי" אחרי שהמיקום יופיע.'); return; }
       share('המיקום שלי', 'המיקום שלי עכשיו: https://maps.google.com/?q=' + state.me.lat.toFixed(6) + ',' + state.me.lng.toFixed(6), '', btn);
     };
 
     if (state.edit) { $('#edit-bar').hidden = false; renderEdit(); $('#edit-copy').onclick = function () { copy($('#edit-out').value, flash(this)); }; }
 
-    // open with location if the visitor already allowed it before
-    try {
-      navigator.permissions.query({ name: 'geolocation' }).then(function (p) { if (p.state === 'granted') locate(true); }, function () { });
-    } catch (e) { /* no permissions API */ }
 
     if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
       navigator.serviceWorker.register('sw.js').catch(function () { });
