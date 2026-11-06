@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מקלטים טירת כרמל</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="רשימת המקלטים, המחסות והמיגוניות בטירת כרמל: המקלט הקרוב אליך, זמן הגעה, ניווט בוויז ובגוגל מפות ופנייה למוקד 106.">
+<meta name="theme-color" content="#123E73">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<!--INLINE-CSS-START--><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="css/app.css"><!--INLINE-CSS-END-->
+</head>
+<body>
+<header class="top">
+  <div class="top__in">
+    <img class="top__logo" src="assets/logo.png" alt="עיריית טירת כרמל">
+    <div class="top__titles">
+      <h1>מקלטים, מחסות ומיגוניות</h1>
+      <p>טירת כרמל · אגף ביטחון וחירום</p>
+    </div>
+    <a class="top__call" href="tel:106" aria-label="חיוג למוקד העירוני 106"><span>מוקד</span><b>106</b></a>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel" aria-label="איתור מקלט">
+    <div class="locate">
+      <button id="btn-locate" class="btn btn--primary btn--xl" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>
+        <span id="btn-locate-label">מצא את המקלט הקרוב אליי</span>
+      </button>
+      <p id="locate-status" class="locate__status" role="status" aria-live="polite">שתפו מיקום ונציג מיד את המקלט הקרוב וזמן ההגעה.</p>
+      <div class="locate__alt">
+        <label for="street-pick">אין מיקום? בחרו רחוב:</label>
+        <select id="street-pick"><option value="">— בחירת רחוב —</option></select>
+        <span class="locate__or">או הקישו על המפה במקום שבו אתם נמצאים</span>
+      </div>
+    </div>
+
+    <div id="nearest" class="nearest" hidden></div>
+
+    <div class="listhead">
+      <div class="tabs" role="tablist" aria-label="סוג מרחב מוגן">
+        <button role="tab" class="tab is-on" data-f="all" aria-selected="true">הכל <i id="c-all"></i></button>
+        <button role="tab" class="tab" data-f="shelter" aria-selected="false">מקלטים ומחסות <i id="c-shelter"></i></button>
+        <button role="tab" class="tab" data-f="protected" aria-selected="false">מיגוניות <i id="c-protected"></i></button>
+      </div>
+      <input id="q" type="search" placeholder="חיפוש רחוב או מקום…" aria-label="חיפוש">
+    </div>
+    <ol id="list" class="list"></ol>
+  </section>
+
+  <section class="mapwrap" aria-label="מפה">
+    <div id="map" class="map"></div>
+    <div class="legend">
+      <span><i class="dot dot--shelter"></i>מקלט / מחסה</span>
+      <span><i class="dot dot--protected"></i>מיגונית</span>
+      <span><i class="dot dot--me"></i>המיקום שלי</span>
+    </div>
+  </section>
+
+  <section class="tools" aria-label="שיתוף ופנייה">
+    <div class="card">
+      <h2>שיתוף</h2>
+      <p class="muted">שלחו את האתר למשפחה ולשכנים, או שתפו את המיקום הנוכחי שלכם.</p>
+      <div class="row">
+        <button id="share-site" class="btn" type="button">שיתוף האתר</button>
+        <button id="share-me" class="btn" type="button">שיתוף המיקום שלי</button>
+        <a id="wa-site" class="btn btn--wa" target="_blank" rel="noopener">וואטסאפ</a>
+      </div>
+    </div>
+
+    <div class="card card--106">
+      <h2>פנייה למוקד 106</h2>
+      <p class="muted">מקלט נעול, תקלה או מפגע? הפנייה נשלחת לדוא״ל המוקד <b class="sel">moked@tirat-carmel.muni.il</b>. במצב חירום חייגו <a href="tel:106">106</a>.</p>
+      <form id="f106" novalidate>
+        <div class="grid2">
+          <label>שם מלא<input id="f-name" required autocomplete="name"></label>
+          <label>טלפון לחזרה<input id="f-phone" type="tel" required autocomplete="tel" inputmode="tel"></label>
+        </div>
+        <label>נושא הפנייה
+          <select id="f-topic">
+            <option>מקלט / מיגונית נעולים</option>
+            <option>מקלט לא תקין או מלוכלך</option>
+            <option>חסר שילוט או תאורה</option>
+            <option>מפגע בטיחותי</option>
+            <option>בקשת מידע</option>
+            <option>אחר</option>
+          </select>
+        </label>
+        <label>מקלט / מיגונית (לא חובה)<select id="f-shelter"><option value="">— לא רלוונטי —</option></select></label>
+        <label>פירוט<textarea id="f-msg" rows="3" required></textarea></label>
+        <label class="check"><input id="f-loc" type="checkbox" checked> לצרף את המיקום הנוכחי שלי</label>
+        <div class="row">
+          <button class="btn btn--primary" type="submit">שליחת פנייה בדוא״ל</button>
+          <button id="f-copy" class="btn" type="button">העתקת הפנייה</button>
+          <a class="btn btn--ghost" href="tel:106">חיוג 106</a>
+        </div>
+        <p id="f-status" class="muted" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+
+    <div class="card card--sos">
+      <h2>מספרי חירום</h2>
+      <ul class="sos">
+        <li><a href="tel:106"><b>106</b>מוקד עירוני</a></li>
+        <li><a href="tel:100"><b>100</b>משטרה</a></li>
+        <li><a href="tel:101"><b>101</b>מד״א</a></li>
+        <li><a href="tel:102"><b>102</b>כבאות</a></li>
+        <li><a href="tel:104"><b>104</b>פיקוד העורף</a></li>
+      </ul>
+      <p class="muted">בהישמע אזעקה: היכנסו למרחב המוגן הקרוב בתוך הזמן שהוגדר לאזורכם והישארו בו 10 דקות, אלא אם פיקוד העורף הנחה אחרת.</p>
+    </div>
+  </section>
+</main>
+
+<div id="edit-bar" class="editbar" hidden>
+  <b>מצב עריכת מיקומים</b> · גררו סמן למיקום המדויק. <button id="edit-copy" class="btn" type="button">העתקת התיקונים</button>
+  <textarea id="edit-out" rows="2" readonly aria-label="תיקוני מיקום"></textarea>
+</div>
+
+<footer class="foot">
+  <div class="foot__in">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+    <b>אגף ביטחון וחירום | עיריית טירת כרמל</b>
+  </div>
+  <p>הרשימה לפי פרסום העירייה. זמני ההגעה הם הערכה של הליכה ברגל. סמנים המסומנים „מיקום משוער" מוצגים במרכז הרחוב; הניווט בוויז ובגוגל מתבצע לפי הכתובת המלאה. נתוני מפה © תורמי OpenStreetMap.</p>
+</footer>
+
+<!--INLINE-JS-START-->
+<script src="vendor/leaflet.js"></script>
+<script src="data/shelters.js"></script>
+<script src="data/streets.js"></script>
+<script src="js/app.js"></script>
+<!--INLINE-JS-END-->
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "מקלטים ומיגוניות — טירת כרמל",
+  "short_name": "מקלטים ט״כ",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F6FA",
+  "theme_color": "#123E73",
+  "icons": [{ "src": "assets/logo.png", "sizes": "335x180", "type": "image/png" }]
+}
