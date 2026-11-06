@@ -33,8 +33,10 @@
   --soon: #9A6200;
   --soon-bg: #FFF2D6;
   --shadow: 0 1px 2px rgba(19, 50, 95, .06), 0 6px 20px rgba(19, 50, 95, .07);
-  --hero-bg: #12284B;
-  --hero-fg: #FFFFFF;
+  --hero-bg: #FFFFFF;
+  --hero-fg: #1C2430;
+  --hero-muted: #4F5A6B;
+  --hero-line: #DCE3EC;
   --logo-tile: #FFFFFF;
 
   --f-display: "Secular One", "Heebo", "Arial Hebrew", system-ui, sans-serif;
@@ -49,7 +51,7 @@
     --bg: #0D131C; --surface: #151D29; --surface-2: #1B2534; --line: #263244; --fg: #E7ECF3; --muted: #9AA6B8;
     --chip: #1F2A3B; --open: #4FD58A; --open-bg: #12321F; --closed: #FF7AAE; --closed-bg: #3A1526;
     --soon: #F2BE5C; --soon-bg: #3A2C0E; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
-    --hero-bg: #0A1A33; --logo-tile: #FFFFFF;
+    --hero-bg: #151D29; --hero-fg: #E7ECF3; --hero-muted: #A3AEBF; --hero-line: #263244; --logo-tile: #FFFFFF;
     color-scheme: dark;
   }
 }
@@ -58,7 +60,7 @@
   --bg: #0D131C; --surface: #151D29; --surface-2: #1B2534; --line: #263244; --fg: #E7ECF3; --muted: #9AA6B8;
   --chip: #1F2A3B; --open: #4FD58A; --open-bg: #12321F; --closed: #FF7AAE; --closed-bg: #3A1526;
   --soon: #F2BE5C; --soon-bg: #3A2C0E; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
-  --hero-bg: #0A1A33; --logo-tile: #FFFFFF;
+  --hero-bg: #151D29; --hero-fg: #E7ECF3; --hero-muted: #A3AEBF; --hero-line: #263244; --logo-tile: #FFFFFF;
   color-scheme: dark;
 }
 
@@ -110,29 +112,30 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 400; line-height: 1.15;
 }
 @media (max-width: 860px) {
   .nav a:not(.cta) { display: none; }
-  .brand img.city { display: none; }
+  .brand .city-tile { display: none; }
   .brand .divider { display: none; }
 }
 
 /* ---------- hero ---------- */
-.hero { position: relative; overflow: hidden; background: var(--hero-bg); color: var(--hero-fg); isolation: isolate; }
+.hero { position: relative; overflow: hidden; background: var(--hero-bg); color: var(--hero-fg); isolation: isolate; border-bottom: 1px solid var(--hero-line); }
 .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
-.hero .wrap { padding-block: 56px 44px; display: grid; gap: 26px; }
+.hero .wrap { padding-block: 64px 48px; display: grid; gap: 26px; }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px; width: fit-content;
-  font-size: 13px; font-weight: 700; letter-spacing: .04em;
-  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+  font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--blue);
+  background: color-mix(in srgb, var(--blue) 9%, transparent);
   padding: 5px 12px; border-radius: 99px;
 }
-.eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: #3BC977; box-shadow: 0 0 0 4px rgba(59,201,119,.22); }
-.hero h1 { font-size: clamp(36px, 6vw, 66px); max-width: 15ch; letter-spacing: -.005em; }
-.hero h1 .hl { background: linear-gradient(90deg, #4A93DA, #F2489C 55%, #3BC977); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.hero p.lead { margin: 0; font-size: clamp(16px, 1.8vw, 19px); max-width: 56ch; color: rgba(255,255,255,.82); }
+.eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 22%, transparent); }
+.hero h1 { font-size: clamp(36px, 6vw, 66px); max-width: 15ch; letter-spacing: -.005em; color: var(--hero-fg); }
+.hero h1 .hl { background: linear-gradient(90deg, var(--blue), var(--magenta) 55%, var(--green)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.lead { margin: 0; font-size: clamp(16px, 1.8vw, 19px); max-width: 56ch; color: var(--hero-muted); }
 
 .search {
   display: flex; align-items: stretch; gap: 0; max-width: 760px;
   background: #fff; border-radius: 16px; padding: 6px;
-  box-shadow: 0 18px 40px rgba(0,0,0,.28);
+  border: 1px solid #D3DCE8;
+  box-shadow: 0 2px 4px rgba(19,50,95,.05), 0 14px 34px rgba(19,50,95,.12);
 }
 .search label { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding-inline: 12px; color: #5A6577; }
 .search input {
@@ -158,13 +161,16 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 400; line-height: 1.15;
 }
 .quick { display: flex; flex-wrap: wrap; gap: 8px; }
 .quick button {
-  border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.07); color: #fff;
+  border: 1px solid var(--line); background: var(--surface); color: var(--fg);
   border-radius: 99px; padding: 6px 14px; font-size: 14px; cursor: pointer;
 }
-.quick button:hover { background: rgba(255,255,255,.16); }
+.quick button:hover { border-color: var(--blue); color: var(--blue); }
 .stats { display: flex; flex-wrap: wrap; gap: 28px 44px; padding-top: 6px; }
 .stat b { display: block; font-family: var(--f-display); font-size: 34px; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; }
-.stat span { font-size: 14px; color: rgba(255,255,255,.72); }
+.stat:nth-child(1) b { color: var(--blue); }
+.stat:nth-child(2) b { color: var(--magenta); }
+.stat:nth-child(3) b { color: var(--green); }
+.stat span { font-size: 14px; color: var(--hero-muted); }
 
 /* ---------- tracks ---------- */
 .tracks { padding-block: 34px 8px; }
@@ -466,7 +472,7 @@ table.hours .off { color: var(--muted); }
     <a class="brand" href="#top" aria-label="מינהלת העסקים והצמיחה בעיר — עיריית טירת כרמל">
       <span class="tile"><img src="assets/logo-minhelet-mark.jpg" alt="מינהלת העסקים והצמיחה בעיר"></span>
       <span class="divider" aria-hidden="true"></span>
-      <span class="tile"><img class="city" src="assets/logo-tirat-carmel.jpg" alt="עיריית טירת כרמל"></span>
+      <span class="tile city-tile"><img class="city" src="assets/logo-tirat-carmel.jpg" alt="עיריית טירת כרמל"></span>
     </a>
     <nav class="nav" aria-label="ניווט ראשי">
       <a href="#directory">האינדקס</a>
@@ -1049,7 +1055,7 @@ table.hours .off { color: var(--muted); }
       var gr = g.createLinearGradient(0, H, W * 0.5, 0);
       gr.addColorStop(0, bands[i][0]); gr.addColorStop(1, bands[i][1]);
       g.fillStyle = gr;
-      g.globalAlpha = W < 700 ? 0.22 : 0.9;
+      g.globalAlpha = W < 700 ? 0.12 : 0.92;
       var oy = i * bw * 1.25;
       g.beginPath();
       g.moveTo(x0 - 60, H * 0.98 - oy);
@@ -1059,7 +1065,7 @@ table.hours .off { color: var(--muted); }
       g.closePath(); g.fill();
     }
     // arrow head at the top of the blue band
-    g.globalAlpha = W < 700 ? 0.22 : 0.9;
+    g.globalAlpha = W < 700 ? 0.12 : 0.92;
     g.fillStyle = '#4A93DA';
     var ax = x0 + W * 0.3, ay = H * 0.2 - bw / 2;
     g.beginPath();
@@ -1068,11 +1074,12 @@ table.hours .off { color: var(--muted); }
     g.lineTo(ax - bw * 0.1, ay + bw * 0.75);
     g.closePath(); g.fill();
     g.globalAlpha = 1;
-    // fade the ribbons out behind the text column
-    var fade = g.createLinearGradient(W, 0, x0 + W * 0.25, 0);
-    var hb = getComputedStyle(document.documentElement).getPropertyValue('--hero-bg').trim() || '#12284B';
-    fade.addColorStop(0, hb); fade.addColorStop(0.55, hb); fade.addColorStop(1, 'rgba(0,0,0,0)');
+    // erase the ribbons gradually behind the text column (works on any background)
+    g.globalCompositeOperation = 'destination-out';
+    var fade = g.createLinearGradient(W, 0, x0 + W * 0.22, 0);
+    fade.addColorStop(0, 'rgba(0,0,0,1)'); fade.addColorStop(0.6, 'rgba(0,0,0,1)'); fade.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = fade; g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'source-over';
   }
   var rT;
   window.addEventListener('resize', function () { clearTimeout(rT); rT = setTimeout(drawRibbons, 120); });
