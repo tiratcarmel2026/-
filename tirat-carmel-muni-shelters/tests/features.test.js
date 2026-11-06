@@ -13,8 +13,8 @@ const BEN_ZVI = { latitude: 32.75232, longitude: 34.97167 };
     const { ctx, page, errors } = await newPage(browser, { geolocation: HERZL39, permissions: ['geolocation'] });
     await page.goto(URL); await page.waitForSelector('#prot', { timeout: 8000 }).catch(() => {});
     ok(await page.$eval('#prot', e => e.dataset.ok).catch(() => '') === '1', 'מוצג „אפשר להגיע בזמן ההתגוננות": ' + (await text(page, '#prot')).split('\n')[0]);
-    ok(/60 שניות/.test(await text(page, '#prot')), 'זמן ההתגוננות (60 שניות) מופיע בהסבר');
-    ok(/60 שניות/.test(await text(page, '#prot-sec')), 'זמן ההתגוננות מוצג גם בכרטיס מספרי החירום');
+    ok(/90 שניות/.test(await text(page, '#prot')), 'זמן ההתגוננות (90 שניות, מתוך ההגדרות) מופיע בהסבר');
+    ok(/90 שניות/.test(await text(page, '#prot-sec')), 'זמן ההתגוננות מוצג גם בכרטיס מספרי החירום');
     ok(await page.$$eval('.item__dist.is-ok', l => l.length) > 0, 'ברשימה מסומנים מקלטים שמגיעים אליהם בזמן');
     ok(await page.evaluate(() => !!document.querySelector('path.leaflet-interactive, .leaflet-overlay-pane path')), 'עיגול טווח ההגעה מצויר במפה');
 
@@ -54,7 +54,7 @@ const BEN_ZVI = { latitude: 32.75232, longitude: 34.97167 };
     await page.waitForSelector('#live:not(.is-wait)', { timeout: 8000 }).catch(() => {});
     await page.waitForFunction(() => /בן צבי/.test(document.querySelector('#sv-info').textContent), null, { timeout: 4000 }).catch(() => {});
     ok(/בן צבי/.test(await text(page, '#sv-info')), 'עם קבלת GPS נבחר אוטומטית המקום הקרוב שלא אומת: ' + (await text(page, '#sv-info')).split('\n')[0]);
-    await page.selectOption('#sv-pick', '4');            // בן צבי 7, כרגע אמצע הרחוב
+    await page.selectOption('#sv-pick', '4');            // בן צבי 7: לא במפת העירייה, כרגע אמצע הרחוב
     await page.click('#sv-here');
     await page.waitForFunction(() => /נשמר/.test(document.querySelector('#sv-status').textContent), null, { timeout: 4000 }).catch(() => {});
     ok(/נשמר: בן צבי 7/.test(await text(page, '#sv-status')), 'המיקום נשמר: ' + await text(page, '#sv-status'));

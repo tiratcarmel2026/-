@@ -1,6 +1,7 @@
 """Build data/shelters.js from tools/source.tsv + tools/streets.json (OSM street geometry) + landmark overrides.
 No network needed. Re-run after editing source.tsv:  python3 -I tools/build_data.py
 precision: verified = confirmed on site with the survey mode (tools/fixes.json)
+           municipal= the municipality's own Google map (exact)
            landmark = pinned to a known building/POI (accurate)
            probable = inferred from a nearby map feature (approximate)
            street   = middle of the street on the map (approximate; navigation still uses the exact address)
@@ -27,6 +28,46 @@ ID_ANCHORS = {
     46: ("near", "ז'בוטינסקי", 32.761772, 34.962811, "probable", "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"),
     36: ("near", "האלה", 32.752872, 34.973456, "probable", "קטע הרחוב הסמוך לבית העלמין"),
 }
+# The municipality's Google My Maps ("מקלטים ומיגוניות בטירת כרמל", mid=17pCpuBLG5NwHAdtu6qe6ZqtjE1N6KII),
+# saved as tools/municipal_map.kml. Matched by hand: id -> (folder kind, placemark address, precision).
+#   municipal = same address on the municipal map (exact)
+#   probable  = nearby/neighbouring number or same compound on the municipal map (needs a field check)
+import xml.etree.ElementTree as ET
+KML_NS = {"k": "http://www.opengis.net/kml/2.2"}
+def load_kml():
+    pts = {}
+    for f in ET.parse(ROOT/"tools/municipal_map.kml").getroot().iter("{http://www.opengis.net/kml/2.2}Folder"):
+        fname = f.findtext("k:name", namespaces=KML_NS) or ""
+        if fname.startswith("Directions"): continue
+        kind = "מיגונית" if "מיגוניות" in fname else "מקלט"
+        for pm in f.findall("k:Placemark", KML_NS):
+            name = (pm.findtext("k:name", namespaces=KML_NS) or "").strip()
+            addr = name.split("|")[-1].strip()
+            lng, lat = map(float, pm.findtext(".//k:coordinates", namespaces=KML_NS).strip().split(",")[:2])
+            pts.setdefault((kind, addr), (lat, lng))
+    return pts
+KML = load_kml()
+M, P = "municipal", "probable"
+MUNICIPAL = {
+    1: ("מקלט", "ביאליק 4", M), 2: ("מקלט", "ביאליק 13", M), 3: ("מקלט", "ביאליק 29", M),
+    5: ("מקלט", "בן צבי 10", M), 6: ("מקלט", "בן צבי 24", M), 7: ("מקלט", "בן צבי 38", M),
+    8: ("מקלט", "גיורא 55", M), 9: ("מקלט", "האלה 14", M),
+    12: ("מקלט", "הרב וינרוב 9", M), 13: ("מקלט", "הרב וינרוב 28", M), 14: ("מקלט", "הרב וינרוב 39", M),
+    15: ("מקלט", "הרב זרביב 23", M), 16: ("מקלט", "הרב קוק 6", M), 18: ("מקלט", "הרצל 39", M),
+    19: ("מקלט", "ויצמן 19", M), 20: ("מקלט", "ויצמן 71", M), 21: ("מקלט", "ז'בוטינסקי 7", M),
+    22: ("מקלט", "ז'בוטינסקי 43", M), 23: ("מקלט", "ירושלים 3", M), 24: ("מקלט", "ירושלים 18", M),
+    25: ("מקלט", "כרמל אליאס 18", M), 26: ("מקלט", "לוי אשכול 6", M), 27: ("מקלט", "רזיאל 8", M),
+    28: ("מקלט", "רזיאל 28", M), 29: ("מקלט", "רזיאל 40", M), 30: ("מקלט", "רמב\"ם 15", M),
+    31: ("מקלט", "רמב\"ם 22", M), 32: ("מקלט", "ש\"י עגנון 12", M),
+    34: ("מיגונית", "ביאליק 36", M), 37: ("מקלט", "הגל 2", M), 38: ("מיגונית", "העצמאות 4", M),
+    42: ("מקלט", "השריון 14", M), 45: ("מקלט", "ויצמן 28", M), 46: ("מיגונית", "ז'בוטינסקי 43", M),
+    47: ("מיגונית", "ירושלים 6", M), 51: ("מיגונית", "נתן אלבז 22", M), 55: ("מיגונית", "רמב\"ם 4", M),
+    59: ("מקלט", "ש\"י עגנון 12", M), 61: ("מיגונית", "ששת הימים 3", M),
+    36: ("מיגונית", "האלה 18", P), 39: ("מיגונית", "הרב קוק 10", P), 48: ("מקלט", "כ״ג יורדי הסירה 4", P),
+    49: ("מיגונית", "מוצקין 4", P), 60: ("מקלט", "ש\"י עגנון 12", P),
+}
+ANCHOR_TXT = {M: "מפת המקלטים של העירייה", P: "כתובת סמוכה במפת העירייה"}
+
 # user-confirmed fixes exported from the site's edit mode (?edit=1) go here and win over everything
 FIXES = json.loads((ROOT/"tools/fixes.json").read_text()) if (ROOT/"tools/fixes.json").exists() else {}
 
@@ -60,6 +101,9 @@ for n, line in enumerate((ROOT/"tools/source.tsv").read_text().splitlines(), 1):
     lat = lng = None; prec = "none"; src = ""
     if str(n) in FIXES:
         lat, lng = FIXES[str(n)][:2]; prec = "verified"; src = "אומת בשטח"
+    elif n in MUNICIPAL and MUNICIPAL[n][:2] in KML:
+        k = MUNICIPAL[n]; lat, lng = KML[k[:2]]; prec = k[2]
+        src = ANCHOR_TXT[prec] + ("" if prec == M else f" ({k[1]})")
     elif n in ID_ANCHORS:
         a = ID_ANCHORS[n]
         if a[0] == "near": lat, lng = near_on_street(streets[a[1]], a[2], a[3]); prec, src = a[4], a[5]
@@ -71,7 +115,8 @@ for n, line in enumerate((ROOT/"tools/source.tsv").read_text().splitlines(), 1):
     out.append({"id": n, "type": kind, "address": f"{street} {num}", "navAddress": f"{base} {num}, טירת כרמל",
                 "note": note, "lat": round(lat, 6) if lat else None, "lng": round(lng, 6) if lng else None,
                 "precision": prec, "anchor": src})
-    print(f"{n:2} {prec:8} {street} {num}")
+    print(f"{n:2} {prec:9} {street} {num}")
+    if n in MUNICIPAL and MUNICIPAL[n][:2] not in KML: print("   !! not found in KML:", MUNICIPAL[n])
 (ROOT/"data/shelters.js").write_text(
     "// נוצר אוטומטית ע\"י tools/build_data.py — אין לערוך ידנית. מקור הרשימה: אגף ביטחון וחירום, עיריית טירת כרמל\n"
     "// מיקומים: © OpenStreetMap contributors (ODbL)\n"

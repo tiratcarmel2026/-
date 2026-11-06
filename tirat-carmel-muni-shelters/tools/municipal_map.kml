@@ -1,0 +1,1039 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>מקלטים ומיגוניות בטירת כרמל </name>
+    <description><![CDATA[לנוחיותכם, הכנו מפה עם סימונים של מקלטים ציבוריים ומיגוניות ברחבי העיר טירת כרמל. <br><br>המקלטים מעניקים מחסה בלבד, ויש להכין תיק וציוד לשהייה במקום (כולל, לדוגמה: בקבוק מים, אוכל, ציוד לשינה, תרופות וכו').<br>אנא שמרו על הסדר והניקיון בהם - הם למענכם :)<br><br>לפרטים נוספים ניתן ליצור קשר עם המוקד העירוני 106 <br>]]></description>
+    <Style id="icon-1563-01579B-normal">
+      <IconStyle>
+        <color>ff9b5701</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1563-01579B-highlight">
+      <IconStyle>
+        <color>ff9b5701</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1563-01579B">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1563-01579B-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1563-01579B-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1563-1A237E-normal">
+      <IconStyle>
+        <color>ff7e231a</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1563-1A237E-highlight">
+      <IconStyle>
+        <color>ff7e231a</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1563-1A237E">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1563-1A237E-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1563-1A237E-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1563-1A237E-nodesc-normal">
+      <IconStyle>
+        <color>ff7e231a</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1563-1A237E-nodesc-highlight">
+      <IconStyle>
+        <color>ff7e231a</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1563-1A237E-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1563-1A237E-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1563-1A237E-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1644-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1644-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1644-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1644-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1644-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1682-097138-normal">
+      <IconStyle>
+        <color>ff387109</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1682-097138-highlight">
+      <IconStyle>
+        <color>ff387109</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1682-097138">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1682-097138-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1682-097138-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1783-A52714-normal">
+      <IconStyle>
+        <color>ff1427a5</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1783-A52714-highlight">
+      <IconStyle>
+        <color>ff1427a5</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1783-A52714">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1783-A52714-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1783-A52714-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1783-A52714-nodesc-normal">
+      <IconStyle>
+        <color>ff1427a5</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1783-A52714-nodesc-highlight">
+      <IconStyle>
+        <color>ff1427a5</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1783-A52714-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1783-A52714-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1783-A52714-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1803-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1803-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1803-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1803-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1803-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1803-880E4F-nodesc-normal">
+      <IconStyle>
+        <color>ff4f0e88</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1803-880E4F-nodesc-highlight">
+      <IconStyle>
+        <color>ff4f0e88</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1803-880E4F-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1803-880E4F-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1803-880E4F-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-0288D1-nodesc-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-nodesc-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-DB4436-nodesc-normal">
+      <IconStyle>
+        <color>ff3644db</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-DB4436-nodesc-highlight">
+      <IconStyle>
+        <color>ff3644db</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-DB4436-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-DB4436-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-DB4436-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-1267FF-5000-nodesc-normal">
+      <LineStyle>
+        <color>ffff6712</color>
+        <width>5</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-1267FF-5000-nodesc-highlight">
+      <LineStyle>
+        <color>ffff6712</color>
+        <width>7.5</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-1267FF-5000-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-1267FF-5000-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-1267FF-5000-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Folder>
+      <name>מקלטים עירוניים </name>
+      <Placemark>
+        <name>מקלט עירוני | ביאליק 4 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9707749,32.7664573,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | ביאליק 13 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9706599,32.7669668,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | ביאליק 29 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9720006,32.7677712,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | הרב קוק 13 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9730481,32.7671373,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | הרב זרביב 23 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9745438,32.768011,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מקלט עירוני | רמב"ם 22 ]]></name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9741799,32.7660959,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מקלט עירוני | רמב"ם 15 ]]></name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9738858,32.7654444,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | הרב וינרוב 9 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9721721,32.7622871,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | הרב וינרוב 28 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.971838,32.762049,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | הרב וינרוב 39</name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9715372,32.760529,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מקלט עירוני | ז'בוטינסקי 7 ]]></name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9717714,32.7600225,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | כרמל אליאס 18 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9736348,32.7604832,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | לוי אשכול 6 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9743331,32.7581178,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | רזיאל 28 </name>
+        <description>מקלט עירוני בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9714859,32.7515798,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | רזיאל 8 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9721824,32.7516011,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מקלט ציבורי | ש"י עגנון 12 ]]></name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9716953,32.7546191,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | בן צבי 10 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9713707,32.7522969,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | בן צבי 38</name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.972583,32.751979,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | בן צבי 24 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9722808,32.7521038,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | רזיאל 40</name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9703265,32.7514177,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | ירושלים 18 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.970239,32.7550224,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | ירושלים 3 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9705691,32.7554249,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | ויצמן 19 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9699578,32.7578795,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | ויצמן 71 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9723366,32.7565511,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | האלה 14 </name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9747667,32.756675,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | השריון 14 </name>
+        <description>מקלט ציבורי בטירת כרמל | גן חרוב </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9699828,32.7614693,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | הרב קוק 6 </name>
+        <description>מקלט ציבורי בטירת כרמל | בית ספר זבולון </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9734927,32.7650934,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מקלט ציבורי | ז'בוטינסקי 43 ]]></name>
+        <description><![CDATA[מקלט ציבורי בטירת כרמל | מתנ"ס טירת כרמל ]]></description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9695008,32.7596495,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | הרצל 39 </name>
+        <description>מקלט ציבורי בטירת כרמל | קניון לב העיר: קומת קרקע + קומה שניה </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9710356,32.7644683,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | הגל 2 </name>
+        <description>מקלט ציבורי בטירת כרמל : גן כוכב </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9685821,32.7555627,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | גיורא 55
+</name>
+        <description>מקלט ציבורי בטירת כרמל </description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.9705438,32.753677,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | בית ספר נוף ים </name>
+        <description>מקלט ציבורי בטירת כרמל | המקלט בקומת הקרקע של בית הספר בלבד</description>
+        <styleUrl>#icon-1563-1A237E</styleUrl>
+        <Point>
+          <coordinates>
+            34.968195,32.7569247,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט ציבורי | הורדים 31</name>
+        <styleUrl>#icon-1563-1A237E-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9726094,32.7666967,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Point 35</name>
+        <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9747415,32.7564906,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Shai Agnon Street</name>
+        <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9133796,32.8087959,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ויצמן 28 </name>
+        <description>מיגונית </description>
+        <styleUrl>#icon-1563-01579B</styleUrl>
+        <Point>
+          <coordinates>
+            34.9706628,32.7559438,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מוצקין 22</name>
+        <description>מיגונית</description>
+        <styleUrl>#icon-1803-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            34.9711661,32.7679491,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>כ״ג יורדי הסירה 4</name>
+        <styleUrl>#icon-1803-880E4F-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.971615,32.75773,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>מיגוניות </name>
+      <Placemark>
+        <name>מיגונית | האלה 18</name>
+        <styleUrl>#icon-1783-A52714-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9747262,32.7564524,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגונית | מוצקין 4 </name>
+        <styleUrl>#icon-1783-A52714-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9693412,32.7674008,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגוניות | נתן אלבז 22</name>
+        <description>מיגוניות | נתן אלבז 22</description>
+        <styleUrl>#icon-1783-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            34.9727875,32.7544958,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגונית | ביאליק 36 </name>
+        <description>מיגונית בטירת כרמל </description>
+        <styleUrl>#icon-1783-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            34.9725952,32.7676811,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגונית | ירושלים 6</name>
+        <description>מיגונית בטירת כרמל</description>
+        <styleUrl>#icon-1783-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            34.9707459,32.7547027,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגוניות | העצמאות 4 </name>
+        <description>מיגונית בטירת כרמל: המרכז המסחרי - סמוך לאנדרטה</description>
+        <styleUrl>#icon-1783-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            34.9736237,32.7610116,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגונית | ששת הימים 3 </name>
+        <description>מיגונית בטירת כרמל: סמוך לקופת חולים כללית</description>
+        <styleUrl>#icon-1783-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            34.9731186,32.7593838,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מיגונית | ז'בוטינסקי 43 ]]></name>
+        <description>מיגונית בטירת כרמל: מתחם סקייט פארק</description>
+        <styleUrl>#icon-1783-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            34.9702546,32.7589706,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגונית | נתן אלבז 12</name>
+        <styleUrl>#icon-1783-A52714-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9723491,32.7551425,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name><![CDATA[מיגונית | רמב"ם 4 ]]></name>
+        <styleUrl>#icon-1783-A52714-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9750309,32.7639238,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מיגונית | הרב קוק 10</name>
+        <styleUrl>#icon-1783-A52714-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9727063,32.7642814,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>חניונים</name>
+      <Placemark>
+        <name>חניון | מנחם בגין 23 </name>
+        <description>חניון בניין לינק </description>
+        <styleUrl>#icon-1644-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            34.9666607,32.7496214,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>חניונים | בית יצחק </name>
+        <description>חניונים בטירת כרמל: רחוב נחום חת 7 </description>
+        <styleUrl>#icon-1644-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            34.9602326,32.7839465,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>מתחמי הלנת לילה ממוגנים </name>
+      <Placemark>
+        <name>מתחם הלנת לילה ממוגן | בית ספר דרכא אריאל‎‎</name>
+        <description>מתחם הלנת לילה ממוגן בטירת כרמל: רחוב הכלניות 8 ‎‎</description>
+        <styleUrl>#icon-1682-097138</styleUrl>
+        <Point>
+          <coordinates>
+            34.965766,32.7591142,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מתחם הלנת לילה ממוגן | בית ספר זבולון </name>
+        <description>מתחם הלנת לילה ממוגן בטירת כרמל: רחוב הרב קוקו 6 | פתוח 24 שעות ביממה | מונגש</description>
+        <styleUrl>#icon-1682-097138</styleUrl>
+        <Point>
+          <coordinates>
+            34.9731835,32.7657304,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Directions from מקלט עירוני | לוי אשכול 6  to מקלט עירוני | לוי אשכול 6 ‎</name>
+      <Placemark>
+        <name>Directions from מקלט עירוני | לוי אשכול 6  to מקלט עירוני | לוי אשכול 6 ‎</name>
+        <styleUrl>#line-1267FF-5000-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            34.9729,32.75401,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | לוי אשכול 6 </name>
+        <styleUrl>#icon-1899-DB4436-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9729019,32.754007,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | לוי אשכול 6 ‎</name>
+        <styleUrl>#icon-1899-DB4436-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9729019,32.754007,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Directions from מקלט עירוני | רזיאל 28  to מקלט עירוני | רזיאל 28 ‎</name>
+      <Placemark>
+        <name>Directions from מקלט עירוני | רזיאל 28  to מקלט עירוני | רזיאל 28 ‎</name>
+        <styleUrl>#line-1267FF-5000-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            34.97142,32.75131,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | רזיאל 28 </name>
+        <styleUrl>#icon-1899-DB4436-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9714162,32.7513136,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>מקלט עירוני | רזיאל 28 ‎</name>
+        <styleUrl>#icon-1899-DB4436-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            34.9714162,32.7513136,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

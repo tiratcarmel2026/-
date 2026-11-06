@@ -47,7 +47,7 @@
   }
 
   /* ---------- links ---------- */
-  function exact(s) { return (s.precision === 'landmark' || s.precision === 'verified') && s.lat != null; }
+  function exact(s) { return (s.precision === 'landmark' || s.precision === 'municipal' || s.precision === 'verified') && s.lat != null; }
   function wazeUrl(s) {
     return exact(s) ? 'https://waze.com/ul?ll=' + s.lat + ',' + s.lng + '&navigate=yes'
       : 'https://waze.com/ul?q=' + encodeURIComponent(s.navAddress) + '&navigate=yes';
@@ -177,7 +177,7 @@
     nearestId = top ? top.s.id : null;
     renderNearest(first || changed, first); renderList();
     // survey: once GPS arrives, jump to the nearest unverified place (unless staff already picked one)
-    if (state.survey && src === 'gps' && !survey.userPicked) { survey.userPicked = true; var n = nextUnverified(); if (n) surveyPick(n.id); }
+    if (state.survey && src === 'gps' && !survey.userPicked) { var n = nextUnverified(); survey.userPicked = true; if (n) surveyPick(n.id); }
   }
   function onFix(p) {
     lastFixAt = Date.now();
@@ -419,8 +419,10 @@
   }
   function svStatus(t, warn) { var el = $('#sv-status'); el.textContent = t; el.classList.toggle('is-err', !!warn); }
   function nextUnverified() {
-    var list = SHELTERS.filter(function (s) { return s.precision !== 'verified' && (s.id !== survey.cur || !survey.userPicked); });
-    if (state.me) list.sort(function (a, b) { return (routeMeters(a) || 1e9) - (routeMeters(b) || 1e9); });
+    var list = SHELTERS.filter(function (s) { return !exact(s) && (s.id !== survey.cur || !survey.userPicked); });
+    if (!list.length) list = SHELTERS.filter(function (s) { return s.precision !== 'verified' && s.id !== survey.cur; });
+    var d = function (x) { var m = routeMeters(x); return m == null ? 1e9 : m; };
+    if (state.me) list.sort(function (a, b) { return d(a) - d(b); });
     return list[0];
   }
   function surveyPick(id) {
@@ -428,19 +430,19 @@
     var s = byId(id); $('#sv-pick').value = String(id);
     var ll = s.lat != null ? s.lat + ',' + s.lng : s.navAddress;
     $('#sv-info').innerHTML = '<b>' + esc(s.address) + '</b> · ' + TYPE_LABEL[s.type] + '<br><span class="muted">' + esc(s.note) + '</span><br>' +
-      '<span class="muted">מצב: ' + ({ verified: 'אומת', landmark: 'לפי מבנה מוכר במפה', probable: 'משוער לפי מבנה סמוך', street: 'משוער: אמצע הרחוב', none: 'לא מסומן' }[s.precision]) +
+      '<span class="muted">מצב: ' + ({ verified: 'אומת', municipal: 'לפי מפת המקלטים של העירייה', landmark: 'לפי מבנה מוכר במפה', probable: 'משוער לפי מבנה סמוך', street: 'משוער: אמצע הרחוב', none: 'לא מסומן' }[s.precision]) +
       (s.anchor ? ' (' + esc(s.anchor) + ')' : '') + '</span>';
     $('#sv-sv').href = s.lat != null ? 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + s.lat + ',' + s.lng : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(ll);
     if (map && markers[id]) { map.setView(markers[id].getLatLng(), 18); markers[id].openPopup(); }
   }
   function renderSurvey() {
     var v = SHELTERS.filter(function (s) { return s.precision === 'verified'; }).length;
-    var lm = SHELTERS.filter(function (s) { return s.precision === 'landmark'; }).length;
-    $('#sv-progress').textContent = v + ' מתוך ' + SHELTERS.length + ' אומתו · ' + lm + ' לפי מבנה מוכר · ' + (SHELTERS.length - v - lm) + ' משוערים';
+    var lm = SHELTERS.filter(function (s) { return s.precision === 'landmark' || s.precision === 'municipal'; }).length;
+    $('#sv-progress').textContent = v + ' מתוך ' + SHELTERS.length + ' אומתו · ' + lm + ' לפי מפת העירייה / מבנה מוכר · ' + (SHELTERS.length - v - lm) + ' משוערים';
     $('#sv-bar').style.width = Math.round(100 * (v + lm) / SHELTERS.length) + '%';
     var sel = $('#sv-pick'), cur = sel.value;
     sel.innerHTML = SHELTERS.map(function (s) {
-      return '<option value="' + s.id + '">' + (s.precision === 'verified' ? '✓ ' : s.precision === 'landmark' ? '◐ ' : '○ ') + esc(s.address) + ' · ' + TYPE_LABEL[s.type] + '</option>';
+      return '<option value="' + s.id + '">' + (s.precision === 'verified' ? '✓ ' : exact(s) ? '◐ ' : '○ ') + esc(s.address) + ' · ' + TYPE_LABEL[s.type] + '</option>';
     }).join('');
     if (cur) sel.value = cur;
     $('#sv-out').value = JSON.stringify(survey.fixes);

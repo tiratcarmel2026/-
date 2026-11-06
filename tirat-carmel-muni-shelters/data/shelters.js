@@ -7,10 +7,10 @@ window.SHELTERS = [
   "address": "ביאליק 4",
   "navAddress": "ביאליק 4, טירת כרמל",
   "note": "מועדונית פרחים, בפתיחה מרחוק",
-  "lat": 32.766929,
-  "lng": 34.971234,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.766457,
+  "lng": 34.970775,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 2,
@@ -18,10 +18,10 @@ window.SHELTERS = [
   "address": "ביאליק 13",
   "navAddress": "ביאליק 13, טירת כרמל",
   "note": "בית כנסת שאגת אריה",
-  "lat": 32.766929,
-  "lng": 34.971234,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.766967,
+  "lng": 34.97066,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 3,
@@ -29,10 +29,10 @@ window.SHELTERS = [
   "address": "ביאליק 29",
   "navAddress": "ביאליק 29, טירת כרמל",
   "note": "מקלט, שיטור עירוני",
-  "lat": 32.766929,
-  "lng": 34.971234,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.767771,
+  "lng": 34.972001,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 4,
@@ -51,10 +51,10 @@ window.SHELTERS = [
   "address": "בן צבי 10",
   "navAddress": "בן צבי 10, טירת כרמל",
   "note": "מחסה",
-  "lat": 32.752315,
-  "lng": 34.971502,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.752297,
+  "lng": 34.971371,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 6,
@@ -62,10 +62,10 @@ window.SHELTERS = [
   "address": "בן צבי 24",
   "navAddress": "בן צבי 24, טירת כרמל",
   "note": "מחסה",
-  "lat": 32.752315,
-  "lng": 34.971502,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.752104,
+  "lng": 34.972281,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 7,
@@ -73,10 +73,10 @@ window.SHELTERS = [
   "address": "בן צבי 38",
   "navAddress": "בן צבי 38, טירת כרמל",
   "note": "מחסה",
-  "lat": 32.752315,
-  "lng": 34.971502,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.751979,
+  "lng": 34.972583,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 8,
@@ -84,10 +84,10 @@ window.SHELTERS = [
   "address": "גיורא 55",
   "navAddress": "גיורא 55, טירת כרמל",
   "note": "מקלט",
-  "lat": 32.75375,
-  "lng": 34.96984,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.753677,
+  "lng": 34.970544,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 9,
@@ -95,10 +95,10 @@ window.SHELTERS = [
   "address": "האלה 14",
   "navAddress": "האלה 14, טירת כרמל",
   "note": "בית כנסת יד אליהו ומרדכי",
-  "lat": 32.754843,
-  "lng": 34.974564,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.756675,
+  "lng": 34.974767,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 10,
@@ -128,10 +128,10 @@ window.SHELTERS = [
   "address": "הרב וינרוב 9",
   "navAddress": "הרב וינרוב 9, טירת כרמל",
   "note": "מועדונית בן צבי, בפתיחה מרחוק",
-  "lat": 32.762104,
-  "lng": 34.971415,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.762287,
+  "lng": 34.972172,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 13,
@@ -139,10 +139,10 @@ window.SHELTERS = [
   "address": "הרב וינרוב 28",
   "navAddress": "הרב וינרוב 28, טירת כרמל",
   "note": "מקלט, מרכז הפעלה",
-  "lat": 32.762104,
-  "lng": 34.971415,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.762049,
+  "lng": 34.971838,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 14,
@@ -150,10 +150,10 @@ window.SHELTERS = [
   "address": "הרב וינרוב 39",
   "navAddress": "הרב וינרוב 39, טירת כרמל",
   "note": "מקלט",
-  "lat": 32.762104,
-  "lng": 34.971415,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.760529,
+  "lng": 34.971537,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 15,
@@ -161,10 +161,10 @@ window.SHELTERS = [
   "address": "הרב זרביב 23",
   "navAddress": "הרב זרביב 23, טירת כרמל",
   "note": "בית כנסת שיר למעלות",
-  "lat": 32.767116,
-  "lng": 34.975096,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.768011,
+  "lng": 34.974544,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 16,
@@ -172,10 +172,10 @@ window.SHELTERS = [
   "address": "הרב קוק 6",
   "navAddress": "הרב קוק 6, טירת כרמל",
   "note": "מקלט, בי\"ס זבולון",
-  "lat": 32.764655,
-  "lng": 34.97371,
-  "precision": "landmark",
-  "anchor": "בי\"ס זבולון המר"
+  "lat": 32.765093,
+  "lng": 34.973493,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 17,
@@ -194,10 +194,10 @@ window.SHELTERS = [
   "address": "הרצל 39",
   "navAddress": "הרצל 39, טירת כרמל",
   "note": "מקלט, קניון לב העיר, קומת קרקע",
-  "lat": 32.764465,
-  "lng": 34.970896,
-  "precision": "landmark",
-  "anchor": "קניון לב העיר"
+  "lat": 32.764468,
+  "lng": 34.971036,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 19,
@@ -205,10 +205,10 @@ window.SHELTERS = [
   "address": "ויצמן 19",
   "navAddress": "ויצמן 19, טירת כרמל",
   "note": "מקלט, בי\"ס יגאל אלון",
-  "lat": 32.757453,
-  "lng": 34.970295,
-  "precision": "landmark",
-  "anchor": "בי\"ס יגאל אלון"
+  "lat": 32.75788,
+  "lng": 34.969958,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 20,
@@ -216,10 +216,10 @@ window.SHELTERS = [
   "address": "ויצמן 71",
   "navAddress": "ויצמן 71, טירת כרמל",
   "note": "מקלט אגף הרווחה והשירותים החברתיים",
-  "lat": 32.75685,
-  "lng": 34.969308,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.756551,
+  "lng": 34.972337,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 21,
@@ -227,10 +227,10 @@ window.SHELTERS = [
   "address": "ז'בוטינסקי 7",
   "navAddress": "ז'בוטינסקי 7, טירת כרמל",
   "note": "בית כנסת מעיין חיים",
-  "lat": 32.760365,
-  "lng": 34.966442,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.760022,
+  "lng": 34.971771,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 22,
@@ -238,10 +238,10 @@ window.SHELTERS = [
   "address": "ז'בוטינסקי 43",
   "navAddress": "ז'בוטינסקי 43, טירת כרמל",
   "note": "מקלט, מתנ\"ס",
-  "lat": 32.760527,
-  "lng": 34.962789,
-  "precision": "probable",
-  "anchor": "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"
+  "lat": 32.75965,
+  "lng": 34.969501,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 23,
@@ -249,10 +249,10 @@ window.SHELTERS = [
   "address": "ירושלים 3",
   "navAddress": "ירושלים 3, טירת כרמל",
   "note": "מועדונית פרפרים, בפתיחה מרחוק",
-  "lat": 32.754751,
-  "lng": 34.970468,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.755425,
+  "lng": 34.970569,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 24,
@@ -260,10 +260,10 @@ window.SHELTERS = [
   "address": "ירושלים 18",
   "navAddress": "ירושלים 18, טירת כרמל",
   "note": "בית כנסת משכן אליף",
-  "lat": 32.754751,
-  "lng": 34.970468,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.755022,
+  "lng": 34.970239,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 25,
@@ -271,10 +271,10 @@ window.SHELTERS = [
   "address": "כרמל אליאס 18",
   "navAddress": "כרמל אליאס 18, טירת כרמל",
   "note": "בית כנסת בית חב\"ד, בחניה האחורית של המרכז המסחרי",
-  "lat": 32.762264,
-  "lng": 34.973938,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.760483,
+  "lng": 34.973635,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 26,
@@ -282,10 +282,10 @@ window.SHELTERS = [
   "address": "לוי אשכול 6",
   "navAddress": "לוי אשכול 6, טירת כרמל",
   "note": "מקלט, מוקד עירוני",
-  "lat": 32.756729,
-  "lng": 34.974114,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.758118,
+  "lng": 34.974333,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 27,
@@ -293,10 +293,10 @@ window.SHELTERS = [
   "address": "רזיאל 8",
   "navAddress": "רזיאל 8, טירת כרמל",
   "note": "מחסה",
-  "lat": 32.751329,
-  "lng": 34.970958,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.751601,
+  "lng": 34.972182,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 28,
@@ -304,10 +304,10 @@ window.SHELTERS = [
   "address": "רזיאל 28",
   "navAddress": "רזיאל 28, טירת כרמל",
   "note": "מחסה",
-  "lat": 32.751329,
-  "lng": 34.970958,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.75158,
+  "lng": 34.971486,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 29,
@@ -315,10 +315,10 @@ window.SHELTERS = [
   "address": "רזיאל 40",
   "navAddress": "רזיאל 40, טירת כרמל",
   "note": "מקלט",
-  "lat": 32.751329,
-  "lng": 34.970958,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.751418,
+  "lng": 34.970326,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 30,
@@ -326,10 +326,10 @@ window.SHELTERS = [
   "address": "רמב\"ם 15",
   "navAddress": "רמב\"ם 15, טירת כרמל",
   "note": "מועדונית רמב\"ם, בפתיחה מרחוק",
-  "lat": 32.766787,
-  "lng": 34.973938,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.765444,
+  "lng": 34.973886,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 31,
@@ -337,10 +337,10 @@ window.SHELTERS = [
   "address": "רמב\"ם 22",
   "navAddress": "רמב\"ם 22, טירת כרמל",
   "note": "בית כנסת חלב חיטים",
-  "lat": 32.766787,
-  "lng": 34.973938,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.766096,
+  "lng": 34.97418,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 32,
@@ -348,10 +348,10 @@ window.SHELTERS = [
   "address": "ש\"י עגנון (מתחם מורשה) 12",
   "navAddress": "ש\"י עגנון 12, טירת כרמל",
   "note": "מועדונית מורשה, בפתיחה מרחוק",
-  "lat": 32.753952,
-  "lng": 34.971101,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.754619,
+  "lng": 34.971695,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 33,
@@ -370,10 +370,10 @@ window.SHELTERS = [
   "address": "ביאליק 36",
   "navAddress": "ביאליק 36, טירת כרמל",
   "note": "בסמוך למרכזי יזמות וחדשנות בטכנולוגיה",
-  "lat": 32.766929,
-  "lng": 34.971234,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.767681,
+  "lng": 34.972595,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 35,
@@ -392,10 +392,10 @@ window.SHELTERS = [
   "address": "האלה 17",
   "navAddress": "האלה 17, טירת כרמל",
   "note": "מול בית העלמין הישן",
-  "lat": 32.752718,
-  "lng": 34.974103,
+  "lat": 32.756452,
+  "lng": 34.974726,
   "precision": "probable",
-  "anchor": "קטע הרחוב הסמוך לבית העלמין"
+  "anchor": "כתובת סמוכה במפת העירייה (האלה 18)"
  },
  {
   "id": 37,
@@ -403,10 +403,10 @@ window.SHELTERS = [
   "address": "הגל 2",
   "navAddress": "הגל 2, טירת כרמל",
   "note": "גני ילדים נוגה, שמש ויהל",
-  "lat": 32.755301,
-  "lng": 34.96638,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.755563,
+  "lng": 34.968582,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 38,
@@ -414,10 +414,10 @@ window.SHELTERS = [
   "address": "העצמאות 4",
   "navAddress": "העצמאות 4, טירת כרמל",
   "note": "מרכז מסחרי, ליד האנדרטה",
-  "lat": 32.761494,
-  "lng": 34.973404,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.761012,
+  "lng": 34.973624,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 39,
@@ -425,10 +425,10 @@ window.SHELTERS = [
   "address": "הרב קוק 12",
   "navAddress": "הרב קוק 12, טירת כרמל",
   "note": "בחניה הגדולה, לפני הכניסה לבי\"ס דגניה",
-  "lat": 32.76557,
-  "lng": 34.97215,
-  "precision": "landmark",
-  "anchor": "חניית בי\"ס דגניה"
+  "lat": 32.764281,
+  "lng": 34.972706,
+  "precision": "probable",
+  "anchor": "כתובת סמוכה במפת העירייה (הרב קוק 10)"
  },
  {
   "id": 40,
@@ -458,10 +458,10 @@ window.SHELTERS = [
   "address": "השריון 14",
   "navAddress": "השריון 14, טירת כרמל",
   "note": "גן נועם",
-  "lat": null,
-  "lng": null,
-  "precision": "none",
-  "anchor": ""
+  "lat": 32.761469,
+  "lng": 34.969983,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 43,
@@ -491,10 +491,10 @@ window.SHELTERS = [
   "address": "ויצמן 28",
   "navAddress": "ויצמן 28, טירת כרמל",
   "note": "ליד המתחם עסקים בחניה",
-  "lat": 32.75685,
-  "lng": 34.969308,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.755944,
+  "lng": 34.970663,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 46,
@@ -502,10 +502,10 @@ window.SHELTERS = [
   "address": "ז'בוטינסקי מול 39",
   "navAddress": "ז'בוטינסקי 39, טירת כרמל",
   "note": "רחבת הסקייטפארק",
-  "lat": 32.760527,
-  "lng": 34.962789,
-  "precision": "probable",
-  "anchor": "קטע הרחוב הסמוך למתנ\"ס (רח' אלמוג)"
+  "lat": 32.758971,
+  "lng": 34.970255,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 47,
@@ -513,10 +513,10 @@ window.SHELTERS = [
   "address": "ירושלים 6",
   "navAddress": "ירושלים 6, טירת כרמל",
   "note": "בתוך החניה",
-  "lat": 32.754751,
-  "lng": 34.970468,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.754703,
+  "lng": 34.970746,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 48,
@@ -524,10 +524,10 @@ window.SHELTERS = [
   "address": "כ\"ג יורדי הסירה 2",
   "navAddress": "כ\"ג יורדי הסירה 2, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.757732,
-  "lng": 34.971912,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.75773,
+  "lng": 34.971615,
+  "precision": "probable",
+  "anchor": "כתובת סמוכה במפת העירייה (כ״ג יורדי הסירה 4)"
  },
  {
   "id": 49,
@@ -535,10 +535,10 @@ window.SHELTERS = [
   "address": "מוצקין 6",
   "navAddress": "מוצקין 6, טירת כרמל",
   "note": "בתוך החניה",
-  "lat": 32.768974,
-  "lng": 34.974426,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.767401,
+  "lng": 34.969341,
+  "precision": "probable",
+  "anchor": "כתובת סמוכה במפת העירייה (מוצקין 4)"
  },
  {
   "id": 50,
@@ -557,10 +557,10 @@ window.SHELTERS = [
   "address": "נתן אלבז 22",
   "navAddress": "נתן אלבז 22, טירת כרמל",
   "note": "צומת נתן אלבז-הארז, ברחבת החניה",
-  "lat": 32.753934,
-  "lng": 34.972583,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.754496,
+  "lng": 34.972788,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 52,
@@ -601,10 +601,10 @@ window.SHELTERS = [
   "address": "רמב\"ם 4",
   "navAddress": "רמב\"ם 4, טירת כרמל",
   "note": "צמוד לבית הכנסת רבי חי טייב",
-  "lat": 32.766787,
-  "lng": 34.973938,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.763924,
+  "lng": 34.975031,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 56,
@@ -645,10 +645,10 @@ window.SHELTERS = [
   "address": "ש\"י עגנון 12",
   "navAddress": "ש\"י עגנון 12, טירת כרמל",
   "note": "מיגונית רווחה, מתחם מורשה, פתיחה מרחוק – מרכז נוצ\"ץ",
-  "lat": 32.753952,
-  "lng": 34.971101,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.754619,
+  "lng": 34.971695,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  },
  {
   "id": 60,
@@ -656,10 +656,10 @@ window.SHELTERS = [
   "address": "ש\"י עגנון 14",
   "navAddress": "ש\"י עגנון 14, טירת כרמל",
   "note": "מיגונית רווחה, מתחם מורשה, פתיחה מרחוק – מרכז תפנית",
-  "lat": 32.753952,
-  "lng": 34.971101,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.754619,
+  "lng": 34.971695,
+  "precision": "probable",
+  "anchor": "כתובת סמוכה במפת העירייה (ש\"י עגנון 12)"
  },
  {
   "id": 61,
@@ -667,9 +667,9 @@ window.SHELTERS = [
   "address": "ששת הימים 3",
   "navAddress": "ששת הימים 3, טירת כרמל",
   "note": "קופת חולים כללית",
-  "lat": 32.759388,
-  "lng": 34.973042,
-  "precision": "landmark",
-  "anchor": "קופת חולים כללית"
+  "lat": 32.759384,
+  "lng": 34.973119,
+  "precision": "municipal",
+  "anchor": "מפת המקלטים של העירייה"
  }
 ];
