@@ -88,6 +88,20 @@
         <button id="btn-street" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M9 21l1-7-2-1 1-4h6l1 4-2 1 1 7"/></svg>מבט מהרחוב</button>
         <button id="btn-next" class="act"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>הפרק הקרוב</button>
       </div>
+      <section id="quiz" class="quiz" hidden>
+        <h3 class="quiz__head">🧠 חידון <small id="quiz-state">ענו נכון וצברו נקודות</small></h3>
+        <p id="quiz-q" class="quiz__q"></p>
+        <div id="quiz-a" class="quiz__a"></div>
+      </section>
+      <div id="edit-box" class="edit-box" hidden>
+        <b>🛠️ מצב עורך</b>
+        <small id="edit-info"></small>
+        <div class="edit-row">
+          <button id="btn-setloc" class="act">📍 קבעו כאן לפי המיקום שלי</button>
+          <button id="btn-radius" class="act">⭕ רדיוס: <span id="radius-label"></span></button>
+        </div>
+        <small>אפשר גם לגרור את הסיכה על המפה.</small>
+      </div>
       <h3 class="tr-head">תמליל <small>לחצו על משפט כדי לקפוץ אליו</small></h3>
       <div id="transcript" class="transcript"></div>
       <p id="now-approx" class="note" hidden>המיקום על המפה משוער.</p>
@@ -106,17 +120,35 @@
       <div>
         <b id="pc-title">התחילו לגלות</b>
         <small id="pc-sub">0 מתוך 0 מקומות</small>
+        <small id="pc-points" class="pc-points"></small>
         <div id="badges" class="badges"></div>
+        <button id="btn-share-card" class="mini-btn">📤 שתפו את ההישג</button>
       </div>
     </div>
     <div class="settings">
       <label class="switch"><input type="checkbox" id="auto"><span></span>השמעה אוטומטית כשמגיעים למקום</label>
       <label class="switch"><input type="checkbox" id="chime"><span></span>צליל הגעה</label>
+      <label class="switch"><input type="checkbox" id="a11y"><span></span>טקסט גדול וניגודיות גבוהה</label>
+      <button id="btn-offline" class="link">📥 שמירת המפה לשימוש בלי אינטרנט</button>
+      <button id="btn-feedback" class="link">✉️ הציעו מקום או דווחו על טעות</button>
       <button id="btn-install" class="link" hidden>📲 התקנה למסך הבית</button>
       <button id="btn-reset" class="link">איפוס התקדמות</button>
+      <div id="editor-tools" class="editor-tools" hidden>
+        <b>🛠️ כלי עורך</b>
+        <small id="edits-count"></small>
+        <button id="btn-export" class="mini-btn">📋 ייצוא מיקומים (JSON)</button>
+        <button id="btn-clear-edits" class="link">ביטול כל העריכות</button>
+        <button id="btn-exit-edit" class="link">יציאה ממצב עורך</button>
+      </div>
     </div>
-    <div id="tour-card" class="tour-card"></div>
-    <ul id="list" class="list"></ul>
+    <div class="list-wrap">
+      <h3 class="sec">🚶 סיורים מודרכים</h3>
+      <div id="tours" class="tours"></div>
+      <h3 class="sec">🎧 כל הפרקים</h3>
+      <div class="search"><input id="search" type="search" placeholder="חיפוש מקום, נושא או מילה…" aria-label="חיפוש"></div>
+      <ul id="list" class="list"></ul>
+      <p id="list-empty" class="empty" hidden>לא נמצאו פרקים. נסו מילה אחרת.</p>
+    </div>
   </aside>
   <div id="scrim" class="scrim"></div>
 
@@ -142,6 +174,7 @@
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="js/geo.js"></script>
   <script src="js/places.js"></script>
+  <script src="js/quiz.js"></script>
   <script src="js/narrator.js"></script>
   <script src="js/wiki.js"></script>
   <script src="js/app.js"></script>

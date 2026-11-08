@@ -355,11 +355,21 @@ window.PODTC_CATEGORIES = {
   live:      { label: 'ויקיפדיה', color: '#cbd5e1' }
 };
 
-/* Guided walking tour — stops in walking order through the old center and up toward the Carmel. */
-window.PODTC_TOUR = {
-  title: 'סיור מודרך: מהכפר אל המעיין',
-  order: ['maabara', 'mukhtar-house', 'old-school', 'old-core', 'em-habanim', 'archaeology', 'beit-tanhum', 'almonds', 'fire-2010', 'trail-kelah-galim', 'ein-kedem']
-};
+/* Guided tours. Stops are re-ordered at runtime into a walkable path (nearest-next),
+ * starting from the first id, so fixing coordinates never breaks a route. */
+window.PODTC_TOURS = [
+  { id: 'village-spring', emoji: '🚶', title: 'מהכפר אל המעיין', desc: 'הסיור המלא: מהמעברות, דרך הכפר הישן ובתי הכנסת, ועד הנקבות של עין קדם',
+    order: ['maabara', 'mukhtar-house', 'old-school', 'old-core', 'em-habanim', 'archaeology', 'beit-tanhum', 'almonds', 'fire-2010', 'trail-kelah-galim', 'ein-kedem'] },
+  { id: 'heritage', emoji: '🕯️', title: 'מורשת ובתי כנסת', desc: 'מבנים עתיקים, בתי כנסת והסיפורים של הכפר והעולים',
+    order: ['maabara', 'mukhtar-house', 'old-school', 'em-habanim', 'old-core', 'archaeology', 'summer-1948', 'beit-tanhum'] },
+  { id: 'nature', emoji: '🌿', title: 'טבע ומים בכרמל', desc: 'מהשקדים בקצה העיר אל השבילים, השמורה והמעיין',
+    order: ['almonds', 'fire-2010', 'carmel-slopes', 'trail-kelah-galim', 'ein-kedem', 'unesco-carmel'] },
+  { id: 'family', emoji: '👨‍👩‍👧', title: 'סיור משפחות קצר', desc: 'פרקים קלילים עם חידון בכל תחנה, לילדים ולהורים',
+    order: ['shnot-80', 'aliyah-mosaic', 'matnas', 'old-school', 'stadium'] },
+  { id: 'tomorrow', emoji: '🚲', title: 'העיר של מחר', desc: 'מסלול ארוך יותר, מומלץ באופניים: התכנון, הים, התעשייה והתחבורה',
+    order: ['municipality', 'nof-yam', 'imi-site', 'coast', 'industrial-zone', 'north-gate'] }
+];
+window.PODTC_TOUR = window.PODTC_TOURS[0]; // backwards compatibility
 
 /* Center of Tirat Carmel — used for the default map view and the "am I in town?" check. */
 window.PODTC_CENTER = { lat: 32.7610, lng: 34.9705, radius: 3500 };
