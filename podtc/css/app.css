@@ -475,3 +475,38 @@ body.a11y .glass{background:var(--glass-strong)}
 .view-home .tabbar{background:rgba(6,20,46,.97)}
 .view-home .mini{background:rgba(6,20,46,.95)}
 .weather small{white-space:nowrap}
+
+/* v7 — favourites, resume, play-all, streak, dark front page */
+.now__acts{display:flex;gap:8px}
+.fav-btn.on{color:#f472b6}
+.fav-btn.on svg{fill:#f472b6;stroke:#f472b6}
+.card__fav{color:#f472b6;font-size:14px}
+.streak{display:block;color:#ea580c!important;font-weight:700;margin-top:2px}
+.resume{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--card);border:1px solid var(--rule);box-shadow:0 6px 18px rgba(11,27,54,.08);margin-bottom:14px;animation:fadein .5s}
+.resume>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.resume small{font-size:12px;color:var(--accent);font-weight:700}
+.resume b{font-family:var(--display);font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resume__bar{height:4px;border-radius:4px;background:var(--rule);overflow:hidden;margin-top:4px}
+.resume__bar i{display:block;height:100%;background:var(--grad)}
+.resume .thumb{width:50px;height:50px;font-size:26px}
+.play-all{margin-inline-start:8px;padding:5px 11px;border-radius:999px;background:var(--navy-900);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;white-space:nowrap}
+.kicker small+.play-all{margin-inline-start:8px}
+.tcard2__btns{display:flex;gap:6px;margin-top:6px}
+.tcard2__btns button{margin-top:0}
+.tcard2 button.alt{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+/* dark front page for dark-mode phones */
+@media (prefers-color-scheme:dark){
+  :root{--paper:#071530;--ink:#eaf2ff;--ink-2:#9fb3cf;--card:#0d2147;--rule:#1d3561;--accent:#6dd5fa}
+  .hero__ex,.lead__ex{color:#c7d6ec}
+  .ghost-btn{background:transparent;color:var(--ink)}
+  .kick,.ncard__kick{color:color-mix(in srgb,var(--c) 75%,#fff)}
+  .fact{background:#2a2410;border-color:#5b4a14}.fact p{color:#f3e7c4}.fact p b{color:#fff;background:linear-gradient(transparent 60%,#7c5e10 60%)}
+  .fact__label{color:#fbbf24}
+  .tcard2 button{background:var(--sky);color:var(--navy-950)}
+  .tcard2 button.alt{background:transparent;color:var(--ink)}
+  .play-all{background:var(--sky);color:var(--navy-950)}
+  .hero .sh--copy{color:var(--ink)}
+  .weather{color:var(--ink)}
+  .foot__logo{filter:none}
+}
+.tcard2__btns button{white-space:nowrap;padding:8px 12px}

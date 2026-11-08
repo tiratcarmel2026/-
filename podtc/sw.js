@@ -1,5 +1,5 @@
 /* PODTC service worker — app shell offline; map tiles & Wikipedia cached as you go. */
-const V = 'podtc-v5';
+const V = 'podtc-v7';
 const SHELL = ['./', 'index.html', 'css/app.css', 'js/geo.js', 'js/places.js', 'js/quiz.js', 'js/narrator.js', 'js/wiki.js', 'js/app.js', 'js/home.js', 'manifest.webmanifest', 'assets/wordmark.png', 'assets/logo-full.png', 'assets/icon-192.png', 'assets/icon-512.png',
   'vendor/leaflet/leaflet.css', 'vendor/leaflet/leaflet.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });

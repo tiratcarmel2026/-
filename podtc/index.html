@@ -40,12 +40,13 @@
 
     <div class="home__inner">
       <div class="dateline">
-        <div><b id="greet">שלום</b><small id="today"></small></div>
+        <div><b id="greet">שלום</b><small id="today"></small><small id="streak" class="streak"></small></div>
         <a id="weather" class="weather" href="https://open-meteo.com/" target="_blank" rel="noopener" aria-label="מזג האוויר בטירת כרמל">
           <span id="w-icon">⛅</span><span><b id="w-temp">--°</b><small id="w-desc">טירת כרמל</small></span>
         </a>
       </div>
 
+      <div id="resume" class="resume" hidden></div>
       <article id="hero" class="hero reveal"></article>
 
       <div id="install-card" class="install-card reveal" hidden>
@@ -58,6 +59,11 @@
       <section class="block reveal">
         <h2 class="kicker"><i style="--c:#38bdf8"></i>קרוב אליכם עכשיו</h2>
         <div id="near" class="hscroll"></div>
+      </section>
+
+      <section class="block" id="fav-block" hidden>
+        <h2 class="kicker"><i style="--c:#f472b6"></i>המועדפים שלי<button class="play-all" data-act="playfav">▶ השמיעו ברצף</button></h2>
+        <div id="favs" class="hscroll"></div>
       </section>
 
       <section class="stats reveal" id="stats"></section>
@@ -148,7 +154,10 @@
     <div class="now__head">
       <button id="now-close" class="icon-btn" aria-label="סגירה"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <span class="now__label">מתנגן עכשיו</span>
+      <span class="now__acts">
+      <button id="now-fav" class="icon-btn fav-btn" aria-label="הוספה למועדפים"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg></button>
       <button id="now-share" class="icon-btn" aria-label="שיתוף"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5"/></svg></button>
+      </span>
     </div>
     <div class="now__scroll">
       <div class="now__art"><span id="now-art" class="art art--lg">🎧</span></div>

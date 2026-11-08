@@ -25,6 +25,11 @@
     const h = new Date().getHours();
     $('#greet').textContent = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 17 ? 'צהריים טובים' : h < 21 ? 'ערב טוב' : 'לילה טוב';
     $('#today').textContent = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · טירת כרמל';
+    streak();
+  }
+  function streak() {
+    const n = A.streak();
+    $('#streak').textContent = n >= 2 ? `🔥 רצף האזנה: ${n} ימים` : n === 1 ? '🔥 האזנתם היום, חזרו מחר להתחיל רצף' : '';
   }
   const WMO = c => c === 0 ? ['☀️', 'בהיר'] : c <= 2 ? ['⛅', 'מעונן חלקית'] : c === 3 ? ['☁️', 'מעונן'] : c <= 48 ? ['🌫️', 'ערפל']
     : c <= 57 ? ['🌦️', 'טפטוף'] : c <= 67 ? ['🌧️', 'גשם'] : c <= 77 ? ['❄️', 'שלג'] : c <= 82 ? ['🌦️', 'ממטרים'] : ['⛈️', 'סופת רעמים'];
@@ -81,6 +86,26 @@
       </div>`;
   }
 
+  /* ================= continue listening ================= */
+  function resume() {
+    const r = A.resumeInfo(), box = $('#resume');
+    if (!r || (A.current && A.current.id === r.ep.id && A.isActive())) { box.hidden = true; return; }
+    const pct = Math.round(r.i / r.n * 100);
+    box.hidden = false;
+    box.innerHTML = `${thumb(r.ep)}<div><small>המשיכו להאזין</small><b>${esc(r.ep.title)}</b>
+      <span class="resume__bar"><i style="width:${pct}%"></i></span></div>
+      <button class="pill-btn" data-act="resume">▶ ${pct}%</button>`;
+  }
+
+  /* ================= favourites ================= */
+  function favs() {
+    const list = A.PLACES.filter(p => A.favs.has(p.id));
+    $('#fav-block').hidden = !list.length;
+    $('#favs').innerHTML = list.map(ep => `<button class="ncard" data-act="open" data-id="${ep.id}">
+      ${thumb(ep, 'thumb--lg')}<span class="ncard__kick" style="--c:${A.catOf(ep).color}">♥ ${A.catOf(ep).label}</span>
+      <b>${esc(ep.title)}</b><small>${A.minutes(ep)}${A.played.has(ep.id) ? ' · ✓' : ''}</small></button>`).join('');
+  }
+
   /* ================= near you ================= */
   function near() {
     let list = A.PLACES.slice();
@@ -122,7 +147,8 @@
         <span class="tcard2__emoji">${t.emoji}</span>
         <b>${esc(t.title)}</b><p>${esc(t.desc)}</p>
         <small>${st.length} תחנות · ${A.fmt(A.tourLength(t))}${done ? ` · ${done}/${st.length} ✓` : ''}</small>
-        <button data-act="tour" data-id="${t.id}">${on ? 'בסיור עכשיו ›' : done ? 'המשיכו ›' : 'יוצאים לדרך ›'}</button>
+        <span class="tcard2__btns"><button data-act="tour" data-id="${t.id}">${on ? 'בסיור עכשיו ›' : done ? 'המשיכו ›' : 'יוצאים ›'}</button>
+        <button class="alt" data-act="tourplay" data-id="${t.id}" title="האזנה לכל הסיור ברצף, בלי ללכת">🛋️ מהבית</button></span>
       </div>`;
     }).join('');
   }
@@ -149,7 +175,7 @@
       const cat = A.CATS[k], eps = A.PLACES.filter(p => p.category === k);
       const [lead, ...rest] = eps, shown = expanded.has(k) ? rest : rest.slice(0, 3);
       return `<section class="block sect reveal in">
-        <h2 class="kicker"><i style="--c:${cat.color}"></i>${cat.label}<small>${eps.length} פרקים</small></h2>
+        <h2 class="kicker"><i style="--c:${cat.color}"></i>${cat.label}<small>${eps.length} פרקים</small><button class="play-all" data-act="playcat" data-id="${k}">▶ הכול ברצף</button></h2>
         <button class="lead" data-act="open" data-id="${lead.id}">
           <span class="lead__art" style="--c:${cat.color}">${lead.emoji}</span>
           <span class="lead__body"><b>${esc(lead.title)}</b><small>${esc(lead.subtitle)}</small>
@@ -270,6 +296,10 @@
       case 'map': setView('map'); A.showOnMap(ep); break;
       case 'tour': setView('map'); A.startTour(id); break;
       case 'more': expanded.add(id); sections(); break;
+      case 'resume': A.resume(); break;
+      case 'playcat': A.playQueue(A.PLACES.filter(p => p.category === id).map(p => p.id), A.CATS[id].label); break;
+      case 'playfav': A.playQueue(A.PLACES.filter(p => A.favs.has(p.id)).map(p => p.id), 'המועדפים'); break;
+      case 'tourplay': { const t = A.TOURS.find(x => x.id === id); A.playQueue(A.tourStops(t).map(p => p.id), t.title); break; }
     }
   });
   $('#foot-feedback').addEventListener('click', () => A.feedback());
@@ -283,14 +313,14 @@
   function observe() { document.querySelectorAll('#home .reveal:not(.in)').forEach(el => io ? io.observe(el) : el.classList.add('in')); }
 
   /* ================= render & live updates ================= */
-  function renderAll() { hero(); near(); stats(); tours(); sections(); ticker(); observe(); }
-  let t = 0, lastPosKey = '';
-  A.onUpdate(() => { // fires on location / progress changes; throttle
-    const k = A.pos ? A.pos.lat.toFixed(4) + A.pos.lng.toFixed(4) : '';
-    const now = Date.now(); if (k === lastPosKey && now - t < 1500) return;
-    lastPosKey = k; t = now;
-    hero(); near(); tours(); sections(); stats();
-    if (statsShown) document.querySelectorAll('#stats b[data-n]').forEach(el => el.textContent = el.dataset.n);
+  function renderAll() { resume(); hero(); favs(); near(); stats(); tours(); sections(); ticker(); observe(); }
+  let pending = 0;
+  A.onUpdate(() => { // fires on location / progress / playback changes; coalesce bursts, never drop the last one
+    clearTimeout(pending);
+    pending = setTimeout(() => {
+      resume(); hero(); favs(); near(); tours(); sections(); stats(); streak();
+      if (statsShown) document.querySelectorAll('#stats b[data-n]').forEach(el => el.textContent = el.dataset.n);
+    }, 250);
   });
 
   // after the splash: land on the front page (demo mode goes straight to the map)
