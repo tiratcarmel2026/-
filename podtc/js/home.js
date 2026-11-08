@@ -189,6 +189,23 @@
     }).join('');
   }
 
+  /* ================= the city of tomorrow ================= */
+  const FUTURE_IDS = ['city-renewal', 'metronit', 'hahotrim', 'imi-site', 'nof-yam', 'coast', 'municipality'];
+  const FUTURE = [
+    ['86,000', 'תושבים', 'היעד של תוכנית המתאר (כ־32 אלף היום)', 'imi-site'],
+    ['12,000', 'דירות חדשות', 'בתוכנית המתאר, כמחציתן בהתחדשות עירונית', 'imi-site'],
+    ['4,700', 'דירות בפינוי־בינוי', 'החזון של ראש העירייה', 'city-renewal'],
+    ['~30', 'תחנות מטרונית', 'בחיפה ובטירת כרמל, לאורך רחוב הרצל', 'metronit'],
+    ['2,153', 'דירות בשכונת החותרים', 'ופארק לאורך נחל גלים', 'hahotrim'],
+    ['~5,000', 'דירות במתחם תע"ש', 'שכונה חדשה במקום המפעל', 'imi-site'],
+    ['30', 'קומות', 'גובה המגדלים במרכז העיר המתחדש', 'city-renewal'],
+    ['🌊', 'חוף ים', 'חיבור העיר אל הים', 'coast']
+  ];
+  function future() {
+    $('#future-grid').innerHTML = FUTURE.filter(f => byId(f[3])).map(([n, l, d, id]) =>
+      `<button class="fnum" data-act="open" data-id="${id}"><b>${n}</b><span>${l}</span><small>${d}</small></button>`).join('');
+  }
+
   /* ================= useful links ================= */
   const LINKS = [
     ['🏛️', 'אתר עיריית טירת כרמל', 'מכרזים, הודעות ושירותים', 'https://tirat-carmel.onecity.co.il/'],
@@ -297,6 +314,7 @@
       case 'tour': setView('map'); A.startTour(id); break;
       case 'more': expanded.add(id); sections(); break;
       case 'resume': A.resume(); break;
+      case 'playfuture': A.playQueue(FUTURE_IDS, 'העיר של מחר'); break;
       case 'playcat': A.playQueue(A.PLACES.filter(p => p.category === id).map(p => p.id), A.CATS[id].label); break;
       case 'playfav': A.playQueue(A.PLACES.filter(p => A.favs.has(p.id)).map(p => p.id), 'המועדפים'); break;
       case 'tourplay': { const t = A.TOURS.find(x => x.id === id); A.playQueue(A.tourStops(t).map(p => p.id), t.title); break; }
@@ -333,7 +351,7 @@
   $('#share-app').innerHTML = shareButtons();
 
   dateline(); setInterval(dateline, 60000);
-  links(); installCard(); renderAll(); showFact(fi); rotateFacts(); weather();
+  links(); future(); installCard(); renderAll(); showFact(fi); rotateFacts(); weather();
   setView('home');
   window.addEventListener('appinstalled', () => { A.toast('🎉 podtc הותקנה!'); installCard(); });
 })();
