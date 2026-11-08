@@ -1,0 +1,9 @@
+window.PodGeo = {
+  distance(lat1, lon1, lat2, lon2) {
+    const R = 6371000, toR = d => d * Math.PI / 180;
+    const dLat = toR(lat2 - lat1), dLon = toR(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toR(lat1)) * Math.cos(toR(lat2)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  },
+  fmt(m) { return m < 1000 ? Math.round(m / 10) * 10 + ' מ׳' : (m / 1000).toFixed(1) + ' ק״מ'; }
+};

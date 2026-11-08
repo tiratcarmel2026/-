@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 # Publishes the game (static site at the repo root) to GitHub Pages.
 on:
   push:
-    branches: [claude/nicky-cleanup-game-g4cvvu]
+    branches: [claude/nicky-cleanup-game-g4cvvu, claude/upbeat-sagan-7731px]
   workflow_dispatch: # allows manual runs from the Actions tab
 
 permissions:

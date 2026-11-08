@@ -1,0 +1,10 @@
+{
+  "name": "PODTC — טירת כרמל באוזניים",
+  "short_name": "PODTC",
+  "description": "פודקאסטים קצרים בעברית על מקומות בטירת כרמל, לפי מיקום.",
+  "lang": "he", "dir": "rtl",
+  "start_url": "./", "scope": "./",
+  "display": "standalone",
+  "background_color": "#e8590c", "theme_color": "#e8590c",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
