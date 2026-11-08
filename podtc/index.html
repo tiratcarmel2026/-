@@ -32,10 +32,17 @@
   <main id="map" aria-label="מפת טירת כרמל"></main>
   <div id="status" class="status glass"><span class="dot"></span><span id="status-text">מחפשים מיקום…</span></div>
 
+  <button id="tour" class="tour glass" hidden>
+    <span class="tour__arrow" id="tour-arrow"><svg viewBox="0 0 24 24"><path d="M12 3l6 16-6-4-6 4z"/></svg></span>
+    <span class="tour__body"><small id="tour-step">תחנה 1 מתוך 9</small><b id="tour-title">—</b><small id="tour-dist"></small></span>
+    <span class="tour__x" id="tour-stop" role="button" aria-label="סיום סיור">✕</span>
+  </button>
+
   <div class="fabs">
     <button id="btn-locate" class="fab glass" aria-label="המיקום שלי">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7" fill="none"/></svg>
     </button>
+    <button id="btn-style" class="fab glass fab--style" aria-label="סגנון מפה"><span id="style-icon">🛰️</span><small id="style-label">לוויין</small></button>
     <button id="btn-demo" class="fab glass fab--txt" aria-label="מצב הדגמה" title="מצב הדגמה: לחיצה על המפה קובעת מיקום">הדגמה</button>
   </div>
 
@@ -78,6 +85,7 @@
       <div class="actions">
         <button id="btn-nav" class="act"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>ניווט למקום</button>
         <button id="btn-rate" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M12 3v2"/></svg><span id="rate-label">×1</span></button>
+        <button id="btn-street" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M9 21l1-7-2-1 1-4h6l1 4-2 1 1 7"/></svg>מבט מהרחוב</button>
         <button id="btn-next" class="act"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>הפרק הקרוב</button>
       </div>
       <h3 class="tr-head">תמליל <small>לחצו על משפט כדי לקפוץ אליו</small></h3>
@@ -107,6 +115,7 @@
       <button id="btn-install" class="link" hidden>📲 התקנה למסך הבית</button>
       <button id="btn-reset" class="link">איפוס התקדמות</button>
     </div>
+    <div id="tour-card" class="tour-card"></div>
     <ul id="list" class="list"></ul>
   </aside>
   <div id="scrim" class="scrim"></div>

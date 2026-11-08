@@ -1,7 +1,8 @@
 /* podtc — main app: map, location tracking, geofences, player UI. */
 (function () {
   const PLACES = window.PODTC_PLACES, CENTER = window.PODTC_CENTER, CATS = window.PODTC_CATEGORIES;
-  const { distance, fmt } = window.PodGeo;
+  const { distance, fmt, bearing, dirName } = window.PodGeo;
+  const TOUR = window.PODTC_TOUR;
   const $ = s => document.querySelector(s);
   const store = {
     get(k, d) { try { const v = localStorage.getItem('podtc.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
@@ -14,7 +15,10 @@
   let filter = 'all';
   let pos = null, demo = false;
   let current = null, insideId = null, liveItems = [], lastWikiPos = null;
-  let map, userMarker, accCircle, markers = {}, liveLayer;
+  let map, userMarker, accCircle, markers = {}, liveLayer, baseLayer, tourLine;
+  let heading = null;                 // device compass heading (deg), null if unknown
+  let tourOn = store.get('tourOn', false);
+  let mapStyle = store.get('mapStyle', 'sat');
   let chunkEls = [];
   let follow = true; // map follows the user until they drag it
 
@@ -28,11 +32,8 @@
 
   /* ================= map ================= */
   function initMap() {
-    map = L.map('map', { zoomControl: false, attributionControl: true }).setView([CENTER.lat, CENTER.lng], 15);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19, subdomains: 'abcd',
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>'
-    }).addTo(map);
+    map = L.map('map', { zoomControl: false, attributionControl: true, maxZoom: 20, zoomSnap: .5 }).setView([CENTER.lat, CENTER.lng], 15);
+    setStyle(mapStyle, true);
     PLACES.forEach(p => {
       const c = catOf(p).color;
       const circle = L.circle([p.lat, p.lng], { radius: p.radius, color: c, weight: 1, opacity: .5, fillColor: c, fillOpacity: .06, dashArray: '4 6', interactive: false }).addTo(map);
@@ -45,11 +46,42 @@
     map.on('dragstart', () => { follow = false; $('#btn-locate').classList.remove('active'); });
   }
 
+  /* ---------- map styles: satellite (real imagery), street (detailed), night (brand) ---------- */
+  const OSM = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+  const CARTO = '© <a href="https://carto.com/attributions">CARTO</a>';
+  const STYLES = {
+    sat: { icon: '🛰️', label: 'לוויין', make: () => L.layerGroup([
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 20, maxNativeZoom: 19, attribution: 'צילום אוויר © Esri, Maxar, Earthstar Geographics' }),
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO })
+    ]) },
+    street: { icon: '🗺️', label: 'רחובות', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) },
+    night: { icon: '🌙', label: 'לילה', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) }
+  };
+  function setStyle(name, silent) {
+    if (!STYLES[name]) name = 'sat';
+    if (baseLayer) map.removeLayer(baseLayer);
+    baseLayer = STYLES[name].make().addTo(map);
+    mapStyle = name; store.set('mapStyle', name);
+    document.body.classList.remove('style-sat', 'style-street', 'style-night');
+    document.body.classList.add('style-' + name);
+    const order = Object.keys(STYLES), next = STYLES[order[(order.indexOf(name) + 1) % order.length]];
+    $('#style-icon').textContent = next.icon; $('#style-label').textContent = next.label; // the button shows what you switch TO
+    if (!silent) toast(`תצוגת מפה: ${STYLES[name].label}`);
+  }
+
   function refreshPins() {
     PLACES.forEach(p => {
       const el = markers[p.id].m.getElement(); if (!el) return;
       const pin = el.firstElementChild;
       pin.classList.toggle('pin--played', played.has(p.id));
+      const n = tourOn ? TOUR.order.indexOf(p.id) : -1;
+      let num = pin.querySelector('.num');
+      if (n >= 0 && !num) { num = document.createElement('b'); num.className = 'num'; pin.appendChild(num); }
+      if (num) { if (n >= 0) num.textContent = n + 1; else num.remove(); }
       pin.classList.toggle('pin--here', p.id === insideId);
       const dim = filter !== 'all' && p.category !== filter;
       pin.classList.toggle('pin--dim', dim);
@@ -79,7 +111,7 @@
   function startTracking() {
     if (!('geolocation' in navigator)) { toast('המכשיר לא תומך בשירותי מיקום. עוברים למצב הדגמה'); toggleDemo(true); return; }
     navigator.geolocation.watchPosition(
-      g => { if (!demo) setPosition(g.coords.latitude, g.coords.longitude, g.coords.accuracy); },
+      g => { if (demo) return; if (g.coords.heading != null && !isNaN(g.coords.heading) && g.coords.speed > .5) gpsHeading = g.coords.heading; setPosition(g.coords.latitude, g.coords.longitude, g.coords.accuracy); },
       err => {
         if (pos && err.code !== 1) return;
         toast(err.code === 1 ? 'לא ניתנה הרשאת מיקום. אפשר לאשר בהגדרות, או לנסות במצב הדגמה.' : 'לא הצלחנו לאתר מיקום');
@@ -101,7 +133,7 @@
   function setPosition(lat, lng, acc) {
     pos = { lat, lng, acc };
     if (!userMarker) {
-      userMarker = L.marker([lat, lng], { icon: L.divIcon({ className: '', html: '<div class="me" style="width:20px;height:20px"></div>', iconSize: [20, 20], iconAnchor: [10, 10] }), interactive: false, zIndexOffset: 2000 }).addTo(map);
+      userMarker = L.marker([lat, lng], { icon: L.divIcon({ className: '', html: '<div class="me-wrap"><div class="cone" id="cone"></div><div class="me"></div></div>', iconSize: [20, 20], iconAnchor: [10, 10] }), interactive: false, zIndexOffset: 2000 }).addTo(map);
       accCircle = L.circle([lat, lng], { radius: acc, color: '#38bdf8', weight: 0, fillOpacity: .1, interactive: false }).addTo(map);
     } else { userMarker.setLatLng([lat, lng]); accCircle.setLatLng([lat, lng]).setRadius(acc); }
     if (firstFix) { firstFix = false; map.flyTo([lat, lng], 16, { duration: 1.2 }); }
@@ -116,8 +148,98 @@
     const newInside = here ? here.p.id : null;
     if (newInside !== insideId) { insideId = newInside; if (here) onEnter(here.p); refreshPins(); }
     if (!current || (!insideId && !isActive())) showNearest();
-    updateMeta(); renderList(); maybeFetchWiki();
+    if (!heading && gpsHeading != null) setHeading(gpsHeading);
+    updateMeta(); renderList(); updateTour(); maybeFetchWiki();
   }
+
+  /* ---------- compass ---------- */
+  let gpsHeading = null, headRaf = 0;
+  function setHeading(h) {
+    heading = h;
+    if (headRaf) return;
+    headRaf = requestAnimationFrame(() => {
+      headRaf = 0;
+      const c = document.getElementById('cone');
+      if (c) { c.style.transform = `rotate(${heading}deg)`; c.classList.add('on'); }
+      updateTourArrow();
+    });
+  }
+  function onOrient(e) {
+    let h = null;
+    if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;          // iOS
+    else if (e.absolute && typeof e.alpha === 'number') h = (360 - e.alpha) % 360;       // Android (absolute)
+    if (h != null) setHeading(h);
+  }
+  function startCompass() {
+    try {
+      const DOE = window.DeviceOrientationEvent;
+      if (!DOE) return;
+      const listen = () => {
+        if ('ondeviceorientationabsolute' in window) addEventListener('deviceorientationabsolute', onOrient);
+        addEventListener('deviceorientation', onOrient); // iOS gives webkitCompassHeading here
+      };
+      listen();
+      if (typeof DOE.requestPermission === 'function') DOE.requestPermission().then(r => { if (r === 'granted') listen(); }).catch(() => {});
+    } catch (e) {}
+  }
+
+  /* ---------- guided tour ---------- */
+  const tourStops = () => TOUR.order.map(id => PLACES.find(p => p.id === id)).filter(Boolean);
+  const tourNext = () => tourStops().find(p => !played.has(p.id)) || null;
+  function tourLength() {
+    const st = tourStops(); let d = 0;
+    for (let i = 1; i < st.length; i++) d += distance(st[i - 1].lat, st[i - 1].lng, st[i].lat, st[i].lng);
+    return d;
+  }
+  function setTour(on) {
+    tourOn = on; store.set('tourOn', on);
+    if (tourLine) { map.removeLayer(tourLine); tourLine = null; }
+    if (on) {
+      const pts = tourStops().map(p => [p.lat, p.lng]);
+      tourLine = L.layerGroup([
+        L.polyline(pts, { color: '#06142e', weight: 9, opacity: .55, interactive: false }),
+        L.polyline(pts, { color: '#6dd5fa', weight: 4, opacity: .95, dashArray: '2 10', lineCap: 'round', interactive: false })
+      ]).addTo(map);
+      map.flyToBounds(L.latLngBounds(pts).pad(.25), { duration: .9 });
+      const n = tourNext(); if (n && !isActive()) select(n);
+    }
+    refreshPins(); updateTour(); renderTourCard();
+  }
+  function updateTour() {
+    const box = $('#tour');
+    const n = tourOn ? tourNext() : null;
+    box.hidden = !n;
+    if (!n) {
+      if (tourOn && tourStops().every(p => played.has(p.id))) { toast('🎉 סיימתם את הסיור המודרך! כל הכבוד'); setTour(false); }
+      return;
+    }
+    const st = tourStops();
+    $('#tour-step').textContent = `התחנה הבאה · ${st.indexOf(n) + 1} מתוך ${st.length}`;
+    $('#tour-title').textContent = `${n.emoji} ${n.title}`;
+    if (pos) {
+      const d = distance(pos.lat, pos.lng, n.lat, n.lng);
+      $('#tour-dist').textContent = d <= n.radius ? 'הגעתם! הפרק מתנגן' : `${fmt(d)} ${dirName(bearing(pos.lat, pos.lng, n.lat, n.lng))} · כ־${Math.max(1, Math.round(d / 75))} דק׳ הליכה`;
+    } else $('#tour-dist').textContent = '';
+    updateTourArrow();
+  }
+  function updateTourArrow() {
+    const n = tourOn && tourNext(); if (!n || !pos) return;
+    const b = bearing(pos.lat, pos.lng, n.lat, n.lng) - (heading || 0); // relative to where you face, if we know it
+    $('#tour-arrow svg').style.transform = `rotate(${b}deg)`;
+  }
+  function renderTourCard() {
+    const st = tourStops(), done = st.filter(p => played.has(p.id)).length;
+    const walk = Math.round(tourLength() / 75), listen = Math.round(st.reduce((m, p) => m + p.script.split(/\s+/).length / WPM, 0));
+    $('#tour-card').innerHTML = `<b>🚶 ${TOUR.title}</b>
+      <small>${st.length} תחנות · ${fmt(tourLength())} · כ־${walk + listen} דק׳ (הליכה והאזנה)${done ? ` · ${done} הושלמו` : ''}</small>
+      <button class="${tourOn ? 'stop' : ''}" id="tour-toggle">${tourOn ? 'סיום הסיור' : 'התחילו את הסיור'}</button>`;
+  }
+  $('#tour-card').addEventListener('click', e => { if (e.target.id === 'tour-toggle') { setTour(!tourOn); if (tourOn) toggleDrawer(false); } });
+  $('#tour').addEventListener('click', e => {
+    if (e.target.closest('#tour-stop')) { setTour(false); return; }
+    const n = tourNext(); if (!n) return;
+    select(n); map.flyTo([n.lat, n.lng], 17, { duration: .8 }); openNow();
+  });
 
   function onEnter(place) {
     if (navigator.vibrate) navigator.vibrate([90, 50, 90]);
@@ -226,7 +348,11 @@
     if (s === 'ended') {
       setProgress(1); chunkEls.forEach(el => { el.classList.remove('cur'); el.classList.add('done'); });
       checkBadges();
-      setTimeout(() => { if (Narrator.state === 'ended') showNearest(); }, 4000);
+      if (tourOn) {
+        const n = tourNext();
+        updateTour();
+        if (n) { toast(`המשיכו לתחנה הבאה: ${n.emoji} ${n.title}`); setTimeout(() => { if (Narrator.state === 'ended') select(n); }, 2500); }
+      } else setTimeout(() => { if (Narrator.state === 'ended') showNearest(); }, 4000);
     }
   });
   $('#transcript').addEventListener('click', e => {
@@ -312,6 +438,10 @@
     if (!current) return;
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${current.lat},${current.lng}&travelmode=walking`, '_blank', 'noopener');
   }
+  function streetView() {
+    if (!current) return;
+    window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${current.lat},${current.lng}`, '_blank', 'noopener');
+  }
   const RATES = [0.85, 1, 1.15, 1.3];
   function cycleRate() {
     const r = RATES[(RATES.indexOf(Narrator.rate) + 1) % RATES.length] || 1;
@@ -332,12 +462,13 @@
     if (Narrator.supported && !Narrator.hasHebrewVoice()) setTimeout(() => toast('לא נמצא קול עברי במכשיר. מומלץ להתקין "Google Text-to-Speech" עם עברית'), 1500);
     map.invalidateSize();
     startTracking();
+    startCompass();
     const deep = PLACES.find(p => '#' + p.id === location.hash); // shared link
     if (deep) { select(deep); map.setView([deep.lat, deep.lng], 16); openNow(); }
   }
 
   /* ================= wire up ================= */
-  initMap(); renderFilters(); renderList();
+  initMap(); renderFilters(); renderList(); renderTourCard(); if (tourOn) setTour(true);
   $('#feat-count').textContent = PLACES.length;
   $('#rate-label').textContent = '×' + Narrator.rate;
 
@@ -351,6 +482,8 @@
   $('#btn-back').addEventListener('click', () => Narrator.skip(-1));
   $('#btn-fwd').addEventListener('click', () => Narrator.skip(1));
   $('#btn-nav').addEventListener('click', navigate);
+  $('#btn-street').addEventListener('click', streetView);
+  $('#btn-style').addEventListener('click', () => { const o = Object.keys(STYLES); setStyle(o[(o.indexOf(mapStyle) + 1) % o.length]); });
   $('#btn-rate').addEventListener('click', cycleRate);
   $('#btn-next').addEventListener('click', playNext);
   $('#btn-list').addEventListener('click', () => toggleDrawer(true));
@@ -364,7 +497,7 @@
   $('#btn-install').addEventListener('click', async () => { if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; $('#btn-install').hidden = true; } });
   const auto = $('#auto'); auto.checked = autoplay; auto.addEventListener('change', () => { autoplay = auto.checked; store.set('autoplay', autoplay); });
   const ch = $('#chime'); ch.checked = chime; ch.addEventListener('change', () => { chime = ch.checked; store.set('chime', chime); if (chime) playChime(); });
-  $('#btn-reset').addEventListener('click', () => { played.clear(); store.set('played', []); store.set('badges', []); refreshPins(); renderList(); toast('ההתקדמות אופסה'); });
+  $('#btn-reset').addEventListener('click', () => { played.clear(); store.set('played', []); store.set('badges', []); refreshPins(); renderList(); updateTour(); renderTourCard(); toast('ההתקדמות אופסה'); });
   // swipe down to close the player
   let y0 = null; const nowEl = $('#now');
   nowEl.addEventListener('touchstart', e => { y0 = $('.now__scroll').scrollTop <= 0 ? e.touches[0].clientY : null; }, { passive: true });
