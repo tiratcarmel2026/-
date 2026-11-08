@@ -531,7 +531,9 @@
       </li>`;
     }).join('');
     $('#list-empty').hidden = rows.length > 0;
+    emitUpdate();
   }
+  function emitUpdate() { const l = window.PodApp && window.PodApp._l; if (l) l.forEach(f => { try { f(); } catch (e) { console.warn(e); } }); }
   $('#list').addEventListener('click', e => {
     const li = e.target.closest('.card'); if (!li) return;
     const ep = allEpisodes().find(p => p.id === li.dataset.id);
@@ -660,6 +662,21 @@
     if (deep) { select(deep); map.setView([deep.lat, deep.lng], 16); openNow(); }
   }
 
+  /* ================= public API (used by the home page, js/home.js) ================= */
+  window.PodApp = {
+    _l: [],
+    onUpdate(fn) { this._l.push(fn); },
+    PLACES, CATS, TOURS, QUIZ, catOf, minutes, distance, fmt, tourStops, tourLength,
+    get pos() { return pos; }, get played() { return played; }, get current() { return current; }, get tourId() { return tourId; },
+    get deferredInstall() { return deferredInstall; }, clearInstall() { deferredInstall = null; $('#btn-install').hidden = true; },
+    select, play, openNow, toast, points, curatedPlayed, quizCorrect, feedback, isActive,
+    listen(ep) { select(ep); play(); openNow(); },
+    showOnMap(ep) { select(ep); map.invalidateSize(); map.flyTo([ep.lat, ep.lng], 17, { duration: .9 }); follow = false; },
+    startTour(id) { setTour(id); },
+    openLibrary() { toggleDrawer(true); },
+    invalidate() { map.invalidateSize(); }
+  };
+
   /* ================= wire up ================= */
   initMap(); renderFilters(); renderList(); renderTours(); if (tourId) setTour(tourId, false);
   if (editing) setEditing(true);
@@ -689,7 +706,7 @@
     if (!pos) return toast('עדיין מחפשים מיקום…');
     follow = true; $('#btn-locate').classList.add('active'); map.flyTo([pos.lat, pos.lng], 17, { duration: .8 });
   });
-  $('#btn-install').addEventListener('click', async () => { if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; $('#btn-install').hidden = true; } });
+  // install button is handled in js/home.js (prompt + per-platform instructions)
   const auto = $('#auto'); auto.checked = autoplay; auto.addEventListener('change', () => { autoplay = auto.checked; store.set('autoplay', autoplay); });
   const ch = $('#chime'); ch.checked = chime; ch.addEventListener('change', () => { chime = ch.checked; store.set('chime', chime); if (chime) playChime(); });
   $('#btn-reset').addEventListener('click', () => { played.clear(); store.set('played', []); store.set('badges', []); quizRes = {}; store.set('quiz', {}); store.set('badges2', []); refreshPins(); renderList(); updateTour(); renderTours(); if (current) renderQuiz(current); toast('ההתקדמות אופסה'); });
