@@ -3,80 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#e8590c">
-  <title>PODTC — טירת כרמל</title>
-  <meta name="description" content="פודקאסטים קצרים בעברית על כל מקום בטירת כרמל — מופעלים לפי המיקום שלכם.">
+  <meta name="theme-color" content="#06142e">
+  <title>podtc — טירת כרמל</title>
+  <meta name="description" content="פודקאסטים קצרים בעברית על כל מקום בטירת כרמל, לפי המיקום שלכם. מבית עיריית טירת כרמל.">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <header class="top">
-    <div class="brand"><span class="brand__logo">🎧</span><b>PODTC</b><small>טירת כרמל באוזניים</small></div>
-    <button id="btn-list" class="chip" aria-label="כל הפרקים">פרקים <span id="count">0/0</span></button>
+  <!-- ===== Header ===== -->
+  <header class="top glass">
+    <img class="top__logo" src="assets/wordmark.png" alt="podtc">
+    <button id="btn-list" class="ring-chip" aria-label="הספרייה וההתקדמות">
+      <svg viewBox="0 0 36 36" class="ring"><circle cx="18" cy="18" r="15.5" class="ring__bg"/><circle id="ring-mini" cx="18" cy="18" r="15.5" class="ring__fg"/></svg>
+      <span id="count">0/0</span>
+    </button>
   </header>
 
+  <nav id="filters" class="filters" aria-label="סינון לפי נושא"></nav>
+
   <main id="map" aria-label="מפת טירת כרמל"></main>
-  <div id="status" class="status">מחפשים מיקום…</div>
+  <div id="status" class="status glass"><span class="dot"></span><span id="status-text">מחפשים מיקום…</span></div>
 
   <div class="fabs">
-    <button id="btn-locate" class="fab" aria-label="המיקום שלי">◎</button>
-    <button id="btn-demo" class="fab fab--txt" aria-label="מצב הדגמה" title="מצב הדגמה — לחיצה על המפה קובעת מיקום">הדגמה</button>
+    <button id="btn-locate" class="fab glass" aria-label="המיקום שלי">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7" fill="none"/></svg>
+    </button>
+    <button id="btn-demo" class="fab glass fab--txt" aria-label="מצב הדגמה" title="מצב הדגמה: לחיצה על המפה קובעת מיקום">הדגמה</button>
   </div>
 
-  <section id="player" class="player" aria-live="polite">
-    <div class="player__bar"><div id="progress"></div></div>
-    <div class="player__main">
-      <span id="ep-emoji" class="player__emoji">🎧</span>
-      <div class="player__info">
-        <b id="ep-title">הסתובבו בעיר</b>
-        <small id="ep-sub">כשתגיעו למקום עם סיפור — הפרק יתחיל לבד</small>
-        <small id="ep-dist" class="player__dist"></small>
-      </div>
-      <button id="btn-text" class="icon-btn" aria-label="תמליל">📝</button>
-      <button id="btn-play" class="play" aria-label="השמעה">▶</button>
-    </div>
-    <div id="ep-textwrap" class="player__text" hidden>
-      <p id="ep-text"></p>
-      <p id="ep-approx" class="note" hidden>⚠️ המיקום על המפה משוער.</p>
-      <p class="sources">מקורות: <span id="ep-sources"></span></p>
+  <!-- ===== Mini player ===== -->
+  <section id="mini" class="mini glass" aria-live="polite">
+    <div class="mini__bar"><div id="mini-progress"></div></div>
+    <div class="mini__row">
+      <button id="mini-open" class="mini__open" aria-label="פתיחת הנגן">
+        <span id="mini-art" class="art art--sm">🎧</span>
+        <span class="mini__info">
+          <b id="mini-title">הסתובבו בעיר</b>
+          <small id="mini-sub">כשתגיעו למקום עם סיפור, הפרק יתחיל מעצמו</small>
+        </span>
+      </button>
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <button id="mini-play" class="play play--sm" aria-label="השמעה"><svg viewBox="0 0 24 24"><path class="i-play" d="M8 5v14l11-7z"/><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
     </div>
   </section>
 
-  <aside id="drawer" class="drawer" aria-label="רשימת פרקים">
+  <!-- ===== Full "now playing" sheet ===== -->
+  <section id="now" class="now" aria-label="מתנגן עכשיו" aria-hidden="true">
+    <div class="now__glow"></div>
+    <div class="now__head">
+      <button id="now-close" class="icon-btn" aria-label="סגירה"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <span class="now__label">מתנגן עכשיו</span>
+      <button id="now-share" class="icon-btn" aria-label="שיתוף"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5"/></svg></button>
+    </div>
+    <div class="now__scroll">
+      <div class="now__art"><span id="now-art" class="art art--lg">🎧</span></div>
+      <span id="now-cat" class="pill">היסטוריה</span>
+      <h2 id="now-title">—</h2>
+      <p id="now-sub" class="now__sub"></p>
+      <p class="now__meta"><span id="now-dist"></span><span id="now-dur"></span></p>
+      <div class="now__progress"><div id="now-progress"></div></div>
+      <div class="controls">
+        <button id="btn-back" class="ctl" aria-label="אחורה"><svg viewBox="0 0 24 24"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg></button>
+        <button id="now-play" class="play play--lg" aria-label="השמעה"><svg viewBox="0 0 24 24"><path class="i-play" d="M8 5v14l11-7z"/><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+        <button id="btn-fwd" class="ctl" aria-label="קדימה"><svg viewBox="0 0 24 24"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="actions">
+        <button id="btn-nav" class="act"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>ניווט למקום</button>
+        <button id="btn-rate" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M12 3v2"/></svg><span id="rate-label">×1</span></button>
+        <button id="btn-next" class="act"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>הפרק הקרוב</button>
+      </div>
+      <h3 class="tr-head">תמליל <small>לחצו על משפט כדי לקפוץ אליו</small></h3>
+      <div id="transcript" class="transcript"></div>
+      <p id="now-approx" class="note" hidden>המיקום על המפה משוער.</p>
+      <p class="sources">מקורות: <span id="now-sources"></span></p>
+    </div>
+  </section>
+
+  <!-- ===== Library drawer ===== -->
+  <aside id="drawer" class="drawer" aria-label="הספרייה" aria-hidden="true">
     <div class="drawer__head">
-      <b>כל הפרקים</b>
-      <button id="btn-close" class="icon-btn" aria-label="סגירה">✕</button>
+      <b>הספרייה</b>
+      <button id="btn-close" class="icon-btn" aria-label="סגירה"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="progress-card">
+      <svg viewBox="0 0 36 36" class="ring ring--lg"><circle cx="18" cy="18" r="15.5" class="ring__bg"/><circle id="ring-big" cx="18" cy="18" r="15.5" class="ring__fg"/></svg>
+      <div>
+        <b id="pc-title">התחילו לגלות</b>
+        <small id="pc-sub">0 מתוך 0 מקומות</small>
+        <div id="badges" class="badges"></div>
+      </div>
     </div>
     <div class="settings">
-      <label><input type="checkbox" id="auto"> השמעה אוטומטית כשמגיעים למקום</label>
-      <label>מהירות
-        <select id="rate"><option value="0.85">איטי</option><option value="1">רגיל</option><option value="1.15">מהיר</option></select>
-      </label>
+      <label class="switch"><input type="checkbox" id="auto"><span></span>השמעה אוטומטית כשמגיעים למקום</label>
+      <label class="switch"><input type="checkbox" id="chime"><span></span>צליל הגעה</label>
+      <button id="btn-install" class="link" hidden>📲 התקנה למסך הבית</button>
       <button id="btn-reset" class="link">איפוס התקדמות</button>
     </div>
     <ul id="list" class="list"></ul>
   </aside>
+  <div id="scrim" class="scrim"></div>
 
+  <!-- ===== Splash ===== -->
   <div id="splash" class="splash">
-    <div class="splash__card">
-      <div class="splash__logo">🎧</div>
-      <h1>PODTC</h1>
-      <p class="lead">טירת כרמל מספרת את עצמה.</p>
-      <p>הפעילו שירותי מיקום והתחילו ללכת. בכל פעם שתגיעו למקום עם סיפור, תשמעו פודקאסט קצר בעברית, דקה או שתיים, על המקום שבו אתם עומדים.</p>
-      <button id="btn-start" class="cta">📍 הפעילו מיקום והתחילו</button>
-      <button id="btn-start-demo" class="link">לא בטירת כרמל? נסו במצב הדגמה</button>
-      <p class="fine">🎧 מומלץ עם אוזניות. המיקום שלכם לא נשלח לשום שרת.</p>
+    <div class="splash__inner">
+      <img class="splash__logo" src="assets/logo-full.png" alt="podtc, מבית עיריית טירת כרמל">
+      <p class="splash__lead">טירת כרמל מספרת את עצמה</p>
+      <p class="splash__text">הפעילו מיקום והתחילו ללכת. בכל מקום עם סיפור תשמעו פרק קצר בעברית, דקה או שתיים, על המקום שבו אתם עומדים.</p>
+      <ul class="splash__feats">
+        <li><b id="feat-count">11</b><span>פרקים</span></li>
+        <li><b>1–2</b><span>דקות לפרק</span></li>
+        <li><b>∞</b><span>תוכן חי מוויקיפדיה</span></li>
+      </ul>
+      <button id="btn-start" class="cta">הפעילו מיקום והתחילו</button>
+      <button id="btn-start-demo" class="link link--light">לא בטירת כרמל? נסו במצב הדגמה</button>
+      <p class="fine">מומלץ עם אוזניות · המיקום שלכם נשאר במכשיר</p>
     </div>
   </div>
 
-  <div id="toast" class="toast" role="status"></div>
+  <div id="toast" class="toast glass" role="status"></div>
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="js/geo.js"></script>

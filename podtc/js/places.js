@@ -10,6 +10,7 @@
 window.PODTC_PLACES = [
   {
     id: 'old-core',
+    category: 'history',
     title: 'לב העיר הוותיקה',
     subtitle: 'מכפר א־טירה לטירת כרמל',
     emoji: '🏘️',
@@ -22,6 +23,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'maabara',
+    category: 'history',
     title: 'שיכוני העולים הראשונים',
     subtitle: 'המעברות של 1949 והמועצה המקומית',
     emoji: '⛺',
@@ -34,6 +36,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'old-school',
+    category: 'history',
     title: 'בית הספר של הכפר',
     subtitle: 'מבנה ששרד בתוך מקיף שפירא',
     emoji: '🏫',
@@ -47,6 +50,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'beit-tanhum',
+    category: 'community',
     title: 'בית הכנסת בית תנחום',
     subtitle: 'הבית של קהילת עולי הקווקז',
     emoji: '🕍',
@@ -60,6 +64,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'industrial-zone',
+    category: 'future',
     title: 'אזור התעשייה הצפוני',
     subtitle: 'מעבודות דחק להייטק',
     emoji: '🏭',
@@ -72,6 +77,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'imi-site',
+    category: 'future',
     title: 'מתחם תע"ש',
     subtitle: 'מפעל ביטחוני שיהפוך לשכונה',
     emoji: '🏗️',
@@ -85,6 +91,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'coast',
+    category: 'nature',
     title: 'בין העיר לים',
     subtitle: 'מישור החוף והחוף העתידי',
     emoji: '🌊',
@@ -97,6 +104,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'carmel-slopes',
+    category: 'nature',
     title: 'מורדות הכרמל',
     subtitle: 'נחל גלים, נחל כלח ושווייצריה הקטנה',
     emoji: '🌲',
@@ -110,6 +118,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'nof-yam',
+    category: 'future',
     title: 'שכונת נוף ים',
     subtitle: 'העיר שמתחדשת',
     emoji: '🏙️',
@@ -122,6 +131,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'stadium',
+    category: 'culture',
     title: 'הכדורגל של טירת כרמל',
     subtitle: 'הפועל, מכבי וגאווה מקומית',
     emoji: '⚽',
@@ -134,6 +144,7 @@ window.PODTC_PLACES = [
   },
   {
     id: 'shnot-80',
+    category: 'culture',
     title: 'שנות ה־80',
     subtitle: 'שלום אסייג והעיר על המסך',
     emoji: '📺',
@@ -145,6 +156,15 @@ window.PODTC_PLACES = [
     sources: ['https://www.ias.co.il/מלונות/הקסם-של-מלון-קדם', 'https://live.tickchak.co.il/tirat-carmel']
   }
 ];
+
+window.PODTC_CATEGORIES = {
+  history:   { label: 'היסטוריה', color: '#7dd3fc' },
+  community: { label: 'קהילה',    color: '#a5b4fc' },
+  culture:   { label: 'תרבות',    color: '#f0abfc' },
+  nature:    { label: 'טבע',      color: '#86efac' },
+  future:    { label: 'העיר של מחר', color: '#fcd34d' },
+  live:      { label: 'ויקיפדיה', color: '#cbd5e1' }
+};
 
 /* Center of Tirat Carmel — used for the default map view and the "am I in town?" check. */
 window.PODTC_CENTER = { lat: 32.7610, lng: 34.9705, radius: 3500 };

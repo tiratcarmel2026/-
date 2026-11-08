@@ -5,7 +5,7 @@
 (function () {
   const synth = window.speechSynthesis;
   let voice = null, chunks = [], idx = 0, audioEl = null, state = 'idle';
-  let listeners = { state: [], progress: [] };
+  let listeners = { state: [], progress: [], chunk: [] };
   const RATE_KEY = 'podtc.rate';
   let rate = parseFloat(localStorage.getItem(RATE_KEY) || '1') || 1;
 
@@ -35,6 +35,7 @@
 
   function speakNext() {
     if (idx >= chunks.length) { setState('ended'); return; }
+    emit('chunk', idx);
     const u = new SpeechSynthesisUtterance(chunks[idx]);
     u.lang = 'he-IL'; u.rate = rate; u.pitch = 1;
     if (voice) u.voice = voice;
@@ -43,6 +44,14 @@
     try { synth.speak(u); } catch (e) { setState('unsupported'); }
   }
 
+  /* jump straight to sentence i (tap on transcript) */
+  function seek(i) {
+    if (audioEl || !chunks.length) return;
+    idx = Math.max(0, Math.min(chunks.length - 1, i));
+    emit('progress', idx / chunks.length);
+    if (state === 'playing') { setState('skipping'); synth.cancel(); setTimeout(() => { setState('playing'); speakNext(); }, 60); }
+    else emit('chunk', idx);
+  }
   function stop() {
     if (audioEl) { audioEl.pause(); audioEl = null; }
     if (synth) synth.cancel();
@@ -77,6 +86,14 @@
     if (audioEl) { audioEl.play(); setState('playing'); return; }
     if (state === 'paused') { setState('playing'); speakNext(); }
   }
+  /* jump between sentences (TTS) or ±15s (mp3) */
+  function skip(delta) {
+    if (audioEl) { audioEl.currentTime = Math.max(0, audioEl.currentTime + delta * 15); return; }
+    if (!chunks.length) return;
+    idx = Math.max(0, Math.min(chunks.length - 1, idx + delta));
+    emit('progress', idx / chunks.length);
+    if (state === 'playing') { setState('skipping'); synth.cancel(); setTimeout(() => { setState('playing'); speakNext(); }, 60); }
+  }
   function setRate(r) { rate = r; localStorage.setItem(RATE_KEY, String(r)); if (audioEl) audioEl.playbackRate = r; }
 
   /* iOS/Android require the first speech to start inside a user gesture. */
@@ -86,7 +103,7 @@
   }
 
   window.Narrator = {
-    play, pause, resume, stop, unlock, setRate,
+    play, pause, resume, stop, unlock, setRate, skip, seek, split,
     get rate() { return rate; }, get state() { return state; },
     hasHebrewVoice: () => !!pickVoice(), supported: !!synth,
     on(type, fn) { listeners[type].push(fn); }

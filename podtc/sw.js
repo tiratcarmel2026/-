@@ -1,13 +1,13 @@
 /* PODTC service worker — app shell offline; map tiles & Wikipedia cached as you go. */
-const V = 'podtc-v1';
-const SHELL = ['./', 'index.html', 'css/app.css', 'js/geo.js', 'js/places.js', 'js/narrator.js', 'js/wiki.js', 'js/app.js', 'icon.svg', 'manifest.webmanifest',
+const V = 'podtc-v2';
+const SHELL = ['./', 'index.html', 'css/app.css', 'js/geo.js', 'js/places.js', 'js/narrator.js', 'js/wiki.js', 'js/app.js', 'manifest.webmanifest', 'assets/wordmark.png', 'assets/logo-full.png', 'assets/icon-192.png', 'assets/icon-512.png',
   'vendor/leaflet/leaflet.css', 'vendor/leaflet/leaflet.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.hostname.endsWith('tile.openstreetmap.org')) { // cache-first for tiles
+  if (url.hostname.endsWith('basemaps.cartocdn.com')) { // cache-first for tiles
     e.respondWith(caches.open(V + '-tiles').then(async c => (await c.match(req)) || fetch(req).then(r => { c.put(req, r.clone()); return r; })));
     return;
   }
