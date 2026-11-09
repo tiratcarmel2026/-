@@ -437,6 +437,7 @@ window.PODTC_CATEGORIES = {
   city:      { label: 'עירייה',   color: '#93c5fd' },
   trails:    { label: 'מסלולי הליכה', color: '#bef264' },
   transport: { label: 'תחבורה',  color: '#fdba74' },
+  news:      { label: 'מהדורה',  color: '#f87171' },
   live:      { label: 'ויקיפדיה', color: '#cbd5e1' }
 };
 

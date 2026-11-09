@@ -37,7 +37,9 @@
   function setState(s) { state = s; emit('state', s); }
 
   function split(text) {
-    const parts = text.replace(/\s+/g, ' ').match(/[^.!?:]+[.!?:]?/g) || [text];
+    // protect decimals and clock times ("0.7", "16:23") so they are not read as sentence breaks
+    const safe = text.replace(/\s+/g, ' ').replace(/(\d)\.(\d)/g, '$1\uE000$2').replace(/(\d):(\d)/g, '$1\uE001$2');
+    const parts = (safe.match(/[^.!?:]+[.!?:]?/g) || [safe]).map(p => p.replace(/\uE000/g, '.').replace(/\uE001/g, ':'));
     // merge very short parts so speech flows naturally
     const out = [];
     parts.forEach(p => {

@@ -333,7 +333,7 @@
   function renderEditsCount() { $('#edits-count').textContent = `${Object.keys(edits).length} מקומות נערכו (נשמר במכשיר הזה)`; }
   function renderEdit(ep) {
     const box = $('#edit-box');
-    box.hidden = !editing || !!ep.live;
+    box.hidden = !editing || !!ep.live || !PLACES.includes(ep);
     if (box.hidden) return;
     $('#edit-info').textContent = `${ep.title} · ${ep.lat.toFixed(5)}, ${ep.lng.toFixed(5)} · ${edits[ep.id] ? 'נערך ✓' : ep.approx ? 'מיקום משוער' : 'מיקום מאומת'}`;
     $('#radius-label').textContent = ep.radius + ' מ׳';
@@ -434,7 +434,7 @@
   }
   function updateMeta() {
     if (!current) return;
-    const d = pos ? distance(pos.lat, pos.lng, current.lat, current.lng) : null;
+    const d = pos && current.id !== 'briefing' ? distance(pos.lat, pos.lng, current.lat, current.lng) : null;
     const here = d != null && d <= (current.radius || 100);
     const sub = $('#mini-sub');
     sub.classList.toggle('here', here);

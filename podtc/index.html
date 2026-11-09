@@ -48,8 +48,14 @@
 
       <nav class="jump" aria-label="קפיצה למדור">
         <a href="#services">🏛️ שירותים</a><a href="#live">🔴 חי עכשיו</a><a href="#radio">📻 רדיו</a>
-        <a href="#social">📱 ברשתות</a><a href="#future">🏗️ העתיד</a><a href="#sections">🎧 פרקים</a><a href="#links-block">🔗 קישורים</a>
+        <a href="#social">📱 ברשתות</a><a href="#kids">🧒 ילדים</a><a href="#photo">📸 מסגרת</a><a href="#future">🏗️ העתיד</a><a href="#sections">🎧 פרקים</a><a href="#links-block">🔗 קישורים</a>
       </nav>
+
+      <button id="briefing" class="briefing">
+        <span class="briefing__ic">🎙️</span>
+        <span class="briefing__txt"><b>מהדורת טירת כרמל</b><small>עדכון קולי של כ־2 דקות: מזג האוויר, שבת וחגים, כותרות ופרק היום</small></span>
+        <span class="briefing__play">▶</span>
+      </button>
 
       <div id="resume" class="resume" hidden></div>
       <article id="hero" class="hero reveal"></article>
@@ -105,6 +111,23 @@
         <h2 class="kicker"><i style="--c:#a855f7"></i>📻 רדיו בשידור חי<small>הקשיבו תוך כדי טיול</small></h2>
         <div id="stations" class="stations"></div>
         <p class="note-sm">השידורים מגיעים ישירות מהתחנות. אם תחנה לא מתנגנת, אפשר לפתוח אותה באתר שלה.</p>
+      </section>
+
+      <section class="block" id="kids">
+        <h2 class="kicker"><i style="--c:#f59e0b"></i>🧒 פינת הילדים</h2>
+        <div class="kids">
+          <a class="kid kid--game" href="../" target="_blank" rel="noopener"><span>🧹</span><b>ניקי שומרת על הניקיון</b><small>משחק לילדים של עיריית טירת כרמל</small></a>
+          <button class="kid kid--tour" data-kid="tour"><span>👨‍👩‍👧</span><b>סיור משפחות</b><small>6 תחנות קצרות עם חידון בכל תחנה</small></button>
+          <button class="kid kid--radio" data-kid="radio"><span>🎵</span><b>רדיו שירי ילדים</b><small>מוזיקה לילדים בשידור חי</small></button>
+          <button class="kid kid--quiz" data-kid="quiz"><span>🧠</span><b>אלופי החידון</b><small>האזינו לפרק וענו על השאלה</small></button>
+        </div>
+      </section>
+
+      <section class="block" id="photo">
+        <div class="photo-card">
+          <div><b>📸 צלמו עם מסגרת podtc</b><small>תמונה ממותגת עם שם המקום שבו אתם עומדים, מוכנה לשיתוף בוואטסאפ ובאינסטגרם</small></div>
+          <label class="pill-btn photo-btn">📷 צלמו או בחרו תמונה<input id="photo-input" type="file" accept="image/*" capture="environment" hidden></label>
+        </div>
       </section>
 
       <section class="future reveal" id="future">
@@ -167,6 +190,15 @@
     <button id="rb-close" class="rb-btn" aria-label="סגירת הרדיו">✕</button>
   </div>
   <audio id="radio-audio" preload="none"></audio>
+
+  <div id="photo-sheet" class="sheet" hidden>
+    <div class="sheet__card photo-sheet">
+      <button class="x" id="photo-close" aria-label="סגירה">✕</button>
+      <img id="photo-out" alt="התמונה עם מסגרת podtc">
+      <div class="photo-place"><label>שם המקום על התמונה: <select id="photo-place"></select></label></div>
+      <div class="photo-actions"><button id="photo-share" class="cta-btn">📤 שיתוף</button><button id="photo-save" class="ghost-btn">⬇️ שמירה</button></div>
+    </div>
+  </div>
 
   <div id="install-sheet" class="sheet" hidden>
     <div class="sheet__card">
@@ -336,6 +368,7 @@
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="js/geo.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/places.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/narrator.js"></script>
