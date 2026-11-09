@@ -5,18 +5,33 @@
 (function () {
   const synth = window.speechSynthesis;
   let voice = null, chunks = [], idx = 0, audioEl = null, state = 'idle';
-  let listeners = { state: [], progress: [], chunk: [] };
+  let listeners = { state: [], progress: [], chunk: [], voices: [] };
+  const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
+               set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
   const RATE_KEY = 'podtc.rate';
-  let rate = parseFloat(localStorage.getItem(RATE_KEY) || '1') || 1;
+  let rate = parseFloat(ls.get(RATE_KEY, '1')) || 1;
+  let pitch = parseFloat(ls.get('podtc.pitch', '1')) || 1;
+  let voiceURI = ls.get('podtc.voice', '');
 
+  const isHe = v => /^(he|iw)/i.test(v.lang);
+  const allVoices = () => synth ? synth.getVoices() : [];
+  /* Hebrew voices first; prefer natural/online voices (Edge "Hila/Avri Online", Google, Apple Carmit) */
+  function hebrewVoices() {
+    const score = v => (/natural|online|neural/i.test(v.name) ? 0 : 1) + (/google|hila|avri|carmit|asaf/i.test(v.name) ? 0 : 1);
+    return allVoices().filter(isHe).sort((a, b) => score(a) - score(b));
+  }
   function pickVoice() {
     if (!synth) return null;
-    const vs = synth.getVoices();
-    voice = vs.find(v => /^he|^iw/i.test(v.lang) && /google|carmit|asaf|hila|avri/i.test(v.name))
-         || vs.find(v => /^he|^iw/i.test(v.lang)) || null;
+    const vs = allVoices();
+    voice = (voiceURI && vs.find(v => v.voiceURI === voiceURI)) || hebrewVoices()[0] || null;
     return voice;
   }
-  if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+  if (synth) {
+    pickVoice();
+    const onVoices = () => { pickVoice(); emit('voices', allVoices()); };
+    if (synth.addEventListener) synth.addEventListener('voiceschanged', onVoices); else synth.onvoiceschanged = onVoices;
+    setTimeout(onVoices, 600); // some browsers never fire voiceschanged
+  }
 
   function emit(type, data) { listeners[type].forEach(fn => fn(data)); }
   function setState(s) { state = s; emit('state', s); }
@@ -37,7 +52,7 @@
     if (idx >= chunks.length) { setState('ended'); return; }
     emit('chunk', idx);
     const u = new SpeechSynthesisUtterance(chunks[idx]);
-    u.lang = 'he-IL'; u.rate = rate; u.pitch = 1;
+    u.lang = voice ? voice.lang : 'he-IL'; u.rate = rate; u.pitch = pitch;
     if (voice) u.voice = voice;
     u.onend = () => { if (state !== 'playing') return; idx++; emit('progress', idx / chunks.length); speakNext(); };
     u.onerror = (e) => { if (e.error === 'interrupted' || e.error === 'canceled') return; idx++; speakNext(); };
@@ -96,6 +111,18 @@
   }
   function setRate(r) { rate = r; localStorage.setItem(RATE_KEY, String(r)); if (audioEl) audioEl.playbackRate = r; }
 
+  function setVoice(uri) { voiceURI = uri || ''; ls.set('podtc.voice', voiceURI); pickVoice(); }
+  function setPitch(p) { pitch = p; ls.set('podtc.pitch', String(p)); }
+  /* short sample in the chosen voice (only when no episode is playing) */
+  function preview(text) {
+    if (!synth || state === 'playing') return false;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text || 'שלום! אני הקול שיספר לכם את הסיפורים של טירת כרמל.');
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'he-IL';
+    u.rate = rate; u.pitch = pitch;
+    try { synth.speak(u); } catch (e) { return false; }
+    return true;
+  }
   /* iOS/Android require the first speech to start inside a user gesture. */
   function unlock() {
     if (!synth) return;
@@ -103,8 +130,9 @@
   }
 
   window.Narrator = {
-    play, pause, resume, stop, unlock, setRate, skip, seek, split,
-    get rate() { return rate; }, get state() { return state; },
+    play, pause, resume, stop, unlock, setRate, skip, seek, split, setVoice, setPitch, preview, hebrewVoices, allVoices,
+    get rate() { return rate; }, get state() { return state; }, get pitch() { return pitch; },
+    get voice() { return voice; }, get voiceURI() { return voiceURI; },
     hasHebrewVoice: () => !!pickVoice(), supported: !!synth,
     on(type, fn) { listeners[type].push(fn); }
   };

@@ -691,7 +691,7 @@
     startTracking();
     startCompass();
     const deep = PLACES.find(p => '#' + p.id === location.hash); // shared link
-    if (deep) { select(deep); map.setView([deep.lat, deep.lng], 16); openNow(); }
+    if (deep) { select(deep); map.setView([deep.lat, deep.lng], 16); play(); openNow(); } // came from a QR sign / shared link: play it right away
   }
 
   /* ================= public API (used by the home page, js/home.js) ================= */

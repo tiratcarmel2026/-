@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>podtc · שלטי QR למקומות</title>
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&family=Rubik:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#06142e;--sky:#6dd5fa}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Heebo,system-ui,sans-serif;background:#eef3f9;color:var(--navy)}
+    .bar{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--navy);color:#fff}
+    .bar img{height:30px}
+    .bar p{margin:0;font-size:14px;color:#b9d2ee;flex:1;min-width:200px}
+    .bar button{padding:10px 18px;border:0;border-radius:12px;background:linear-gradient(135deg,#8be3ff,#38bdf8 55%,#2563eb);color:var(--navy);font:800 15px Rubik,sans-serif;cursor:pointer}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:16px;max-width:1100px;margin:0 auto}
+    .sign{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px rgba(6,20,46,.12);display:flex;flex-direction:column;break-inside:avoid;page-break-inside:avoid}
+    .sign__top{background:radial-gradient(circle at 80% 0%,#174a96,var(--navy) 70%);color:#fff;padding:16px 18px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .sign__top img{height:34px}
+    .sign__top span{font-size:12px;color:#b9d2ee}
+    .sign__body{padding:16px 18px;display:flex;gap:14px;align-items:center}
+    .sign__emoji{font-size:44px}
+    .sign h2{font:800 22px/1.2 Rubik,sans-serif;margin:0}
+    .sign p{margin:4px 0 0;color:#41526b;font-size:14px}
+    .sign__qr{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 18px 18px}
+    .sign__qr svg{width:190px;height:190px}
+    .sign__qr b{font:800 16px Rubik,sans-serif}
+    .sign__qr small{color:#41526b;font-size:12px}
+    .kick{display:inline-block;font-size:12px;font-weight:700;border-right:4px solid var(--c);padding-right:6px;margin-bottom:4px}
+    @media print{
+      body{background:#fff}.bar{display:none}
+      .grid{grid-template-columns:repeat(2,1fr);gap:10mm;padding:8mm}
+      .sign{box-shadow:none;border:1px solid #cbd5e1}
+      .sign__top{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <img src="assets/wordmark.png" alt="podtc">
+    <p>שלט לכל מקום באפליקציה: סורקים את הקוד ומגיעים ישר לפרק של המקום. אפשר להדפיס, לתלות במקום עצמו, או לשים בעלונים של העירייה.</p>
+    <button onclick="print()">🖨️ הדפסה</button>
+  </div>
+  <div id="grid" class="grid"></div>
+
+  <script src="js/places.js"></script>
+  <script src="vendor/qrcode/qrcode.js"></script>
+  <script>
+    (function () {
+      const base = location.href.replace(/print\.html.*$/, '');
+      const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const svg = url => { const q = qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag({ cellSize: 5, margin: 1, scalable: true }); };
+      document.getElementById('grid').innerHTML = PODTC_PLACES.map(p => {
+        const cat = PODTC_CATEGORIES[p.category] || { label: '', color: '#6dd5fa' };
+        return `<article class="sign">
+          <div class="sign__top"><img src="assets/wordmark.png" alt="podtc"><span>מבית עיריית טירת כרמל</span></div>
+          <div class="sign__body"><span class="sign__emoji">${p.emoji}</span>
+            <div><span class="kick" style="--c:${cat.color}">${esc(cat.label)}</span><h2>${esc(p.title)}</h2><p>${esc(p.subtitle)}</p></div></div>
+          <div class="sign__qr">${svg(base + '#' + p.id)}<b>🎧 סרקו והאזינו לסיפור של המקום</b><small>פרק של דקה או שתיים, בעברית</small></div>
+        </article>`;
+      }).join('');
+    })();
+  </script>
+</body>
+</html>

@@ -46,6 +46,11 @@
         </a>
       </div>
 
+      <nav class="jump" aria-label="קפיצה למדור">
+        <a href="#services">🏛️ שירותים</a><a href="#live">🔴 חי עכשיו</a><a href="#radio">📻 רדיו</a>
+        <a href="#social">📱 ברשתות</a><a href="#future">🏗️ העתיד</a><a href="#sections">🎧 פרקים</a><a href="#links-block">🔗 קישורים</a>
+      </nav>
+
       <div id="resume" class="resume" hidden></div>
       <article id="hero" class="hero reveal"></article>
 
@@ -55,6 +60,23 @@
         <button id="home-install" class="pill-btn">הוספה</button>
         <button id="install-x" class="x" aria-label="סגירה">✕</button>
       </div>
+
+      <section class="block" id="services">
+        <h2 class="kicker"><i style="--c:#0b72d9"></i>שירותי עיריית טירת כרמל</h2>
+        <div id="svc" class="svc"></div>
+        <div class="emerg" id="emerg"></div>
+      </section>
+
+      <section class="block live" id="live">
+        <h2 class="kicker"><i style="--c:#ef4444"></i><span class="livepill"><i class="live-dot"></i>LIVE</span> חי עכשיו בטירת כרמל<small id="live-upd"></small></h2>
+        <div id="live-cards" class="live-cards"></div>
+        <div class="news">
+          <h3>📰 חדשות טירת כרמל מהרשת</h3>
+          <ul id="news-list" class="news__list"><li class="news__skel"></li><li class="news__skel"></li><li class="news__skel"></li></ul>
+          <div class="news__more" id="news-more"></div>
+        </div>
+        <div id="wiki-live" class="wiki-live" hidden></div>
+      </section>
 
       <section class="block reveal">
         <h2 class="kicker"><i style="--c:#38bdf8"></i>קרוב אליכם עכשיו</h2>
@@ -79,6 +101,12 @@
         <div class="fact__dots" id="fact-dots"></div>
       </section>
 
+      <section class="block" id="radio">
+        <h2 class="kicker"><i style="--c:#a855f7"></i>📻 רדיו בשידור חי<small>הקשיבו תוך כדי טיול</small></h2>
+        <div id="stations" class="stations"></div>
+        <p class="note-sm">השידורים מגיעים ישירות מהתחנות. אם תחנה לא מתנגנת, אפשר לפתוח אותה באתר שלה.</p>
+      </section>
+
       <section class="future reveal" id="future">
         <span class="future__kick">🏗️ העיר של מחר</span>
         <h2>טירת כרמל ב־2040: התוכניות במספרים</h2>
@@ -89,9 +117,20 @@
         <p class="future__note">לפי תוכניות שאושרו או מקודמות בוועדות התכנון ודיווחים בתקשורת. המספרים עשויים להשתנות.</p>
       </section>
 
+      <section class="block" id="social">
+        <h2 class="kicker"><i style="--c:#111827"></i>העירייה ברשתות</h2>
+        <div class="soc-tabs" role="tablist">
+          <button class="soc-tab on" data-soc="tiktok">🎵 טיקטוק</button>
+          <button class="soc-tab" data-soc="facebook">📘 פייסבוק</button>
+          <button class="soc-tab" data-soc="youtube">▶️ יוטיוב</button>
+        </div>
+        <div id="soc-frame" class="soc-frame"></div>
+        <div id="soc-links" class="soc-links"></div>
+      </section>
+
       <div id="sections"></div>
 
-      <section class="block reveal">
+      <section class="block reveal" id="links-block">
         <h2 class="kicker"><i style="--c:#93c5fd"></i>קישורים שימושיים</h2>
         <div id="links" class="links"></div>
       </section>
@@ -100,13 +139,15 @@
         <h2>אהבתם? שתפו את podtc 💙</h2>
         <p>כל אחד יכול לגלות את הסיפורים של טירת כרמל</p>
         <div id="share-app" class="sharebar sharebar--center"></div>
+        <div class="qr-box"><div id="qr-app" class="qr"></div><small>סרקו כדי לפתוח את podtc בטלפון</small>
+          <a class="link link--light" href="print.html" target="_blank" rel="noopener">🖨️ שלטי QR להדפסה לכל המקומות</a></div>
       </section>
 
       <footer class="foot">
         <img src="assets/wordmark.png" alt="podtc" class="foot__logo">
         <p>podtc · מבית עיריית טירת כרמל</p>
         <p class="foot__small">התכנים נכתבו ממקורות פתוחים ברשת, ולכל פרק מצורפים מקורות. מצאתם טעות? <button class="link" id="foot-feedback">ספרו לנו</button></p>
-        <p class="foot__small">מפות: Esri, CARTO, OpenStreetMap · מזג אוויר: Open-Meteo</p>
+        <p class="foot__small">מפות: Esri, CARTO, OpenStreetMap · מזג אוויר, אוויר וים: Open-Meteo · זמני שבת: Hebcal · חדשות: מקורות פתוחים ברשת</p>
       </footer>
     </div>
   </section>
@@ -117,6 +158,15 @@
     <button data-view="library" class="tab"><svg viewBox="0 0 24 24"><path d="M4 5h4v15H4zM10 5h4v15h-4zM16 6l3.5-1 3 14-3.5 1z"/></svg><span>ספרייה</span></button>
     <button data-view="install" class="tab" id="tab-install"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M12 8v7M9 12l3 3 3-3"/></svg><span>התקנה</span></button>
   </nav>
+
+  <div id="radiobar" class="radiobar glass" hidden>
+    <span class="radiobar__eq"><i></i><i></i><i></i></span>
+    <span class="radiobar__info"><b id="rb-name">רדיו</b><small id="rb-state">מתחבר…</small></span>
+    <button id="rb-sleep" class="rb-btn" title="כיבוי אוטומטי">⏲</button>
+    <button id="rb-toggle" class="rb-btn rb-btn--main" aria-label="השהיה">❚❚</button>
+    <button id="rb-close" class="rb-btn" aria-label="סגירת הרדיו">✕</button>
+  </div>
+  <audio id="radio-audio" preload="none"></audio>
 
   <div id="install-sheet" class="sheet" hidden>
     <div class="sheet__card">
@@ -184,6 +234,7 @@
       <div class="actions">
         <button id="btn-nav" class="act"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>ניווט למקום</button>
         <button id="btn-rate" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M12 3v2"/></svg><span id="rate-label">×1</span></button>
+        <button id="btn-voice" class="act"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg><span id="voice-label">קול</span></button>
         <button id="btn-street" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M9 21l1-7-2-1 1-4h6l1 4-2 1 1 7"/></svg>מבט מהרחוב</button>
         <button id="btn-next" class="act"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>הפרק הקרוב</button>
       </div>
@@ -232,6 +283,15 @@
       <label class="switch"><input type="checkbox" id="auto"><span></span>השמעה אוטומטית כשמגיעים למקום</label>
       <label class="switch"><input type="checkbox" id="chime"><span></span>צליל הגעה</label>
       <label class="switch"><input type="checkbox" id="a11y"><span></span>טקסט גדול וניגודיות גבוהה</label>
+      <div class="voice-box">
+        <b>🎙️ קול הקריין</b>
+        <select id="voice-sel" aria-label="בחירת קול"></select>
+        <div class="voice-row">
+          <label>גובה <select id="pitch-sel"><option value="0.8">נמוך</option><option value="1">רגיל</option><option value="1.2">גבוה</option></select></label>
+          <button id="voice-test" class="mini-btn">▶ השמיעו דוגמה</button>
+        </div>
+        <small id="voice-note"></small>
+      </div>
       <button id="btn-offline" class="link">📥 שמירת המפה לשימוש בלי אינטרנט</button>
       <button id="btn-feedback" class="link">✉️ הציעו מקום או דווחו על טעות</button>
       <button id="btn-install" class="link" hidden>📲 התקנה למסך הבית</button>
@@ -282,5 +342,7 @@
   <script src="js/wiki.js"></script>
   <script src="js/app.js"></script>
   <script src="js/home.js"></script>
+  <script src="vendor/qrcode/qrcode.js"></script>
+  <script src="js/live.js"></script>
 </body>
 </html>
