@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#06142e">
+  <meta name="theme-color" content="#0E4D3F">
   <title>podtc — טירת כרמל</title>
   <meta name="description" content="פודקאסטים קצרים בעברית על כל מקום בטירת כרמל, לפי המיקום שלכם. מבית עיריית טירת כרמל.">
   <link rel="manifest" href="manifest.webmanifest">
@@ -14,13 +14,14 @@
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
   <!-- ===== Header ===== -->
   <header class="top glass">
-    <img class="top__logo" src="assets/wordmark.png" alt="podtc">
+    <img class="top__logo" src="assets/wordmark-white.png" alt="podtc">
     <button id="btn-list" class="ring-chip" aria-label="הספרייה וההתקדמות">
       <svg viewBox="0 0 36 36" class="ring"><circle cx="18" cy="18" r="15.5" class="ring__bg"/><circle id="ring-mini" cx="18" cy="18" r="15.5" class="ring__fg"/></svg>
       <span id="count">0/0</span>
@@ -42,17 +43,17 @@
       <div class="dateline">
         <div><b id="greet">שלום</b><small id="today"></small><small id="streak" class="streak"></small></div>
         <a id="weather" class="weather" href="https://open-meteo.com/" target="_blank" rel="noopener" aria-label="מזג האוויר בטירת כרמל">
-          <span id="w-icon">⛅</span><span><b id="w-temp">--°</b><small id="w-desc">טירת כרמל</small></span>
+          <span id="w-icon"></span><span><b id="w-temp">--°</b><small id="w-desc">טירת כרמל</small></span>
         </a>
       </div>
 
       <nav class="jump" aria-label="קפיצה למדור">
-        <a href="#services">🏛️ שירותים</a><a href="#live">🔴 חי עכשיו</a><a href="#radio">📻 רדיו</a>
-        <a href="#social">📱 ברשתות</a><a href="#kids">🧒 ילדים</a><a href="#photo">📸 מסגרת</a><a href="#future">🏗️ העתיד</a><a href="#sections">🎧 פרקים</a><a href="#links-block">🔗 קישורים</a>
+        <a href="#services">שירותים</a><a href="#live">חי עכשיו</a><a href="#radio">רדיו</a>
+        <a href="#social">ברשתות</a><a href="#kids">ילדים</a><a href="#photo">מסגרת</a><a href="#future">העתיד</a><a href="#sections">פרקים</a><a href="#links-block">קישורים</a>
       </nav>
 
       <button id="briefing" class="briefing">
-        <span class="briefing__ic">🎙️</span>
+        <span class="briefing__ic" data-icon="mic" data-size="26"></span>
         <span class="briefing__txt"><b>מהדורת טירת כרמל</b><small>עדכון קולי של כ־2 דקות: מזג האוויר, שבת וחגים, כותרות ופרק היום</small></span>
         <span class="briefing__play">▶</span>
       </button>
@@ -77,7 +78,7 @@
         <h2 class="kicker"><i style="--c:#ef4444"></i><span class="livepill"><i class="live-dot"></i>LIVE</span> חי עכשיו בטירת כרמל<small id="live-upd"></small></h2>
         <div id="live-cards" class="live-cards"></div>
         <div class="news">
-          <h3>📰 חדשות טירת כרמל מהרשת</h3>
+          <h3>חדשות טירת כרמל מהרשת</h3>
           <ul id="news-list" class="news__list"><li class="news__skel"></li><li class="news__skel"></li><li class="news__skel"></li></ul>
           <div class="news__more" id="news-more"></div>
         </div>
@@ -102,36 +103,36 @@
       </section>
 
       <section class="fact reveal" id="fact-box">
-        <span class="fact__label">💡 הידעתם?</span>
+        <span class="fact__label">הידעתם?</span>
         <p id="fact"></p>
         <div class="fact__dots" id="fact-dots"></div>
       </section>
 
       <section class="block" id="radio">
-        <h2 class="kicker"><i style="--c:#a855f7"></i>📻 רדיו בשידור חי<small>הקשיבו תוך כדי טיול</small></h2>
+        <h2 class="kicker"><i style="--c:#a855f7"></i>רדיו בשידור חי<small>הקשיבו תוך כדי טיול</small></h2>
         <div id="stations" class="stations"></div>
         <p class="note-sm">השידורים מגיעים ישירות מהתחנות. אם תחנה לא מתנגנת, אפשר לפתוח אותה באתר שלה.</p>
       </section>
 
       <section class="block" id="kids">
-        <h2 class="kicker"><i style="--c:#f59e0b"></i>🧒 פינת הילדים</h2>
+        <h2 class="kicker"><i style="--c:#f59e0b"></i>פינת הילדים</h2>
         <div class="kids">
-          <a class="kid kid--game" href="../" target="_blank" rel="noopener"><span>🧹</span><b>ניקי שומרת על הניקיון</b><small>משחק לילדים של עיריית טירת כרמל</small></a>
-          <button class="kid kid--tour" data-kid="tour"><span>👨‍👩‍👧</span><b>סיור משפחות</b><small>6 תחנות קצרות עם חידון בכל תחנה</small></button>
-          <button class="kid kid--radio" data-kid="radio"><span>🎵</span><b>רדיו שירי ילדים</b><small>מוזיקה לילדים בשידור חי</small></button>
-          <button class="kid kid--quiz" data-kid="quiz"><span>🧠</span><b>אלופי החידון</b><small>האזינו לפרק וענו על השאלה</small></button>
+          <a class="kid kid--game" href="../" target="_blank" rel="noopener"><span data-icon="game" data-size="30"></span><b>ניקי שומרת על הניקיון</b><small>משחק לילדים של עיריית טירת כרמל</small></a>
+          <button class="kid kid--tour" data-kid="tour"><span data-icon="people" data-size="30"></span><b>סיור משפחות</b><small>6 תחנות קצרות עם חידון בכל תחנה</small></button>
+          <button class="kid kid--radio" data-kid="radio"><span data-icon="radio" data-size="30"></span><b>רדיו שירי ילדים</b><small>מוזיקה לילדים בשידור חי</small></button>
+          <button class="kid kid--quiz" data-kid="quiz"><span data-icon="quiz" data-size="30"></span><b>אלופי החידון</b><small>האזינו לפרק וענו על השאלה</small></button>
         </div>
       </section>
 
       <section class="block" id="photo">
         <div class="photo-card">
-          <div><b>📸 צלמו עם מסגרת podtc</b><small>תמונה ממותגת עם שם המקום שבו אתם עומדים, מוכנה לשיתוף בוואטסאפ ובאינסטגרם</small></div>
-          <label class="pill-btn photo-btn">📷 צלמו או בחרו תמונה<input id="photo-input" type="file" accept="image/*" capture="environment" hidden></label>
+          <div><b>צלמו עם מסגרת podtc</b><small>תמונה ממותגת עם שם המקום שבו אתם עומדים, מוכנה לשיתוף בוואטסאפ ובאינסטגרם</small></div>
+          <label class="pill-btn photo-btn">צלמו או בחרו תמונה<input id="photo-input" type="file" accept="image/*" capture="environment" hidden></label>
         </div>
       </section>
 
       <section class="future reveal" id="future">
-        <span class="future__kick">🏗️ העיר של מחר</span>
+        <span class="future__kick">העיר של מחר</span>
         <h2>טירת כרמל ב־2040: התוכניות במספרים</h2>
         <div id="future-grid" class="future__grid"></div>
         <div class="future__cta">
@@ -143,9 +144,9 @@
       <section class="block" id="social">
         <h2 class="kicker"><i style="--c:#111827"></i>העירייה ברשתות</h2>
         <div class="soc-tabs" role="tablist">
-          <button class="soc-tab on" data-soc="tiktok">🎵 טיקטוק</button>
-          <button class="soc-tab" data-soc="facebook">📘 פייסבוק</button>
-          <button class="soc-tab" data-soc="youtube">▶️ יוטיוב</button>
+          <button class="soc-tab on" data-soc="tiktok">טיקטוק</button>
+          <button class="soc-tab" data-soc="facebook">פייסבוק</button>
+          <button class="soc-tab" data-soc="youtube">▶יוטיוב</button>
         </div>
         <div id="soc-frame" class="soc-frame"></div>
         <div id="soc-links" class="soc-links"></div>
@@ -159,11 +160,11 @@
       </section>
 
       <section class="share-app reveal">
-        <h2>אהבתם? שתפו את podtc 💙</h2>
+        <h2>אהבתם? שתפו את podtc </h2>
         <p>כל אחד יכול לגלות את הסיפורים של טירת כרמל</p>
         <div id="share-app" class="sharebar sharebar--center"></div>
         <div class="qr-box"><div id="qr-app" class="qr"></div><small>סרקו כדי לפתוח את podtc בטלפון</small>
-          <a class="link link--light" href="print.html" target="_blank" rel="noopener">🖨️ שלטי QR להדפסה לכל המקומות</a></div>
+          <a class="link link--light" href="print.html" target="_blank" rel="noopener">שלטי QR להדפסה לכל המקומות</a></div>
       </section>
 
       <footer class="foot">
@@ -185,7 +186,7 @@
   <div id="radiobar" class="radiobar glass" hidden>
     <span class="radiobar__eq"><i></i><i></i><i></i></span>
     <span class="radiobar__info"><b id="rb-name">רדיו</b><small id="rb-state">מתחבר…</small></span>
-    <button id="rb-sleep" class="rb-btn" title="כיבוי אוטומטי">⏲</button>
+    <button id="rb-sleep" class="rb-btn" title="כיבוי אוטומטי" aria-label="טיימר כיבוי" data-icon="timer" data-size="18"></button>
     <button id="rb-toggle" class="rb-btn rb-btn--main" aria-label="השהיה">❚❚</button>
     <button id="rb-close" class="rb-btn" aria-label="סגירת הרדיו">✕</button>
   </div>
@@ -196,7 +197,7 @@
       <button class="x" id="photo-close" aria-label="סגירה">✕</button>
       <img id="photo-out" alt="התמונה עם מסגרת podtc">
       <div class="photo-place"><label>שם המקום על התמונה: <select id="photo-place"></select></label></div>
-      <div class="photo-actions"><button id="photo-share" class="cta-btn">📤 שיתוף</button><button id="photo-save" class="ghost-btn">⬇️ שמירה</button></div>
+      <div class="photo-actions"><button id="photo-share" class="cta-btn">שיתוף</button><button id="photo-save" class="ghost-btn">שמירה</button></div>
     </div>
   </div>
 
@@ -220,7 +221,7 @@
     <button id="btn-locate" class="fab glass" aria-label="המיקום שלי">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7" fill="none"/></svg>
     </button>
-    <button id="btn-style" class="fab glass fab--style" aria-label="סגנון מפה"><span id="style-icon">🛰️</span><small id="style-label">לוויין</small></button>
+    <button id="btn-style" class="fab glass fab--style" aria-label="סגנון מפה"><span id="style-icon"></span><small id="style-label">לוויין</small></button>
     <button id="btn-demo" class="fab glass fab--txt" aria-label="מצב הדגמה" title="מצב הדגמה: לחיצה על המפה קובעת מיקום">הדגמה</button>
   </div>
 
@@ -229,7 +230,7 @@
     <div class="mini__bar"><div id="mini-progress"></div></div>
     <div class="mini__row">
       <button id="mini-open" class="mini__open" aria-label="פתיחת הנגן">
-        <span id="mini-art" class="art art--sm">🎧</span>
+        <span id="mini-art" class="art art--sm"></span>
         <span class="mini__info">
           <b id="mini-title">הסתובבו בעיר</b>
           <small id="mini-sub">כשתגיעו למקום עם סיפור, הפרק יתחיל מעצמו</small>
@@ -252,7 +253,7 @@
       </span>
     </div>
     <div class="now__scroll">
-      <div class="now__art"><span id="now-art" class="art art--lg">🎧</span></div>
+      <div class="now__art"><span id="now-art" class="art art--lg"></span></div>
       <span id="now-cat" class="pill">היסטוריה</span>
       <h2 id="now-title">—</h2>
       <p id="now-sub" class="now__sub"></p>
@@ -275,16 +276,16 @@
         <div id="share-ep" class="sharebar"></div>
       </div>
       <section id="quiz" class="quiz" hidden>
-        <h3 class="quiz__head">🧠 חידון <small id="quiz-state">ענו נכון וצברו נקודות</small></h3>
+        <h3 class="quiz__head">חידון <small id="quiz-state">ענו נכון וצברו נקודות</small></h3>
         <p id="quiz-q" class="quiz__q"></p>
         <div id="quiz-a" class="quiz__a"></div>
       </section>
       <div id="edit-box" class="edit-box" hidden>
-        <b>🛠️ מצב עורך</b>
+        <b>מצב עורך</b>
         <small id="edit-info"></small>
         <div class="edit-row">
-          <button id="btn-setloc" class="act">📍 קבעו כאן לפי המיקום שלי</button>
-          <button id="btn-radius" class="act">⭕ רדיוס: <span id="radius-label"></span></button>
+          <button id="btn-setloc" class="act">קבעו כאן לפי המיקום שלי</button>
+          <button id="btn-radius" class="act">רדיוס: <span id="radius-label"></span></button>
         </div>
         <small>אפשר גם לגרור את הסיכה על המפה.</small>
       </div>
@@ -308,15 +309,16 @@
         <small id="pc-sub">0 מתוך 0 מקומות</small>
         <small id="pc-points" class="pc-points"></small>
         <div id="badges" class="badges"></div>
-        <button id="btn-share-card" class="mini-btn">📤 שתפו את ההישג</button>
+        <button id="btn-share-card" class="mini-btn">שתפו את ההישג</button>
       </div>
     </div>
     <div class="settings">
       <label class="switch"><input type="checkbox" id="auto"><span></span>השמעה אוטומטית כשמגיעים למקום</label>
       <label class="switch"><input type="checkbox" id="chime"><span></span>צליל הגעה</label>
+      <label class="switch"><input type="checkbox" id="music"><span></span>פתיח ומוזיקת רקע עדינה בפרקים</label>
       <label class="switch"><input type="checkbox" id="a11y"><span></span>טקסט גדול וניגודיות גבוהה</label>
       <div class="voice-box">
-        <b>🎙️ קול הקריין</b>
+        <b>קול הקריין</b>
         <select id="voice-sel" aria-label="בחירת קול"></select>
         <div class="voice-row">
           <label>גובה <select id="pitch-sel"><option value="0.8">נמוך</option><option value="1">רגיל</option><option value="1.2">גבוה</option></select></label>
@@ -324,22 +326,22 @@
         </div>
         <small id="voice-note"></small>
       </div>
-      <button id="btn-offline" class="link">📥 שמירת המפה לשימוש בלי אינטרנט</button>
-      <button id="btn-feedback" class="link">✉️ הציעו מקום או דווחו על טעות</button>
-      <button id="btn-install" class="link" hidden>📲 התקנה למסך הבית</button>
+      <button id="btn-offline" class="link">שמירת המפה לשימוש בלי אינטרנט</button>
+      <button id="btn-feedback" class="link">הציעו מקום או דווחו על טעות</button>
+      <button id="btn-install" class="link" hidden>התקנה למסך הבית</button>
       <button id="btn-reset" class="link">איפוס התקדמות</button>
       <div id="editor-tools" class="editor-tools" hidden>
-        <b>🛠️ כלי עורך</b>
+        <b>כלי עורך</b>
         <small id="edits-count"></small>
-        <button id="btn-export" class="mini-btn">📋 ייצוא מיקומים (JSON)</button>
+        <button id="btn-export" class="mini-btn">ייצוא מיקומים (JSON)</button>
         <button id="btn-clear-edits" class="link">ביטול כל העריכות</button>
         <button id="btn-exit-edit" class="link">יציאה ממצב עורך</button>
       </div>
     </div>
     <div class="list-wrap">
-      <h3 class="sec">🚶 סיורים מודרכים</h3>
+      <h3 class="sec">סיורים מודרכים</h3>
       <div id="tours" class="tours"></div>
-      <h3 class="sec">🎧 כל הפרקים</h3>
+      <h3 class="sec">כל הפרקים</h3>
       <div class="search"><input id="search" type="search" placeholder="חיפוש מקום, נושא או מילה…" aria-label="חיפוש"></div>
       <ul id="list" class="list"></ul>
       <p id="list-empty" class="empty" hidden>לא נמצאו פרקים. נסו מילה אחרת.</p>
@@ -350,7 +352,8 @@
   <!-- ===== Splash ===== -->
   <div id="splash" class="splash">
     <div class="splash__inner">
-      <img class="splash__logo" src="assets/logo-full.png" alt="podtc, מבית עיריית טירת כרמל">
+      <img class="splash__logo" src="assets/wordmark-white.png" alt="podtc">
+      <span class="splash__by">מבית עיריית טירת כרמל</span>
       <p class="splash__lead">טירת כרמל מספרת את עצמה</p>
       <p class="splash__text">הפעילו מיקום והתחילו ללכת. בכל מקום עם סיפור תשמעו פרק קצר בעברית, דקה או שתיים, על המקום שבו אתם עומדים.</p>
       <ul class="splash__feats">
@@ -368,6 +371,7 @@
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="js/geo.js"></script>
+  <script src="js/icons.js"></script>
   <script src="js/config.js"></script>
   <script src="js/places.js"></script>
   <script src="js/quiz.js"></script>

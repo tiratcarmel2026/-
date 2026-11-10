@@ -9,7 +9,9 @@
   const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
                set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
   const RATE_KEY = 'podtc.rate';
-  let rate = parseFloat(ls.get(RATE_KEY, '1')) || 1;
+  let rate = parseFloat(ls.get(RATE_KEY, '0.95')) || 0.95;   // a touch slower than default sounds less robotic
+  let music = ls.get('podtc.music', '1') === '1';
+  let paraEnds = new Set();   // chunk indexes that end a paragraph → longer pause
   let pitch = parseFloat(ls.get('podtc.pitch', '1')) || 1;
   let voiceURI = ls.get('podtc.voice', '');
 
@@ -34,9 +36,24 @@
   }
 
   function emit(type, data) { listeners[type].forEach(fn => fn(data)); }
-  function setState(s) { state = s; emit('state', s); }
+  function setState(s) {
+    state = s; emit('state', s);
+    if ((s === 'paused' || s === 'ended' || s === 'idle') && typeof Studio !== 'undefined') Studio.bed(false);
+    if (s === 'playing' && music && typeof Studio !== 'undefined' && Studio.ready() && !audioEl) Studio.bed(true);
+  }
 
   function split(text) {
+    // split per paragraph so we know where the longer pauses go
+    const paras = String(text).split(/\n+/).map(t => t.trim()).filter(Boolean);
+    if (paras.length > 1) {
+      const out = []; const ends = new Set();
+      paras.forEach(p => { splitPara(p).forEach(c => out.push(c)); ends.add(out.length - 1); });
+      split.lastEnds = ends; return out;
+    }
+    split.lastEnds = new Set([0]);
+    const r = splitPara(text); split.lastEnds = new Set([r.length - 1]); return r;
+  }
+  function splitPara(text) {
     // protect decimals and clock times ("0.7", "16:23") so they are not read as sentence breaks
     const safe = text.replace(/\s+/g, ' ').replace(/(\d)\.(\d)/g, '$1\uE000$2').replace(/(\d):(\d)/g, '$1\uE001$2');
     const parts = (safe.match(/[^.!?:]+[.!?:]?/g) || [safe]).map(p => p.replace(/\uE000/g, '.').replace(/\uE001/g, ':'));
@@ -56,7 +73,12 @@
     const u = new SpeechSynthesisUtterance(chunks[idx]);
     u.lang = voice ? voice.lang : 'he-IL'; u.rate = rate; u.pitch = pitch;
     if (voice) u.voice = voice;
-    u.onend = () => { if (state !== 'playing') return; idx++; emit('progress', idx / chunks.length); speakNext(); };
+    u.onend = () => {
+      if (state !== 'playing') return;
+      const gap = paraEnds.has(idx) ? 650 : 220;   // breathe between sentences, longer between paragraphs
+      idx++; emit('progress', idx / chunks.length);
+      clearTimeout(speakNext.t); speakNext.t = setTimeout(() => { if (state === 'playing') speakNext(); }, gap);
+    };
     u.onerror = (e) => { if (e.error === 'interrupted' || e.error === 'canceled') return; idx++; speakNext(); };
     try { synth.speak(u); } catch (e) { setState('unsupported'); }
   }
@@ -91,9 +113,47 @@
 
   function playTTS(episode) {
     if (!synth) { setState('unsupported'); return; }
-    chunks = split(episode.intro ? episode.intro + '. ' + episode.script : episode.script);
-    idx = 0; setState('playing'); emit('progress', 0); speakNext();
+    chunks = split(episode.intro ? episode.intro + '.\n' + episode.script : episode.script);
+    paraEnds = split.lastEnds || new Set();
+    idx = 0; setState('playing'); emit('progress', 0);
+    // podcast feel: a short sting, then the voice over a very soft music bed
+    if (music && Studio.ready()) { Studio.sting(); Studio.bed(true); clearTimeout(speakNext.t); speakNext.t = setTimeout(() => { if (state === 'playing') speakNext(); }, 1500); }
+    else speakNext();
   }
+
+  /* --- tiny "studio": jingle + ambient bed with WebAudio (no files, no network) --- */
+  const Studio = (() => {
+    let ctx = null, bedGain = null, bedNodes = [];
+    const ready = () => !!ctx;
+    function init() { try { const AC = window.AudioContext || window.webkitAudioContext; if (AC && !ctx) ctx = new AC(); if (ctx && ctx.state === 'suspended') ctx.resume(); } catch (e) {} }
+    function tone(f, t, len, vol, type = 'sine') {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .04); g.gain.exponentialRampToValueAtTime(.0008, t + len);
+      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + len + .05);
+    }
+    function sting() {   // warm major-seventh arpeggio, ~1.3s
+      if (!ctx) return; const t = ctx.currentTime + .02;
+      [[392, 0], [493.9, .12], [587.3, .24], [740, .38]].forEach(([f, d]) => { tone(f, t + d, 1.1, .07, 'triangle'); tone(f / 2, t + d, 1.2, .03); });
+    }
+    function bed(on) {
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      if (on) {
+        if (bedNodes.length) { bedGain.gain.cancelScheduledValues(now); bedGain.gain.linearRampToValueAtTime(.022, now + 1.5); return; }
+        bedGain = ctx.createGain(); bedGain.gain.value = 0;
+        const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+        lp.connect(bedGain).connect(ctx.destination);
+        [196, 246.9, 293.7, 196.6].forEach(f => { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f; o.connect(lp); o.start(); bedNodes.push(o); });
+        const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = .08; lg.gain.value = 250; lfo.connect(lg).connect(lp.frequency); lfo.start(); bedNodes.push(lfo);
+        bedGain.gain.linearRampToValueAtTime(.022, now + 2);
+      } else if (bedGain) {
+        bedGain.gain.cancelScheduledValues(now); bedGain.gain.setValueAtTime(bedGain.gain.value, now); bedGain.gain.linearRampToValueAtTime(0, now + 1.2);
+        const nodes = bedNodes; bedNodes = []; setTimeout(() => nodes.forEach(o => { try { o.stop(); } catch (e) {} }), 1400);
+      }
+    }
+    return { init, ready, sting, bed };
+  })();
 
   function pause() {
     if (audioEl) { audioEl.pause(); setState('paused'); return; }
@@ -127,11 +187,14 @@
   }
   /* iOS/Android require the first speech to start inside a user gesture. */
   function unlock() {
+    Studio.init();
     if (!synth) return;
     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; u.lang = 'he-IL'; synth.speak(u); } catch (e) {}
   }
 
   window.Narrator = {
+    setMusic(on) { music = !!on; ls.set('podtc.music', on ? '1' : '0'); if (!on) Studio.bed(false); }, get music() { return music; },
+    isNatural: () => !!(voice && /natural|online|neural|google|premium|enhanced/i.test(voice.name + ' ' + voice.voiceURI)),
     play, pause, resume, stop, unlock, setRate, skip, seek, split, setVoice, setPitch, preview, hebrewVoices, allVoices,
     get rate() { return rate; }, get state() { return state; }, get pitch() { return pitch; },
     get voice() { return voice; }, get voiceURI() { return voiceURI; },

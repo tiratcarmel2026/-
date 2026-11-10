@@ -53,7 +53,7 @@
     PLACES.forEach(p => {
       const c = catOf(p).color;
       const circle = L.circle([p.lat, p.lng], { radius: p.radius, color: c, weight: 1, opacity: .5, fillColor: c, fillOpacity: .06, dashArray: '4 6', interactive: false }).addTo(map);
-      const icon = L.divIcon({ className: '', html: `<div class="pin" style="--c:${c};width:42px;height:42px">${p.emoji}</div>`, iconSize: [42, 42], iconAnchor: [21, 21] });
+      const icon = L.divIcon({ className: '', html: `<div class="pin" style="--c:${c};width:40px;height:40px">${PodIcons.cat(p, 20)}</div>`, iconSize: [42, 42], iconAnchor: [21, 21] });
       const m = L.marker([p.lat, p.lng], { icon, title: p.title }).addTo(map).on('click', () => { select(p); openNow(); })
         .on('dragend', e => saveEdit(p, e.target.getLatLng()));
       markers[p.id] = { m, circle };
@@ -67,15 +67,15 @@
   const OSM = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
   const CARTO = '© <a href="https://carto.com/attributions">CARTO</a>';
   const STYLES = {
-    sat: { icon: '🛰️', label: 'לוויין', make: () => L.layerGroup([
+    sat: { icon: 'globe', label: 'לוויין', make: () => L.layerGroup([
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 20, maxNativeZoom: 19, attribution: 'צילום אוויר © Esri, Maxar, Earthstar Geographics' }),
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png', {
         maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO })
     ]) },
-    street: { icon: '🗺️', label: 'רחובות', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    street: { icon: 'pin', label: 'רחובות', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) },
-    night: { icon: '🌙', label: 'לילה', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    night: { icon: 'moon', label: 'לילה', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) }
   };
   function setStyle(name, silent) {
@@ -86,7 +86,7 @@
     document.body.classList.remove('style-sat', 'style-street', 'style-night');
     document.body.classList.add('style-' + name);
     const order = Object.keys(STYLES), next = STYLES[order[(order.indexOf(name) + 1) % order.length]];
-    $('#style-icon').textContent = next.icon; $('#style-label').textContent = next.label; // the button shows what you switch TO
+    $('#style-icon').innerHTML = PodIcons.svg(next.icon, 18); $('#style-label').textContent = next.label; // the button shows what you switch TO
     if (!silent) toast(`תצוגת מפה: ${STYLES[name].label}`);
   }
 
@@ -107,7 +107,7 @@
     });
     liveLayer.clearLayers();
     if (filter === 'all' || filter === 'live') liveItems.forEach(w => {
-      const icon = L.divIcon({ className: '', html: `<div class="pin pin--live" style="width:30px;height:30px">📖</div>`, iconSize: [30, 30], iconAnchor: [15, 15] });
+      const icon = L.divIcon({ className: '', html: `<div class="pin pin--live" style="width:30px;height:30px"></div>`, iconSize: [30, 30], iconAnchor: [15, 15] });
       L.marker([w.lat, w.lng], { icon, title: w.title }).on('click', () => { select(w); openNow(); }).addTo(liveLayer);
     });
   }
@@ -119,7 +119,7 @@
     const used = ['all', ...(favs.size ? ['fav'] : []), ...Object.keys(CATS).filter(k => k === 'live' ? liveItems.length : PLACES.some(p => p.category === k))];
     $('#filters').innerHTML = used.map(k => k === 'all'
       ? `<button class="fchip" data-f="all" aria-pressed="${filter === 'all'}">הכול</button>`
-      : k === 'fav' ? `<button class="fchip" data-f="fav" style="--c:#f472b6" aria-pressed="${filter === 'fav'}">♥ מועדפים</button>`
+      : k === 'fav' ? `<button class="fchip" data-f="fav" style="--c:#f472b6" aria-pressed="${filter === 'fav'}">מועדפים</button>`
       : `<button class="fchip" data-f="${k}" style="--c:${CATS[k].color}" aria-pressed="${filter === k}"><i></i>${CATS[k].label}</button>`).join('');
   }
   $('#filters').addEventListener('click', e => {
@@ -242,7 +242,7 @@
     if (tourOn) {
       if (fly && pts.length) map.flyToBounds(L.latLngBounds(pts).pad(.25), { duration: .9 });
       const n = tourNext(); if (n && !isActive()) select(n);
-      if (fly) toast(`${activeTour().emoji} התחלתם: ${activeTour().title}`);
+      if (fly) toast(`התחלתם: ${activeTour().title}`);
     }
     refreshPins(); updateTour(); renderTours();
   }
@@ -251,12 +251,12 @@
     const n = tourOn ? tourNext() : null;
     box.hidden = !n;
     if (!n) {
-      if (tourOn && tourStops().every(p => played.has(p.id))) { toast(`🎉 סיימתם את הסיור "${activeTour().title}"! כל הכבוד`); setTour(null, false); }
+      if (tourOn && tourStops().every(p => played.has(p.id))) { toast(`סיימתם את הסיור "${activeTour().title}"! כל הכבוד`); setTour(null, false); }
       return;
     }
     const st = tourStops();
-    $('#tour-step').textContent = `${activeTour().emoji} התחנה הבאה · ${st.indexOf(n) + 1} מתוך ${st.length}`;
-    $('#tour-title').textContent = `${n.emoji} ${n.title}`;
+    $('#tour-step').textContent = `התחנה הבאה · ${st.indexOf(n) + 1} מתוך ${st.length}`;
+    $('#tour-title').textContent = n.title;
     if (pos) {
       const d = distance(pos.lat, pos.lng, n.lat, n.lng);
       $('#tour-dist').textContent = d <= n.radius ? 'הגעתם! הפרק מתנגן' : `${fmt(d)} ${dirName(bearing(pos.lat, pos.lng, n.lat, n.lng))} · כ־${Math.max(1, Math.round(d / 75))} דק׳ הליכה`;
@@ -273,7 +273,7 @@
       const st = tourStops(t), done = st.filter(p => played.has(p.id)).length, on = t.id === tourId;
       const walk = Math.round(tourLength(t) / 75), listen = Math.round(st.reduce((m, p) => m + p.script.split(/\s+/).length / WPM, 0));
       return `<div class="tcard ${on ? 'on' : ''}">
-        <b>${t.emoji} ${t.title}</b><p>${t.desc}</p>
+        <b>${PodIcons.tour(t, 18)} ${t.title}</b><p>${t.desc}</p>
         <small>${st.length} תחנות · ${fmt(tourLength(t))} · כ־${walk + listen} דק׳</small>
         <div class="bar"><i style="width:${Math.round(done / st.length * 100)}%"></i></div>
         <button data-tour="${t.id}" class="${on ? 'stop' : ''}">${on ? 'סיום הסיור' : done ? `המשיכו (${done}/${st.length})` : 'התחילו'}</button>
@@ -316,7 +316,7 @@
     $('#quiz-a').querySelectorAll('button').forEach(x => { x.disabled = true; if (x.dataset.ok === '1') x.classList.add('ok'); });
     $('#quiz').classList.add('done');
     $('#quiz-state').textContent = ok ? '✓ עניתם נכון · +10' : 'לא נורא, עכשיו אתם יודעים!';
-    if (ok) { toast('🎉 תשובה נכונה! +10 נקודות'); if (chime) playChime(); if (navigator.vibrate) navigator.vibrate(60); }
+    if (ok) { toast('תשובה נכונה! +10 נקודות'); if (chime) playChime(); if (navigator.vibrate) navigator.vibrate(60); }
     else toast('כמעט! התשובה הנכונה מסומנת בירוק');
     checkBadges(); renderProgress();
   });
@@ -361,17 +361,17 @@
   let logoTaps = [];
   $('.top__logo').addEventListener('click', () => {
     const now = Date.now(); logoTaps = logoTaps.filter(t => now - t < 2500); logoTaps.push(now);
-    if (logoTaps.length >= 5) { logoTaps = []; setEditing(!editing); toast(editing ? '🛠️ מצב עורך פעיל: גררו סיכות או קבעו מיקום מתוך פרק' : 'יצאתם ממצב עורך'); }
+    if (logoTaps.length >= 5) { logoTaps = []; setEditing(!editing); toast(editing ? 'מצב עורך פעיל: גררו סיכות או קבעו מיקום מתוך פרק' : 'יצאתם ממצב עורך'); }
   });
 
   function onEnter(place) {
-    if (editing) { toast(`🛠️ אתם באזור של: ${place.title}`); return; } // editor: never switch the place being edited
+    if (editing) { toast(`אתם באזור של: ${place.title}`); return; } // editor: never switch the place being edited
     if (navigator.vibrate) navigator.vibrate([90, 50, 90]);
     if (chime) playChime();
     const busy = isActive();
     if (!busy) select(place);
-    if (autoplay && !busy && !played.has(place.id)) { play(); toast(`${place.emoji} הגעתם ל${place.title}`); }
-    else toast(`${place.emoji} הגעתם ל${place.title}. יש כאן פרק!`);
+    if (autoplay && !busy && !played.has(place.id)) { play(); toast(`הגעתם ל${place.title}`); }
+    else toast(`הגעתם ל${place.title}. יש כאן פרק`);
   }
 
   const isActive = () => ['playing', 'paused', 'skipping'].includes(Narrator.state);
@@ -405,15 +405,15 @@
     if (current && current.id !== ep.id && isActive()) Narrator.stop();
     current = ep;
     const cat = catOf(ep);
-    $('#mini-art').textContent = $('#now-art').textContent = ep.emoji;
+    $('#mini-art').innerHTML = PodIcons.cat(ep, 22); $('#now-art').innerHTML = PodIcons.cat(ep, 96);
     $('#mini-title').textContent = $('#now-title').textContent = ep.title;
     $('#now-sub').textContent = ep.subtitle;
     const pill = $('#now-cat'); pill.textContent = cat.label; pill.style.setProperty('--c', cat.color);
-    $('#now-dur').textContent = '🎧 ' + minutes(ep);
+    $('#now-dur').textContent = '' + minutes(ep);
     $('#now-approx').hidden = !ep.approx;
     $('#now-sources').innerHTML = (ep.sources || []).map(s => `<a href="${s}" target="_blank" rel="noopener">${decodeURIComponent(s).replace(/^https?:\/\/(www\.)?/, '').slice(0, 46)}</a>`).join(' · ');
     // transcript, split exactly like the narrator so we can highlight the sentence being read
-    const text = ep.intro ? ep.intro + '. ' + ep.script : ep.script;
+    const text = ep.intro ? ep.intro + '.\n' + ep.script : ep.script;
     const parts = Narrator.split(text);
     $('#transcript').innerHTML = parts.map((t, i) => `<span data-i="${i}">${t} </span>`).join('');
     chunkEls = [...$('#transcript').children];
@@ -429,7 +429,7 @@
   }
   function toggleFav(id) {
     if (!id) return;
-    if (favs.has(id)) { favs.delete(id); toast('הוסר מהמועדפים'); } else { favs.add(id); toast('♥ נשמר במועדפים'); if (navigator.vibrate) navigator.vibrate(30); }
+    if (favs.has(id)) { favs.delete(id); toast('הוסר מהמועדפים'); } else { favs.add(id); toast('נשמר במועדפים'); if (navigator.vibrate) navigator.vibrate(30); }
     store.set('favs', [...favs]); renderFav(); renderFilters(); refreshPins(); renderList();
   }
   function updateMeta() {
@@ -439,7 +439,7 @@
     const sub = $('#mini-sub');
     sub.classList.toggle('here', here);
     sub.textContent = isActive() ? current.subtitle + (queue.length ? ` · ${queueName}: עוד ${queue.length}` : '') : here ? 'אתם כאן · ' + minutes(current) : d != null ? `במרחק ${fmt(d)} · ${minutes(current)}` : current.subtitle;
-    $('#now-dist').textContent = d == null ? '' : here ? '📍 אתם כאן' : '📍 ' + fmt(d);
+    $('#now-dist').textContent = d == null ? '' : here ? 'אתם כאן' : '' + fmt(d);
   }
 
   function play() {
@@ -490,7 +490,7 @@
       const rs = store.get('resume', null); if (rs && current && rs.id === current.id) store.set('resume', null);
       if (queue.length) {
         const nx = byId(queue[0]);
-        toast(`⏭ הפרק הבא ב${queueName}: ${nx.emoji} ${nx.title}`);
+        toast(`הפרק הבא ב${queueName}: ${nx.title}`);
         setTimeout(() => { if (Narrator.state === 'ended' && queue.length) { const n = byId(queue.shift()); select(n, true); play(); } }, 3000);
         checkBadges();
         return;
@@ -498,13 +498,13 @@
       if (queueName) { const qn = queueName; setTimeout(() => toast(`✓ סיימתם להאזין: ${qn}`), 600); queueName = ''; checkBadges(); return; }
       checkBadges();
       if (current && QUIZ[current.id] && !(current.id in quizRes)) {
-        setTimeout(() => toast('🧠 יש חידון קצר על הפרק! גללו למטה בנגן'), 1200);
+        setTimeout(() => toast('יש חידון קצר על הפרק! גללו למטה בנגן'), 1200);
         if ($('#now').classList.contains('open')) setTimeout(() => $('#quiz').scrollIntoView({ block: 'center', behavior: 'smooth' }), 600);
       }
       if (tourOn) {
         const n = tourNext();
         updateTour();
-        if (n) { toast(`המשיכו לתחנה הבאה: ${n.emoji} ${n.title}`); setTimeout(() => { if (Narrator.state === 'ended') select(n); }, 2500); }
+        if (n) { toast(`המשיכו לתחנה הבאה: ${n.title}`); setTimeout(() => { if (Narrator.state === 'ended') select(n); }, 2500); }
       } else setTimeout(() => { if (Narrator.state === 'ended') showNearest(); }, 4000);
     }
   });
@@ -533,15 +533,15 @@
   function curatedPlayed() { return PLACES.filter(p => played.has(p.id)).length; }
   function checkBadges() {
     const seen = store.get('badges2', []);
-    BADGES.forEach(b => { if (b.test() && !seen.includes(b.id)) { seen.push(b.id); store.set('badges2', seen); setTimeout(() => toast(`🏅 תג חדש: ${b.label}`), 2600); } });
+    BADGES.forEach(b => { if (b.test() && !seen.includes(b.id)) { seen.push(b.id); store.set('badges2', seen); setTimeout(() => toast(`תג חדש: ${b.label}`), 2600); } });
   }
   function renderProgress() {
     const n = curatedPlayed(), tot = PLACES.length, off = 97.4 * (1 - n / tot);
     $('#ring-mini').style.strokeDashoffset = off; $('#ring-big').style.strokeDashoffset = off;
     $('#count').textContent = `${n}/${tot}`;
-    $('#pc-title').textContent = n === 0 ? 'התחילו לגלות' : n === tot ? 'גיליתם את כל העיר! 🎉' : `גיליתם ${Math.round(n / tot * 100)}% מהעיר`;
+    $('#pc-title').textContent = n === 0 ? 'התחילו לגלות' : n === tot ? 'גיליתם את כל העיר! ' : `גיליתם ${Math.round(n / tot * 100)}% מהעיר`;
     $('#pc-sub').textContent = `${n} מתוך ${tot} מקומות`;
-    $('#pc-points').textContent = `⭐ ${points()} נקודות · ${quizCorrect()} תשובות נכונות בחידון`;
+    $('#pc-points').textContent = `${points()} נקודות · ${quizCorrect()} תשובות נכונות בחידון`;
     $('#badges').innerHTML = BADGES.map(b => `<span class="badge ${b.test() ? 'on' : ''}">${b.label}</span>`).join('');
   }
 
@@ -556,10 +556,10 @@
     $('#list').innerHTML = rows.map(({ p, d }) => {
       const c = catOf(p);
       return `<li class="card ${p.id === insideId ? 'card--here' : ''}" data-id="${p.id}">
-        <span class="art art--sm">${p.emoji}</span>
+        <span class="art art--sm">${PodIcons.cat(p, 20)}</span>
         <span class="card__body"><b>${p.title}</b><small>${p.subtitle}</small>
           <span class="card__tags"><i style="--c:${c.color}">${c.label}</i>· ${minutes(p)}</span></span>
-        <span class="card__meta">${d == null ? '' : p.id === insideId ? 'אתם כאן' : fmt(d)}${favs.has(p.id) ? '<span class="card__fav">♥</span>' : ''}${played.has(p.id) ? '<span class="card__check">✓</span>' : ''}</span>
+        <span class="card__meta">${d == null ? '' : p.id === insideId ? 'אתם כאן' : fmt(d)}${favs.has(p.id) ? '<span class="card__fav"></span>' : ''}${played.has(p.id) ? '<span class="card__check">✓</span>' : ''}</span>
       </li>`;
     }).join('');
     $('#list-empty').hidden = rows.length > 0;
@@ -595,7 +595,7 @@
   }
   async function share() {
     if (!current) return;
-    const data = { title: `podtc · ${current.title}`, text: `האזנתי לפרק על "${current.title}" בטירת כרמל 🎧`, url: location.href.split('#')[0] + '#' + current.id };
+    const data = { title: `podtc · ${current.title}`, text: `האזנתי לפרק על "${current.title}" בטירת כרמל `, url: location.href.split('#')[0] + '#' + current.id };
     try {
       if (navigator.share) await navigator.share(data);
       else { await navigator.clipboard.writeText(data.text + ' ' + data.url); toast('הקישור הועתק'); }
@@ -624,14 +624,14 @@
     g.fillStyle = '#6dd5fa'; g.font = '800 220px Rubik, Heebo, sans-serif'; g.fillText(pct + '%', W / 2, 780);
     g.fillStyle = '#ffffff'; g.font = '700 64px Rubik, Heebo, sans-serif'; g.fillText('מטירת כרמל', W / 2, 870);
     g.fillStyle = '#93acc9'; g.font = '400 44px Heebo, sans-serif';
-    g.fillText(`${n} מקומות · ⭐ ${points()} נקודות · ${quizCorrect()} תשובות נכונות`, W / 2, 960);
+    g.fillText(`${n} מקומות · ${points()} נקודות · ${quizCorrect()} תשובות נכונות`, W / 2, 960);
     const earned = BADGES.filter(b => b.test()).map(b => b.label);
-    if (earned.length) { g.fillStyle = '#eaf6ff'; g.font = '500 40px Heebo, sans-serif'; g.fillText('🏅 ' + earned.slice(-3).join(' · '), W / 2, 1050); }
+    if (earned.length) { g.fillStyle = '#eaf6ff'; g.font = '500 40px Heebo, sans-serif'; g.fillText('' + earned.slice(-3).join(' · '), W / 2, 1050); }
     g.fillStyle = '#6dd5fa'; g.font = '500 38px Heebo, sans-serif'; g.fillText('האזינו גם אתם: tiratcarmel2026.github.io/-/podtc', W / 2, 1240);
     const blob = await new Promise(r => c.toBlob(r, 'image/png'));
     const file = new File([blob], 'podtc.png', { type: 'image/png' });
     try {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'podtc', text: `גיליתי ${pct}% מטירת כרמל עם podtc 🎧` }); return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'podtc', text: `גיליתי ${pct}% מטירת כרמל עם podtc ` }); return; }
     } catch (e) { return; }
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'podtc.png'; document.body.appendChild(a); a.click(); a.remove();
     toast('התמונה ירדה למכשיר. אפשר לשתף אותה');
@@ -656,7 +656,7 @@
           tpl.forEach(t => urls.push(t.replace('{s}', subs[(x + y) % 4]).replace('{z}', z).replace('{x}', x).replace('{y}', y).replace('{r}', r)));
     const btn = $('#btn-offline'), label = btn.textContent; let done = 0, fail = 0;
     btn.disabled = true;
-    const worker = async () => { while (urls.length) { const u = urls.pop(); try { await fetch(u, { mode: 'no-cors' }); } catch (e) { fail++; } done++; btn.textContent = `📥 שומרים את המפה… ${done}`; } };
+    const worker = async () => { while (urls.length) { const u = urls.pop(); try { await fetch(u, { mode: 'no-cors' }); } catch (e) { fail++; } done++; btn.textContent = `שומרים את המפה… ${done}`; } };
     const total = urls.length;
     await Promise.all(Array.from({ length: 6 }, worker));
     btn.disabled = false; btn.textContent = label;
@@ -672,7 +672,7 @@
   const RATES = [0.85, 1, 1.15, 1.3];
   function cycleRate() {
     const r = RATES[(RATES.indexOf(Narrator.rate) + 1) % RATES.length] || 1;
-    Narrator.setRate(r); $('#rate-label').textContent = '×' + r; if (current) { $('#now-dur').textContent = '🎧 ' + minutes(current); }
+    Narrator.setRate(r); $('#rate-label').textContent = '×' + r; if (current) { $('#now-dur').textContent = '' + minutes(current); }
     toast(`מהירות הקראה ×${r} (תחול מהמשפט הבא)`);
   }
 

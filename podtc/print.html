@@ -40,7 +40,7 @@
   <div class="bar">
     <img src="assets/wordmark.png" alt="podtc">
     <p>שלט לכל מקום באפליקציה: סורקים את הקוד ומגיעים ישר לפרק של המקום. אפשר להדפיס, לתלות במקום עצמו, או לשים בעלונים של העירייה.</p>
-    <button onclick="print()">🖨️ הדפסה</button>
+    <button onclick="print()">הדפסה</button>
   </div>
   <div id="grid" class="grid"></div>
 
@@ -57,7 +57,7 @@
           <div class="sign__top"><img src="assets/wordmark.png" alt="podtc"><span>מבית עיריית טירת כרמל</span></div>
           <div class="sign__body"><span class="sign__emoji">${p.emoji}</span>
             <div><span class="kick" style="--c:${cat.color}">${esc(cat.label)}</span><h2>${esc(p.title)}</h2><p>${esc(p.subtitle)}</p></div></div>
-          <div class="sign__qr">${svg(base + '#' + p.id)}<b>🎧 סרקו והאזינו לסיפור של המקום</b><small>פרק של דקה או שתיים, בעברית</small></div>
+          <div class="sign__qr">${svg(base + '#' + p.id)}<b>סרקו והאזינו לסיפור של המקום</b><small>פרק של דקה או שתיים, בעברית</small></div>
         </article>`;
       }).join('');
     })();

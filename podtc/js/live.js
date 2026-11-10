@@ -22,7 +22,7 @@
   const N = window.Narrator;
   const prettyVoice = v => {
     const n = v.name.replace(/Microsoft |Google |Apple |\(.*?\)|- Hebrew|Hebrew|Online|Natural/gi, ' ').replace(/\s+/g, ' ').trim();
-    const tag = /natural|online|neural/i.test(v.name) ? ' ✨ טבעי' : /google/i.test(v.name) ? ' · Google' : '';
+    const tag = /natural|online|neural/i.test(v.name) ? ' טבעי' : /google/i.test(v.name) ? ' · Google' : '';
     return (n || v.name) + tag;
   };
   function renderVoices() {
@@ -40,6 +40,14 @@
     $('#voice-label').textContent = N.voice ? prettyVoice(N.voice).split(' ')[0] : 'קול';
   }
   N.on('voices', renderVoices);
+  const mus = $('#music'); mus.checked = N.music; mus.addEventListener('change', () => N.setMusic(mus.checked));
+  // one gentle hint when the device only has a robotic voice
+  N.on('state', s => {
+    if (s !== 'playing' || N.isNatural() || store.get('voiceHint', false)) return;
+    store.set('voiceHint', true);
+    const edge = /Edg\//.test(navigator.userAgent);
+    setTimeout(() => A.toast(edge ? 'טיפ: בהגדרות אפשר לבחור את הקולות הטבעיים "הילה" ו"אברי"' : 'טיפ: בדפדפן Edge הקול נשמע הרבה יותר טבעי. באנדרואיד אפשר להתקין את "Google Text-to-Speech"'), 4000);
+  });
   renderVoices();
   $('#voice-sel').addEventListener('change', e => { N.setVoice(e.target.value); renderVoices(); N.preview() || A.toast('הקול החדש יופעל מהמשפט הבא'); });
   $('#pitch-sel').addEventListener('change', e => { N.setPitch(parseFloat(e.target.value)); N.preview('ככה אני נשמע עכשיו.'); });
@@ -51,7 +59,7 @@
     const i = he.findIndex(v => N.voice && v.voiceURI === N.voice.voiceURI);
     const nx = he[(i + 1) % he.length];
     N.setVoice(nx.voiceURI); renderVoices();
-    A.toast(`🎙️ קול: ${prettyVoice(nx)} (מהמשפט הבא)`);
+    A.toast(`קול: ${prettyVoice(nx)} (מהמשפט הבא)`);
     N.preview('שלום, זה הקול החדש שלי.');
   });
 
@@ -60,29 +68,29 @@
      ===================================================================== */
   const MUNI = 'https://www.tirat-carmel.muni.il';
   const SERVICES = [
-    ['☎️', 'מוקד 106', 'דיווח ופניות 24/7', 'tel:106', 'hot'],
-    ['💳', 'תשלומים מקוונים', 'ארנונה, דוחות, אגרות', MUNI + '/Sservice/Pages/Payments.aspx'],
-    ['🏠', 'ארנונה והוראת קבע', 'תשלום והצטרפות', MUNI + '/Departments/Pages/ArnonaPayments.aspx'],
-    ['📍', 'דיווח מפגע עם מיקום', 'שולחים את המיקום המדויק', '#hazard'],
-    ['🏛️', 'אתר העירייה', 'הודעות, מחלקות ומידע', MUNI + '/'],
-    ['📞', 'מרכזיית העירייה', '04-8547000', 'tel:048547000'],
-    ['🎭', 'המתנ"ס', 'חוגים, אירועים וקייטנות', 'http://www.matnastc.co.il/'],
-    ['📘', 'העירייה בפייסבוק', 'עדכונים שוטפים', 'https://www.facebook.com/TCarmel.muni/']
+    ['phone', 'מוקד 106', 'דיווח ופניות 24/7', 'tel:106', 'hot'],
+    ['card', 'תשלומים מקוונים', 'ארנונה, דוחות, אגרות', MUNI + '/Sservice/Pages/Payments.aspx'],
+    ['home', 'ארנונה והוראת קבע', 'תשלום והצטרפות', MUNI + '/Departments/Pages/ArnonaPayments.aspx'],
+    ['pin', 'דיווח מפגע עם מיקום', 'שולחים את המיקום המדויק', '#hazard'],
+    ['building', 'אתר העירייה', 'הודעות, מחלקות ומידע', MUNI + '/'],
+    ['phone', 'מרכזיית העירייה', '04-8547000', 'tel:048547000'],
+    ['note', 'המתנ"ס', 'חוגים, אירועים וקייטנות', 'http://www.matnastc.co.il/'],
+    ['facebook', 'העירייה בפייסבוק', 'עדכונים שוטפים', 'https://www.facebook.com/TCarmel.muni/']
   ];
-  const EMERG = [['👮', 'משטרה', '100'], ['🚑', 'מד"א', '101'], ['🚒', 'כבאות', '102'], ['🚨', 'פיקוד העורף', '104'], ['🏛️', 'מוקד עירוני', '106']];
+  const EMERG = [['', 'משטרה', '100'], ['', 'מד"א', '101'], ['', 'כבאות', '102'], ['siren', 'פיקוד העורף', '104'], ['building', 'מוקד עירוני', '106']];
   function services() {
     $('#svc').innerHTML = SERVICES.map(([e, t, d, u, cls]) => {
       const ext = /^https?:/.test(u);
       return `<a class="svc__item ${cls || ''}" href="${u}" ${ext ? 'target="_blank" rel="noopener"' : ''} ${u === '#hazard' ? 'data-hazard="1"' : ''}>
-        <span>${e}</span><b>${t}</b><small>${d}</small></a>`;
+        <span>${PodIcons.svg(e, 24)}</span><b>${t}</b><small>${d}</small></a>`;
     }).join('');
-    $('#emerg').innerHTML = '<b>חירום:</b>' + EMERG.map(([e, t, n]) => `<a href="tel:${n}">${e} ${t} <b>${n}</b></a>`).join('');
+    $('#emerg').innerHTML = '<b>חירום:</b>' + EMERG.map(([e, t, n]) => `<a href="tel:${n}">${t} <b>${n}</b></a>`).join('');
   }
   // hazard report: grab the location and let the person send it (WhatsApp / SMS / mail / 106)
   function hazard() {
     const send = (lat, lng) => {
       const map = `https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
-      const text = `דיווח מפגע בטירת כרמל 📍 ${map}\nתיאור המפגע: `;
+      const text = `דיווח מפגע בטירת כרמל ${map}\nתיאור המפגע: `;
       if (navigator.share) navigator.share({ title: 'דיווח מפגע', text }).catch(() => {});
       else { try { navigator.clipboard.writeText(text); } catch (e) {} A.toast('המיקום הועתק. חייגו 106 או הדביקו בהודעה'); }
     };
@@ -97,13 +105,13 @@
   /* =====================================================================
      3. LIVE INFO — weather, air, sea, sun, Shabbat, Hebrew date, news, Wikipedia
      ===================================================================== */
-  const WMO = c => c === 0 ? ['☀️', 'בהיר'] : c <= 2 ? ['⛅', 'מעונן חלקית'] : c === 3 ? ['☁️', 'מעונן'] : c <= 48 ? ['🌫️', 'ערפל']
-    : c <= 57 ? ['🌦️', 'טפטוף'] : c <= 67 ? ['🌧️', 'גשם'] : c <= 77 ? ['❄️', 'שלג'] : c <= 82 ? ['🌦️', 'ממטרים'] : ['⛈️', 'סופת רעמים'];
+  const WMO = c => c === 0 ? ['sun', 'בהיר'] : c <= 2 ? ['cloud-sun', 'מעונן חלקית'] : c === 3 ? ['cloud', 'מעונן'] : c <= 48 ? ['fog', 'ערפל']
+    : c <= 57 ? ['rain', 'טפטוף'] : c <= 67 ? ['rain', 'גשם'] : c <= 77 ? ['snow', 'שלג'] : c <= 82 ? ['rain', 'ממטרים'] : ['storm', 'סופת רעמים'];
   // times with an offset (Hebcal) → Israel time; naive local times (Open-Meteo, already Asia/Jerusalem) → read as-is
   const hm = iso => !iso ? '' : /(Z|[+-]\d\d:?\d\d)$/.test(iso)
     ? new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }) : iso.slice(11, 16);
   const dayName = iso => new Date(iso).toLocaleDateString('he-IL', { weekday: 'short' });
-  const card = (cls, icon, title, big, sub) => `<div class="lc ${cls}"><span class="lc__i">${icon}</span><small>${title}</small><b>${big}</b><span class="lc__s">${sub}</span></div>`;
+  const card = (cls, icon, title, big, sub) => `<div class="lc ${cls}"><span class="lc__i">${PodIcons.svg(icon, 26)}</span><small>${title}</small><b>${big}</b><span class="lc__s">${sub}</span></div>`;
   const cards = {}; // id -> html (rendered in a fixed order as data arrives)
   const LIVE = {};  // raw live data, used by the audio briefing and the smart tip
   const ORDER = ['tip', 'weather', 'forecast', 'air', 'sea', 'sun', 'shabbat', 'holiday', 'hdate'];
@@ -115,25 +123,25 @@
     try {
       const d = await getJSON(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LNG}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=4`);
       const c = d.current, dl = d.daily;
-      let [ic, desc] = WMO(c.weather_code); if (!c.is_day && c.weather_code === 0) ic = '🌙';
+      let [ic, desc] = WMO(c.weather_code); if (!c.is_day && c.weather_code === 0) ic = 'moon';
       cards.weather = card('lc--w', ic, 'מזג האוויר עכשיו', `${Math.round(c.temperature_2m)}°`, `${desc} · מורגש ${Math.round(c.apparent_temperature)}° · לחות ${c.relative_humidity_2m}% · רוח ${Math.round(c.wind_speed_10m)} קמ"ש`);
       cards.forecast = `<div class="lc lc--f"><small>תחזית</small><div class="fc">${dl.time.slice(1, 4).map((t, i) => {
         const [fi] = WMO(dl.weather_code[i + 1]);
-        return `<span><em>${dayName(t)}</em>${fi}<b>${Math.round(dl.temperature_2m_max[i + 1])}°</b><i>${Math.round(dl.temperature_2m_min[i + 1])}°</i>${dl.precipitation_probability_max[i + 1] >= 30 ? `<u>💧${dl.precipitation_probability_max[i + 1]}%</u>` : ''}</span>`;
+        return `<span><em>${dayName(t)}</em>${PodIcons.svg(fi, 24)}<b>${Math.round(dl.temperature_2m_max[i + 1])}°</b><i>${Math.round(dl.temperature_2m_min[i + 1])}°</i>${dl.precipitation_probability_max[i + 1] >= 30 ? `<u>${dl.precipitation_probability_max[i + 1]}%</u>` : ''}</span>`;
       }).join('')}</div></div>`;
       const uv = dl.uv_index_max[0];
       LIVE.weather = { t: Math.round(c.temperature_2m), desc, code: c.weather_code, max: Math.round(dl.temperature_2m_max[0]), min: Math.round(dl.temperature_2m_min[0]),
         rain: dl.precipitation_probability_max[0], tomorrow: WMO(dl.weather_code[1])[1], tmax: Math.round(dl.temperature_2m_max[1]), uv, sunset: hm(dl.sunset[0]) };
       cards.tip = smartTip(LIVE.weather);
-      cards.sun = card('lc--sun', '🌅', 'זריחה ושקיעה', `${hm(dl.sunrise[0])} · ${hm(dl.sunset[0])}`, `מדד UV היום: ${Math.round(uv)}${uv >= 8 ? ' · גבוה מאוד, מומלץ כובע וקרם' : uv >= 6 ? ' · גבוה' : ''}`);
-    } catch (e) { cards.weather = card('', '⛅', 'מזג האוויר', '—', 'לא זמין כרגע'); }
+      cards.sun = card('lc--sun', 'sunrise', 'זריחה ושקיעה', `${hm(dl.sunrise[0])} · ${hm(dl.sunset[0])}`, `מדד UV היום: ${Math.round(uv)}${uv >= 8 ? ' · גבוה מאוד, מומלץ כובע וקרם' : uv >= 6 ? ' · גבוה' : ''}`);
+    } catch (e) { cards.weather = card('', 'cloud-sun', 'מזג האוויר', '—', 'לא זמין כרגע'); }
     paintCards();
   }
   async function air() {
     try {
       const d = await getJSON(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LNG}&current=european_aqi,pm2_5,pm10`);
       const q = d.current.european_aqi;
-      const lvl = q <= 20 ? ['🟢', 'טובה מאוד'] : q <= 40 ? ['🟢', 'טובה'] : q <= 60 ? ['🟡', 'בינונית'] : q <= 80 ? ['🟠', 'ירודה'] : ['🔴', 'גרועה'];
+      const lvl = q <= 20 ? ['wind', 'טובה מאוד'] : q <= 40 ? ['wind', 'טובה'] : q <= 60 ? ['wind', 'בינונית'] : q <= 80 ? ['wind', 'ירודה'] : ['wind', 'גרועה'];
       LIVE.air = lvl[1];
       cards.air = card('lc--air', lvl[0], 'איכות האוויר', lvl[1], `מדד ${Math.round(q)} · חלקיקים PM2.5: ${Math.round(d.current.pm2_5)}`);
     } catch (e) { cards.air = ''; }
@@ -145,7 +153,7 @@
       const w = d.current.wave_height, t = d.current.sea_surface_temperature;
       const st = w < .5 ? 'ים שקט' : w < 1 ? 'ים נוח' : w < 2 ? 'גלי' : 'סוער';
       LIVE.sea = { w: w.toFixed(1), st, t: t != null ? Math.round(t) : null };
-      cards.sea = card('lc--sea', '🌊', 'הים מול טירת כרמל', `${w.toFixed(1)} מ׳`, `${st}${t != null ? ` · מים ${Math.round(t)}°` : ''}`);
+      cards.sea = card('lc--sea', 'wave', 'הים מול טירת כרמל', `${w.toFixed(1)} מ׳`, `${st}${t != null ? ` · מים ${Math.round(t)}°` : ''}`);
     } catch (e) { cards.sea = ''; }
     paintCards();
   }
@@ -155,7 +163,7 @@
       const it = d.items || [];
       const cand = it.find(i => i.category === 'candles'), havd = it.find(i => i.category === 'havdalah'), par = it.find(i => i.category === 'parashat');
       LIVE.shabbat = { in: hm(cand && cand.date), out: hm(havd && havd.date), par: par ? (par.hebrew || par.title) : '' };
-      cards.shabbat = card('lc--sh', '🕯️', 'זמני שבת', `${hm(cand && cand.date)} · ${hm(havd && havd.date)}`, `כניסה · יציאה${par ? ` · ${esc(par.hebrew || par.title)}` : ''}`);
+      cards.shabbat = card('lc--sh', 'candle', 'זמני שבת', `${hm(cand && cand.date)} · ${hm(havd && havd.date)}`, `כניסה · יציאה${par ? ` · ${esc(par.hebrew || par.title)}` : ''}`);
     } catch (e) { cards.shabbat = ''; }
     paintCards();
   }
@@ -163,7 +171,7 @@
     try {
       const d = await getJSON('https://www.hebcal.com/converter?cfg=json&g2h=1&strict=1');
       LIVE.hdate = d.hebrew;
-      cards.hdate = card('lc--hd', '📅', 'התאריך העברי', esc(d.hebrew), new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
+      cards.hdate = card('lc--hd', 'calendar', 'התאריך העברי', esc(d.hebrew), new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
     } catch (e) { cards.hdate = ''; }
     paintCards();
   }
@@ -202,9 +210,9 @@
         <b>${esc(i.title)}</b><small>${esc(i.src)} · ${ago(i.date)}</small></a></li>`).join('')
       : `<li class="news__empty">לא הצלחנו לטעון כותרות כרגע. אפשר לקרוא את החדשות ישירות במקורות:</li>`;
     $('#news-more').innerHTML = [
-      ['🔎 חדשות טירת כרמל בגוגל', 'https://news.google.com/search?q=%22%D7%98%D7%99%D7%A8%D7%AA%20%D7%9B%D7%A8%D7%9E%D7%9C%22&hl=he&gl=IL&ceid=IL:he'],
-      ['📰 חדשות טירת כרמל', 'https://www.tcarmel.org.il/'],
-      ['🏛️ הודעות העירייה', MUNI + '/']
+      ['חדשות טירת כרמל בגוגל', 'https://news.google.com/search?q=%22%D7%98%D7%99%D7%A8%D7%AA%20%D7%9B%D7%A8%D7%9E%D7%9C%22&hl=he&gl=IL&ceid=IL:he'],
+      ['חדשות טירת כרמל', 'https://www.tcarmel.org.il/'],
+      ['הודעות העירייה', MUNI + '/']
     ].map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('');
   }
   async function wikiLive() {
@@ -212,7 +220,7 @@
       const d = await getJSON('https://he.wikipedia.org/api/rest_v1/page/summary/%D7%98%D7%99%D7%A8%D7%AA_%D7%9B%D7%A8%D7%9E%D7%9C');
       if (!d.extract) return;
       $('#wiki-live').hidden = false;
-      $('#wiki-live').innerHTML = `<b>📖 טירת כרמל בוויקיפדיה, מתעדכן ברשת</b><p>${esc(d.extract.slice(0, 420))}${d.extract.length > 420 ? '…' : ''}</p>
+      $('#wiki-live').innerHTML = `<b>טירת כרמל בוויקיפדיה, מתעדכן ברשת</b><p>${esc(d.extract.slice(0, 420))}${d.extract.length > 420 ? '…' : ''}</p>
         <a href="${esc(d.content_urls && d.content_urls.mobile ? d.content_urls.mobile.page : 'https://he.wikipedia.org/wiki/טירת_כרמל')}" target="_blank" rel="noopener">לערך המלא ›</a>`;
     } catch (e) {}
   }
@@ -226,7 +234,7 @@
       const days = Math.round((new Date(h.date.slice(0, 10)) - new Date(today)) / 864e5);
       const name = h.hebrew || h.title;
       LIVE.holiday = { name, days };
-      cards.holiday = card('lc--hol', '🎉', 'החג הבא', esc(name), days === 0 ? 'היום! חג שמח' : days === 1 ? 'מחר' : `בעוד ${days} ימים · ${new Date(h.date).toLocaleDateString('he-IL', { day: 'numeric', month: 'long' })}`);
+      cards.holiday = card('lc--hol', 'star', 'החג הבא', esc(name), days === 0 ? 'היום! חג שמח' : days === 1 ? 'מחר' : `בעוד ${days} ימים · ${new Date(h.date).toLocaleDateString('he-IL', { day: 'numeric', month: 'long' })}`);
     } catch (e) { cards.holiday = ''; }
     paintCards();
   }
@@ -234,10 +242,10 @@
   function smartTip(w) {
     const rainy = w.code >= 51 || w.rain >= 50, hot = w.t >= 30 || w.uv >= 8;
     const [ic, title, text, act, btn] = rainy
-      ? ['🌧️', 'יום גשום?', 'מושלם לסיור מהבית. האזינו לכל הסיור "מהכפר אל המעיין" ברצף, מהספה', 'tour-home', '🛋️ האזינו מהבית']
-      : hot ? ['🥵', 'חם היום', `עד ${w.max}°. עדיף לסייר בבוקר או אחרי השקיעה (${w.sunset}), עם מים. בינתיים: עין קדם, המקום הכי מרענן בעיר`, 'ein-kedem', '💧 לפרק על עין קדם']
-      : ['☀️', 'מזג אוויר מושלם לסיור', `${w.t}° ו${w.desc}. צאו לסיור "מהכפר אל המעיין", כ־3 ק"מ`, 'tour-go', '🚶 יוצאים לסיור'];
-    return `<div class="lc lc--tip"><span class="lc__i">${ic}</span><small>הטיפ של היום</small><b>${title}</b><span class="lc__s">${text}</span><button class="tip-btn" data-tip="${act}">${btn}</button></div>`;
+      ? ['rain', 'יום גשום?', 'מושלם לסיור מהבית. האזינו לכל הסיור "מהכפר אל המעיין" ברצף, מהספה', 'tour-home', 'האזינו מהבית']
+      : hot ? ['sun', 'חם היום', `עד ${w.max}°. עדיף לסייר בבוקר או אחרי השקיעה (${w.sunset}), עם מים. בינתיים: עין קדם, המקום הכי מרענן בעיר`, 'ein-kedem', 'לפרק על עין קדם']
+      : ['sun', 'מזג אוויר מושלם לסיור', `${w.t}° ו${w.desc}. צאו לסיור "מהכפר אל המעיין", כ־3 ק"מ`, 'tour-go', 'יוצאים לסיור'];
+    return `<div class="lc lc--tip"><span class="lc__i">${PodIcons.svg(ic, 26)}</span><small>הטיפ של היום</small><b>${title}</b><span class="lc__s">${text}</span><button class="tip-btn" data-tip="${act}">${btn}</button></div>`;
   }
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-tip]'); if (!b) return;
@@ -297,7 +305,7 @@
     if (N.state === 'playing') N.pause();             // never talk over the radio
     station = s; tries = [s.url, ...(s.alt || [])];
     $('#radiobar').hidden = false;
-    $('#rb-name').textContent = `📻 ${s.name} ${/^\d/.test(s.freq) ? s.freq : ''}`.trim();
+    $('#rb-name').textContent = `${s.name} ${/^\d/.test(s.freq) ? s.freq : ''}`.trim();
     radioState('מתחבר…', false); stations(); tryNext();
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({ title: s.name, artist: 'רדיו חי · podtc', artwork: [{ src: 'assets/icon-512.png', sizes: '512x512', type: 'image/png' }] });
@@ -321,7 +329,7 @@
     audio.src = url;
     audio.play().catch(() => {});
   }
-  audio.addEventListener('playing', () => radioState('🔴 שידור חי', true));
+  audio.addEventListener('playing', () => radioState('שידור חי', true));
   audio.addEventListener('waiting', () => radioState('טוען…', true));
   audio.addEventListener('pause', () => radioState(sleepUntil && Date.now() >= sleepUntil ? 'כובה בטיימר' : 'מושהה', false));
   audio.addEventListener('error', () => { if (station) tryNext(); });
@@ -332,16 +340,16 @@
     playStation(s);
   });
   $('#rb-toggle').addEventListener('click', () => { if (!station) return; if (audio.paused) { if (N.state === 'playing') N.pause(); audio.play().catch(() => tryNext()); } else audio.pause(); });
-  $('#rb-close').addEventListener('click', () => { audio.pause(); audio.removeAttribute('src'); audio.load(); station = null; $('#radiobar').hidden = true; clearTimeout(sleepT); sleepUntil = 0; $('#rb-sleep').textContent = '⏲'; document.body.classList.remove('radio-on'); stations(); });
+  $('#rb-close').addEventListener('click', () => { audio.pause(); audio.removeAttribute('src'); audio.load(); station = null; $('#radiobar').hidden = true; clearTimeout(sleepT); sleepUntil = 0; $('#rb-sleep').innerHTML = PodIcons.svg('timer', 18); document.body.classList.remove('radio-on'); stations(); });
   $('#rb-sleep').addEventListener('click', () => {
     const cur = sleepUntil ? Math.round((sleepUntil - Date.now()) / 60000) : 0;
     const next = [15, 30, 60].find(m => m > cur + 1) || 0; // 15 → 30 → 60 → off
     clearTimeout(sleepT); sleepUntil = 0;
-    if (next) { sleepUntil = Date.now() + next * 60000; sleepT = setTimeout(() => audio.pause(), next * 60000); $('#rb-sleep').textContent = next + "'"; A.toast(`⏲ הרדיו ייכבה בעוד ${next} דקות`); }
-    else { $('#rb-sleep').textContent = '⏲'; A.toast('הטיימר בוטל'); }
+    if (next) { sleepUntil = Date.now() + next * 60000; sleepT = setTimeout(() => audio.pause(), next * 60000); $('#rb-sleep').textContent = next + "'"; A.toast(`הרדיו ייכבה בעוד ${next} דקות`); }
+    else { $('#rb-sleep').innerHTML = PodIcons.svg('timer', 18); A.toast('הטיימר בוטל'); }
   });
   // an episode starting stops the radio
-  N.on('state', s => { if (s === 'playing' && !audio.paused) { audio.pause(); A.toast('📻 הרדיו הושהה בזמן הפרק'); } });
+  N.on('state', s => { if (s === 'playing' && !audio.paused) { audio.pause(); A.toast('הרדיו הושהה בזמן הפרק'); } });
 
   /* =====================================================================
      5. THE MUNICIPALITY ON SOCIAL NETWORKS — embedded (lazy-loaded)
@@ -349,21 +357,21 @@
   const CFG = (window.PODTC_CONFIG && window.PODTC_CONFIG.social) || {};
   const TT = CFG.tiktok || 'tiratcarmel.muni', FB = CFG.facebook || 'TCarmel.muni', YT = CFG.youtubeChannel || 'UCeGhFSCGBTK18f_c3dQPQWg';
   const SOCIAL = {
-    tiktok: { name: 'טיקטוק', icon: '🎵', handle: '@' + TT, page: `https://www.tiktok.com/@${TT}`,
+    tiktok: { name: 'טיקטוק', icon: 'tiktok', handle: '@' + TT, page: `https://www.tiktok.com/@${TT}`,
       search: `https://www.tiktok.com/search/user?q=${encodeURIComponent('עיריית טירת כרמל')}`, cls: 'tt' },
-    facebook: { name: 'פייסבוק', icon: '📘', handle: FB, page: `https://www.facebook.com/${FB}/`, cls: 'fb',
+    facebook: { name: 'פייסבוק', icon: 'facebook', handle: FB, page: `https://www.facebook.com/${FB}/`, cls: 'fb',
       frame: w => `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(`https://www.facebook.com/${FB}/`)}&tabs=timeline&width=${w}&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false&locale=he_IL`, h: 600 },
-    youtube: { name: 'יוטיוב', icon: '▶️', handle: 'עיריית טירת כרמל', page: `https://www.youtube.com/channel/${YT}`, cls: 'yt',
+    youtube: { name: 'יוטיוב', icon: 'youtube', handle: 'עיריית טירת כרמל', page: `https://www.youtube.com/channel/${YT}`, cls: 'yt',
       frame: () => `https://www.youtube-nocookie.com/embed/videoseries?list=${YT.replace(/^UC/, 'UU')}`, h: 260 }
   };
   const qrSvg = url => { if (!window.qrcode) return ''; const q = window.qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag({ cellSize: 3, margin: 1, scalable: true }); };
   /* a card that always works: open in the app, search, or scan from another phone */
   const socCard = (s, msg) => `<div class="soc-card soc-card--${s.cls}">
-      <span class="soc-card__logo">${s.icon}</span>
+      <span class="soc-card__logo">${PodIcons.svg(s.icon, 26)}</span>
       <div class="soc-card__txt"><b>עיריית טירת כרמל ב${s.name}</b><small>${esc(s.handle)}</small>${msg ? `<em>${msg}</em>` : ''}</div>
       <div class="soc-card__qr">${qrSvg(s.page)}</div>
       <div class="soc-card__btns"><a class="pill-btn" href="${s.page}" target="_blank" rel="noopener">פתחו ב${s.name}</a>
-      ${s.search ? `<a class="ghost-btn" href="${s.search}" target="_blank" rel="noopener">🔎 חיפוש העירייה</a>` : ''}</div>
+      ${s.search ? `<a class="ghost-btn" href="${s.search}" target="_blank" rel="noopener">חיפוש העירייה</a>` : ''}</div>
     </div>`;
   let socNow = 'tiktok', ttTimer = 0;
   function loadTikTokScript() {
@@ -450,7 +458,7 @@
     parts.push(`ופרק היום בפודטיסי: ${ep.title}, ${ep.subtitle}. אפשר להאזין לו עכשיו בעמוד הראשי.`);
     parts.push('ואם צריך משהו מהעירייה, המוקד העירוני מאה ושש זמין בכל שעה. יום נפלא!');
     const today = now.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
-    A.select({ id: 'briefing', category: 'news', title: 'מהדורת טירת כרמל', subtitle: today, emoji: '🎙️', lat: LAT, lng: LNG, radius: 1,
+    A.select({ id: 'briefing', category: 'news', title: 'מהדורת טירת כרמל', subtitle: today, emoji: '', lat: LAT, lng: LNG, radius: 1,
       script: parts.join(' '), sources: ['https://open-meteo.com/', 'https://www.hebcal.com/', 'https://news.google.com/'] });
     A.play(); A.openNow();
   }
@@ -477,12 +485,12 @@
     g.direction = 'rtl'; g.textAlign = 'right';
     g.fillStyle = '#b9d2ee'; g.font = '500 30px Heebo, sans-serif'; g.fillText('מבית עיריית טירת כרמל', W - 52, 50 + 300 * .3 + 40);
     const sel = $('#photo-place').value, place = A.PLACES.find(p => p.id === sel);
-    g.fillStyle = '#6dd5fa'; g.font = '700 40px Heebo, sans-serif'; g.fillText('📍 הייתי כאן', W - 60, H - 230);
+    g.fillStyle = '#6dd5fa'; g.font = '700 40px Heebo, sans-serif'; g.fillText('הייתי כאן', W - 60, H - 230);
     g.fillStyle = '#fff'; g.font = '800 76px Rubik, Heebo, sans-serif';
     g.fillText(place ? place.title : 'טירת כרמל', W - 60, H - 145, W - 120);
     g.fillStyle = '#b9d2ee'; g.font = '400 34px Heebo, sans-serif';
     g.fillText(`${place ? 'טירת כרמל · ' : ''}${new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}`, W - 60, H - 90);
-    g.textAlign = 'left'; g.fillStyle = '#6dd5fa'; g.font = '500 30px Heebo, sans-serif'; g.fillText('🎧 podtc', 60, H - 90);
+    g.textAlign = 'left'; g.fillStyle = '#6dd5fa'; g.font = '500 30px Heebo, sans-serif'; g.fillText('podtc', 60, H - 90);
     g.strokeStyle = 'rgba(109,213,250,.9)'; g.lineWidth = 10; g.strokeRect(5, 5, W - 10, H - 10);
     photoBlob = await new Promise(r => c.toBlob(r, 'image/jpeg', .9));
     $('#photo-out').src = URL.createObjectURL(photoBlob);
@@ -502,7 +510,7 @@
   $('#photo-share').addEventListener('click', async () => {
     if (!photoBlob) return;
     const file = new File([photoBlob], 'podtc-tirat-carmel.jpg', { type: 'image/jpeg' });
-    try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: 'טיילתי בטירת כרמל עם podtc 🎧' }); return; } } catch (e) { return; }
+    try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: 'טיילתי בטירת כרמל עם podtc ' }); return; } } catch (e) { return; }
     $('#photo-save').click(); A.toast('התמונה נשמרה. אפשר לשתף אותה מהגלריה');
   });
 
@@ -514,15 +522,15 @@
     const k = b.dataset.kid;
     if (k === 'tour') { document.querySelector('.tab[data-view="map"]').click(); A.startTour('family'); }
     else if (k === 'radio') playStation(STATIONS.find(s => s.id === 'kids'));
-    else if (k === 'quiz') { const ep = A.PLACES.find(p => p.id === 'gene-simmons') || A.PLACES[0]; A.select(ep); A.openNow(); A.toast('🧠 האזינו לפרק וגללו למטה לחידון'); }
+    else if (k === 'quiz') { const ep = A.PLACES.find(p => p.id === 'gene-simmons') || A.PLACES[0]; A.select(ep); A.openNow(); A.toast('האזינו לפרק וגללו למטה לחידון'); }
   });
 
   /* ---------- arrived from a QR sign / shared link: name the place on the splash ---------- */
   const deep = A.PLACES.find(p => '#' + p.id === location.hash);
   if (deep) {
-    $('.splash__lead').textContent = `${deep.emoji} ${deep.title}`;
+    $('.splash__lead').textContent = deep.title;
     $('.splash__text').textContent = `${deep.subtitle}. לחצו כדי להאזין לסיפור של המקום, ואז המשיכו לגלות את שאר העיר.`;
-    $('#btn-start').textContent = '🎧 האזינו לפרק';
+    $('#btn-start').textContent = 'האזינו לפרק';
   }
 
   /* ---------- boot: heavy things load when their section comes into view ---------- */
