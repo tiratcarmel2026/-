@@ -64,61 +64,77 @@
     $('#ticker').style.animationDuration = Math.max(30, items.length * 7) + 's';
   }
 
-  /* ================= hero: episode of the day ================= */
+  /* ================= podcast-style building blocks ================= */
+  const cover = (ep, o) => PodCovers.html(ep, o);
+  const playIc = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  /* square tile: artwork + play overlay + title + one meta line (Spotify / BBC Sounds shelf item) */
+  const tile = (ep, meta) => `<div class="tile">
+      <button class="tile__art" data-act="open" data-id="${ep.id}" aria-label="${esc(ep.title)}">${cover(ep)}${A.played.has(ep.id) ? '<i class="tile__done" aria-label="האזנתם">✓</i>' : ''}</button>
+      <button class="tile__play" data-act="listen" data-id="${ep.id}" aria-label="האזנה: ${esc(ep.title)}">${playIc}</button>
+      <b class="tile__t">${esc(ep.title)}</b><small class="tile__m">${meta || `${A.catOf(ep).label} · ${A.minutes(ep)}`}</small>
+    </div>`;
+  const shelf = (title, body, action) => `<section class="shelf"><div class="shelf__h"><h2>${title}</h2>${action || ''}</div><div class="shelf__row">${body}</div></section>`;
+
+  /* ================= hero: episode of the day (Apple-style big artwork) ================= */
   const dayIndex = () => { const d = new Date(); return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5); };
   const heroEp = () => A.PLACES[dayIndex() % A.PLACES.length];
   function hero() {
     const ep = heroEp(), cat = A.catOf(ep);
     const d = A.pos ? A.distance(A.pos.lat, A.pos.lng, ep.lat, ep.lng) : null;
     $('#hero').innerHTML = `
-      <div class="hero__art" style="--c:${cat.color}"><span>${PodIcons.cat(ep, 96)}</span><i class="hero__badge">פרק היום</i></div>
+      <div class="hero__art">${cover(ep, { label: true })}</div>
       <div class="hero__body">
-        <span class="kick" style="--c:${cat.color}">${cat.label}</span>
+        <span class="kick">פרק היום · ${cat.label}</span>
         <h1>${esc(ep.title)}</h1>
         <p class="hero__sub">${esc(ep.subtitle)}</p>
-        <p class="hero__ex">${esc(excerpt(ep, 190))}</p>
-        <p class="hero__meta">${A.minutes(ep)} האזנה${d != null ? ` · ${A.fmt(d)} מכם` : ''}${A.played.has(ep.id) ? ' · ✓ האזנתם' : ''}</p>
+        <p class="hero__ex">${esc(excerpt(ep, 170))}</p>
         <div class="hero__cta">
-          <button class="cta-btn" data-act="listen" data-id="${ep.id}">▶ האזינו עכשיו</button>
+          <button class="bigplay" data-act="listen" data-id="${ep.id}" aria-label="האזינו עכשיו">${playIc}</button>
+          <span class="hero__meta"><b>האזינו עכשיו</b><small>${A.minutes(ep)}${d != null ? ` · ${A.fmt(d)} מכם` : ''}${A.played.has(ep.id) ? ' · האזנתם' : ''}</small></span>
           <button class="ghost-btn" data-act="map" data-id="${ep.id}">במפה</button>
         </div>
         <div class="sharebar sharebar--sm" data-ctx="ep" data-id="${ep.id}">${shareButtons(true)}</div>
       </div>`;
   }
 
-  /* ================= continue listening ================= */
+  /* ================= quick picks (Spotify-style shortcut grid) ================= */
   function resume() {
-    const r = A.resumeInfo(), box = $('#resume');
-    if (!r || (A.current && A.current.id === r.ep.id && A.isActive())) { box.hidden = true; return; }
-    const pct = Math.round(r.i / r.n * 100);
-    box.hidden = false;
-    box.innerHTML = `${thumb(r.ep)}<div><small>המשיכו להאזין</small><b>${esc(r.ep.title)}</b>
-      <span class="resume__bar"><i style="width:${pct}%"></i></span></div>
-      <button class="pill-btn" data-act="resume">▶ ${pct}%</button>`;
+    const r = A.resumeInfo(), items = [];
+    items.push({ act: 'briefing', ep: { id: 'briefing', title: 'מהדורת טירת כרמל' }, sub: 'עדכון קולי יומי' });
+    if (r && !(A.current && A.current.id === r.ep.id && A.isActive())) items.push({ act: 'resume', ep: r.ep, sub: `המשיכו · ${Math.round(r.i / r.n * 100)}%`, pct: Math.round(r.i / r.n * 100) });
+    const t = A.TOURS[0], st = A.tourStops(t);
+    items.push({ act: 'tour', id: t.id, ep: st[0], title: t.title, sub: `סיור · ${st.length} תחנות` });
+    let near1 = null;
+    if (A.pos) near1 = A.PLACES.slice().sort((a, b) => A.distance(A.pos.lat, A.pos.lng, a.lat, a.lng) - A.distance(A.pos.lat, A.pos.lng, b.lat, b.lng))[0];
+    const n = near1 || heroEp();
+    if (!items.some(i => i.ep.id === n.id)) items.push({ act: 'open', ep: n, sub: near1 ? 'הכי קרוב אליכם' : 'פרק היום' });
+    items.push({ act: 'jump', id: 'radio', ep: { id: 'radio-q', title: 'רדיו חי' }, sub: 'רדיו חיפה ועוד 17 תחנות', icon: 'radio' });
+    items.push({ act: 'jump', id: 'live', ep: { id: 'live-q', title: 'חי עכשיו' }, sub: 'מזג אוויר, שבת וחדשות', icon: 'sun' });
+    if (A.favs.size) items.push({ act: 'jump', id: 'fav-block', ep: { id: 'fav-q', title: 'המועדפים שלי' }, sub: `${A.favs.size} פרקים`, icon: 'heart' });
+    items.push({ act: 'jump', id: 'sections', ep: { id: 'all-q', title: 'כל הפרקים' }, sub: `${A.PLACES.length} פרקים לפי נושא`, icon: 'headphones' });
+    items.push({ act: 'jump', id: 'services', ep: { id: 'svc-q', title: 'שירותי העירייה' }, sub: 'מוקד 106, תשלומים ודיווחים', icon: 'building' });
+    $('#quick').innerHTML = items.slice(0, 6).map(i => `<button class="qp" data-act="${i.act}" data-id="${i.id || i.ep.id}">
+        <span class="qp__art">${i.icon ? `<span class="cover cover--icon">${PodIcons.svg(i.icon, 26)}</span>` : cover(i.ep)}</span>
+        <span class="qp__t"><b>${esc(i.title || i.ep.title)}</b><small>${esc(i.sub)}</small></span>
+        ${i.pct != null ? `<i class="qp__bar" style="--p:${i.pct}%"></i>` : ''}
+      </button>`).join('');
   }
 
   /* ================= favourites ================= */
   function favs() {
     const list = A.PLACES.filter(p => A.favs.has(p.id));
     $('#fav-block').hidden = !list.length;
-    $('#favs').innerHTML = list.map(ep => `<button class="ncard" data-act="open" data-id="${ep.id}">
-      ${thumb(ep, 'thumb--lg')}<span class="ncard__kick" style="--c:${A.catOf(ep).color}">${A.catOf(ep).label}</span>
-      <b>${esc(ep.title)}</b><small>${A.minutes(ep)}${A.played.has(ep.id) ? ' · ✓' : ''}</small></button>`).join('');
+    $('#favs').innerHTML = list.map(ep => tile(ep)).join('');
   }
 
   /* ================= near you ================= */
   function near() {
     let list = A.PLACES.slice();
     if (A.pos) list.sort((a, b) => A.distance(A.pos.lat, A.pos.lng, a.lat, a.lng) - A.distance(A.pos.lat, A.pos.lng, b.lat, b.lng));
-    else list = list.slice(-8).reverse();
-    $('#near').innerHTML = list.slice(0, 8).map(ep => {
+    else list = list.slice(-10).reverse();
+    $('#near').innerHTML = list.slice(0, 10).map(ep => {
       const d = A.pos ? A.distance(A.pos.lat, A.pos.lng, ep.lat, ep.lng) : null;
-      return `<button class="ncard" data-act="open" data-id="${ep.id}">
-        ${thumb(ep, 'thumb--lg')}
-        <span class="ncard__kick" style="--c:${A.catOf(ep).color}">${A.catOf(ep).label}</span>
-        <b>${esc(ep.title)}</b>
-        <small>${d != null ? (d <= ep.radius ? 'אתם כאן' : '' + A.fmt(d)) : 'חדש'} · ${A.minutes(ep)}${A.played.has(ep.id) ? ' · ✓' : ''}</small>
-      </button>`;
+      return tile(ep, `${d != null ? (d <= ep.radius ? 'אתם כאן' : A.fmt(d)) : 'חדש'} · ${A.minutes(ep)}`);
     }).join('');
   }
 
@@ -139,16 +155,16 @@
     });
   }
 
-  /* ================= tours ================= */
+  /* ================= tours: wide artwork cards ================= */
   function tours() {
     $('#home-tours').innerHTML = A.TOURS.map(t => {
       const st = A.tourStops(t), done = st.filter(p => A.played.has(p.id)).length, on = A.tourId === t.id;
-      return `<div class="tcard2 ${on ? 'on' : ''}">
-        <span class="tcard2__emoji">${PodIcons.tour(t, 30)}</span>
-        <b>${esc(t.title)}</b><p>${esc(t.desc)}</p>
-        <small>${st.length} תחנות · ${A.fmt(A.tourLength(t))}${done ? ` · ${done}/${st.length} ✓` : ''}</small>
-        <span class="tcard2__btns"><button data-act="tour" data-id="${t.id}">${on ? 'בסיור עכשיו ›' : done ? 'המשיכו ›' : 'יוצאים ›'}</button>
-        <button class="alt" data-act="tourplay" data-id="${t.id}" title="האזנה לכל הסיור ברצף, בלי ללכת">מהבית</button></span>
+      return `<div class="tour-tile ${on ? 'on' : ''}">
+        <button class="tour-tile__art" data-act="tour" data-id="${t.id}" aria-label="${esc(t.title)}">${cover(st[0])}
+          <span class="tour-tile__stops">${st.slice(1, 4).map(p => `<span>${cover(p)}</span>`).join('')}</span></button>
+        <b>${esc(t.title)}</b><small>${st.length} תחנות · ${A.fmt(A.tourLength(t))}${done ? ` · ${done}/${st.length} הושלמו` : ''}</small>
+        <span class="tour-tile__btns"><button data-act="tour" data-id="${t.id}">${on ? 'בסיור עכשיו' : done ? 'המשיכו בסיור' : 'יוצאים לסיור'}</button>
+        <button class="alt" data-act="tourplay" data-id="${t.id}">האזנה מהבית</button></span>
       </div>`;
     }).join('');
   }
@@ -173,19 +189,8 @@
   function sections() {
     $('#sections').innerHTML = ORDER.filter(k => A.CATS[k] && A.PLACES.some(p => p.category === k)).map(k => {
       const cat = A.CATS[k], eps = A.PLACES.filter(p => p.category === k);
-      const [lead, ...rest] = eps, shown = expanded.has(k) ? rest : rest.slice(0, 3);
-      return `<section class="block sect reveal in">
-        <h2 class="kicker"><i style="--c:${cat.color}"></i>${cat.label}<small>${eps.length} פרקים</small><button class="play-all" data-act="playcat" data-id="${k}">▶ הכול ברצף</button></h2>
-        <button class="lead" data-act="open" data-id="${lead.id}">
-          <span class="lead__art" style="--c:${cat.color}">${PodIcons.cat(lead, 56)}</span>
-          <span class="lead__body"><b>${esc(lead.title)}</b><small>${esc(lead.subtitle)}</small>
-            <span class="lead__ex">${esc(excerpt(lead, 120))}</span>
-            <span class="meta">${A.minutes(lead)}${A.played.has(lead.id) ? ' · ✓ האזנתם' : ''}</span></span>
-        </button>
-        ${shown.map(ep => `<button class="row" data-act="open" data-id="${ep.id}">${thumb(ep)}
-          <span><b>${esc(ep.title)}</b><small>${esc(ep.subtitle)} · ${A.minutes(ep)}${A.played.has(ep.id) ? ' · ✓' : ''}</small></span><i>›</i></button>`).join('')}
-        ${rest.length > 3 && !expanded.has(k) ? `<button class="more" data-act="more" data-id="${k}">עוד ${rest.length - 3} פרקים ב${cat.label} ›</button>` : ''}
-      </section>`;
+      return shelf(`${cat.label} <small>${eps.length} פרקים</small>`, eps.map(ep => tile(ep, A.minutes(ep))).join(''),
+        `<button class="shelf__all" data-act="playcat" data-id="${k}">${playIc} הכול ברצף</button>`);
     }).join('');
   }
 
@@ -203,7 +208,7 @@
   ];
   function future() {
     $('#future-grid').innerHTML = FUTURE.filter(f => byId(f[3])).map(([n, l, d, id]) =>
-      `<button class="fnum" data-act="open" data-id="${id}"><b>${n}</b><span>${l}</span><small>${d}</small></button>`).join('');
+      `<button class="fnum" data-act="open" data-id="${id}"><b>${PodIcons.has(n) ? PodIcons.svg(n, 30) : n}</b><span>${l}</span><small>${d}</small></button>`).join('');
   }
 
   /* ================= useful links ================= */
@@ -319,6 +324,8 @@
       case 'tour': setView('map'); A.startTour(id); break;
       case 'more': expanded.add(id); sections(); break;
       case 'resume': A.resume(); break;
+      case 'briefing': document.getElementById('briefing').click(); break;
+      case 'jump': { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); break; }
       case 'playfuture': A.playQueue(FUTURE_IDS, 'העיר של מחר'); break;
       case 'playcat': A.playQueue(A.PLACES.filter(p => p.category === id).map(p => p.id), A.CATS[id].label); break;
       case 'playfav': A.playQueue(A.PLACES.filter(p => A.favs.has(p.id)).map(p => p.id), 'המועדפים'); break;
@@ -355,6 +362,13 @@
   $('#share-app').dataset.ctx = 'app';
   $('#share-app').innerHTML = shareButtons();
 
+  /* podcast-app order: listening first, city services further down */
+  (function reorder() {
+    const inner = document.querySelector('.home__inner'), foot = inner.querySelector('.foot');
+    ['quick', 'resume', 'hero', 'fav-block', 'near-block', 'tours-block', 'sections', 'radio', 'live', 'future', 'kids', 'services',
+     'social', 'photo', 'install-card', 'links-block'].forEach(id => { const el = document.getElementById(id); if (el) inner.insertBefore(el, foot); });
+    const share = inner.querySelector('.share-app'); if (share) inner.insertBefore(share, foot);
+  })();
   dateline(); setInterval(dateline, 60000);
   links(); future(); installCard(); renderAll(); showFact(fi); rotateFacts(); weather();
   setView('home');

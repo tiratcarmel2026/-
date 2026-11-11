@@ -405,7 +405,8 @@
     if (current && current.id !== ep.id && isActive()) Narrator.stop();
     current = ep;
     const cat = catOf(ep);
-    $('#mini-art').innerHTML = PodIcons.cat(ep, 22); $('#now-art').innerHTML = PodIcons.cat(ep, 96);
+    $('#mini-art').innerHTML = PodCovers.html(ep); $('#now-art').innerHTML = PodCovers.html(ep, { label: true });
+    const bg = document.getElementById('now-bg'); if (bg) bg.style.backgroundImage = ep.id !== 'briefing' && typeof ep.lat === 'number' ? `url("${PodCovers.tile(ep.lat, ep.lng)}")` : 'none';
     $('#mini-title').textContent = $('#now-title').textContent = ep.title;
     $('#now-sub').textContent = ep.subtitle;
     const pill = $('#now-cat'); pill.textContent = cat.label; pill.style.setProperty('--c', cat.color);
@@ -556,7 +557,7 @@
     $('#list').innerHTML = rows.map(({ p, d }) => {
       const c = catOf(p);
       return `<li class="card ${p.id === insideId ? 'card--here' : ''}" data-id="${p.id}">
-        <span class="art art--sm">${PodIcons.cat(p, 20)}</span>
+        <span class="art art--sm">${PodCovers.html(p)}</span>
         <span class="card__body"><b>${p.title}</b><small>${p.subtitle}</small>
           <span class="card__tags"><i style="--c:${c.color}">${c.label}</i>· ${minutes(p)}</span></span>
         <span class="card__meta">${d == null ? '' : p.id === insideId ? 'אתם כאן' : fmt(d)}${favs.has(p.id) ? '<span class="card__fav"></span>' : ''}${played.has(p.id) ? '<span class="card__check">✓</span>' : ''}</span>
