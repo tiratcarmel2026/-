@@ -289,3 +289,11 @@ podtc/
   - the player's share button opens the sheet
 - More links: Radio Haifa, iplan (mavat), Kol Zchut, gov.il, MDA, Moovit, KKL, sea forecast, emergency numbers.
 - Polish: animated brand gradient under the masthead, colour wash behind the lead story, gradient play buttons, larger radii, coloured shadows.
+
+## v16 — bus lines, city facts, notice board, gallery, wider search, responsive audit
+- Bus lines (`js/city.js`): 14 lines serving Tirat Carmel with a line/destination filter and links to real-time arrivals and timetables. Sources: bus.co.il, busnearby.co.il, markav.net.
+- "Tirat Carmel in brief": 8 figures (population per National Insurance 1.10.2026, milestones, master-plan targets) and 9 expandable fact cards.
+- Notice board: municipal notices are placed between the home sections and collected in one board. They are edited in `js/config.js` (`notices`), because Facebook posts cannot be read without the page owner's token.
+- Gallery: the municipality's Facebook feed, buttons to its photo, video and event pages, and an optional `gallery` list of image links in `js/config.js` with a lightbox.
+- Search: a search bar on the front page; results now include bus lines, city facts, notices, services and sections.
+- Responsive audit at 320, 360, 390, 600, 768, 1024, 1280 and 1920 px: no horizontal overflow and no overlapping header items.
