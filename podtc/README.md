@@ -259,3 +259,20 @@ podtc/
 - Article cards with kicker, headline, two-line summary and meta; 4-column news grid on desktop.
 - New sections: recently played, top 10, browse by topic, short episodes, "your podtc" stats.
 - Global search (`/`), waveform seek, up next, related episodes, sleep timer, live "now playing" marker on cards, reveal motion.
+
+## v14 — accessibility, legal strip, illustrated covers, interactive player
+- Accessibility toolbar (`js/a11y.js`, `css/a11y.css`), built to IS 5568 / WCAG 2.0 AA. It includes:
+  - text size up to 200%
+  - contrast modes: high contrast, inverted, light background, grayscale, low saturation
+  - highlight links and headings, readable font, line and letter spacing, right alignment
+  - stop animations, large black or white cursor, reading guide, reading mask, hide images
+  - read text aloud on click, describe elements on hover, strong keyboard focus outline
+  - skip link, Alt+A shortcut, settings saved per device, accessibility statement page (`accessibility.html`)
+- Legal strip at the bottom: "© כל הזכויות שמורות לעיריית טירת כרמל | האתר נבנה על ידי מחלקת דוברות והסברה | עיריית טירת כרמל".
+- Logo recoloured navy (`assets/wordmark-navy.png`) so it is readable on white.
+- Aerial photos removed: covers are illustrated, using the topic colour, drifting contour rings and the topic icon.
+- Player:
+  - drag the waveform to seek, with a sentence preview while dragging
+  - elapsed and remaining time, "sentence x of y", live captions
+  - speed chips; swipe the artwork for the next or previous episode; double-tap the artwork to like
+  - keyboard shortcuts; tap the mini-player bar to seek

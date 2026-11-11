@@ -17,18 +17,18 @@
       const r = i * (7 + rnd() * 2.5), wob = 1 + rnd() * .25;
       rings.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${(r * wob).toFixed(1)}" ry="${(r / wob).toFixed(1)}" transform="rotate(${Math.round(rnd() * 180)} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`);
     }
-    return `<svg class="cover__pat" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <rect width="100" height="100" fill="var(--c,#1E3A8A)"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#fff" opacity=".12"/>
-      <g fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6">${rings.join('')}</g></svg>`;
+    return `<svg class="cover__pat" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>
+      <rect width="100" height="100" fill="var(--c,#1E3A8A)"/><rect width="100" height="100" fill="url(#cg)"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#fff" opacity=".12"/>
+      <g class="cover__rings" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6">${rings.join('')}</g></svg>`;
   }
-  /* size: 'xs' (list), 'sm' (tile), 'lg' (hero / player). label shows the title on the art. */
+  /* Illustrated artwork (no photos): the topic colour, a soft light, slowly drifting
+   contour rings and the topic's line icon. label shows the title on the art. */
   function html(ep, opts = {}) {
     const { label = false, cls = '' } = opts;
-    const img = ep && typeof ep.lat === 'number' && ep.id !== 'briefing'
-      ? `<img class="cover__img" src="${tile(ep.lat, ep.lng)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : '';
-    const mark = ep && ep.id === 'briefing' ? `<span class="cover__mark">${window.PodIcons ? PodIcons.svg('mic', 44, 1.4) : ''}</span>` : '';
     const cat = ep && window.PODTC_CATEGORIES && PODTC_CATEGORIES[ep.category];
-    return `<span class="cover ${cls}" style="--c:${cat ? cat.color : '#1E3A8A'}">${pattern(ep ? ep.id : 'x')}${img}<span class="cover__tint"></span>${mark}
+    const ic = window.PodIcons ? (ep && ep.id === 'briefing' ? PodIcons.svg('mic', 44, 1.4) : PodIcons.cat(ep && ep.category ? ep : 'city', 44)) : '';
+    const sd = ep ? hash(ep.id) % 360 : 0;
+    return `<span class="cover cover--art ${cls}" style="--c:${cat ? cat.color : '#1E3A8A'};--r:${sd}deg" role="img" aria-label="${esc(ep ? ep.title : '')}">${pattern(ep ? ep.id : 'x')}<span class="cover__mark">${ic}</span>
       ${label ? `<span class="cover__label"><small>podtc</small><b>${esc(ep.title)}</b></span>` : ''}</span>`;
   }
   window.PodCovers = { html, tile, pattern };

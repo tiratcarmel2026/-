@@ -406,7 +406,7 @@
     current = ep;
     const cat = catOf(ep);
     $('#mini-art').innerHTML = PodCovers.html(ep); $('#now-art').innerHTML = PodCovers.html(ep, { label: true });
-    const bg = document.getElementById('now-bg'); if (bg) bg.style.backgroundImage = ep.id !== 'briefing' && typeof ep.lat === 'number' ? `url("${PodCovers.tile(ep.lat, ep.lng)}")` : 'none';
+    const bg = document.getElementById('now-bg'); if (bg) { bg.style.backgroundImage = 'none'; bg.style.setProperty('--c', (catOf(ep) || {}).color || '#1E3A8A'); }
     $('#mini-title').textContent = $('#now-title').textContent = ep.title;
     $('#now-sub').textContent = ep.subtitle;
     const pill = $('#now-cat'); pill.textContent = cat.label; pill.style.setProperty('--c', cat.color);
@@ -673,7 +673,7 @@
     location.href = `mailto:?subject=${encodeURIComponent('podtc: הצעה או תיקון')}&body=${encodeURIComponent(body)}`;
   }
 
-  const RATES = [0.85, 1, 1.15, 1.3];
+  const RATES = [0.8, 1, 1.25, 1.5];
   function cycleRate() {
     const r = RATES[(RATES.indexOf(Narrator.rate) + 1) % RATES.length] || 1;
     Narrator.setRate(r); $('#rate-label').textContent = '×' + r; if (current) { $('#now-dur').textContent = '' + minutes(current); }

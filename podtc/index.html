@@ -20,11 +20,13 @@
   <link rel="stylesheet" href="css/theme-blue.css">
   <link rel="stylesheet" href="css/podcast.css">
   <link rel="stylesheet" href="css/news.css">
+  <link rel="stylesheet" href="css/a11y.css">
 </head>
 <body>
+  <a class="skip-link" href="#home">דלגו לתוכן הראשי</a>
   <!-- ===== Header ===== -->
   <header class="top glass">
-    <img class="top__logo" src="assets/wordmark.png" alt="podtc">
+    <img class="top__logo" src="assets/wordmark-navy.png" alt="podtc - דף הבית">
     <button id="btn-search" class="top-search" aria-label="חיפוש"><span data-icon="search" data-size="20"></span></button>
     <button id="btn-list" class="ring-chip" aria-label="הספרייה וההתקדמות">
       <svg viewBox="0 0 36 36" class="ring"><circle cx="18" cy="18" r="15.5" class="ring__bg"/><circle id="ring-mini" cx="18" cy="18" r="15.5" class="ring__fg"/></svg>
@@ -179,12 +181,16 @@
       </section>
 
       <footer class="foot">
-        <img src="assets/wordmark-white.png" alt="podtc" class="foot__logo">
+        <img src="assets/wordmark-navy.png" alt="podtc" class="foot__logo">
         <p>podtc · מבית עיריית טירת כרמל</p>
         <p class="foot__small">התכנים נכתבו ממקורות פתוחים ברשת, ולכל פרק מצורפים מקורות. מצאתם טעות? <button class="link" id="foot-feedback">ספרו לנו</button></p>
-        <p class="foot__small">מפות: Esri, CARTO, OpenStreetMap · מזג אוויר, אוויר וים: Open-Meteo · זמני שבת: Hebcal · חדשות: מקורות פתוחים ברשת</p>
+        <p class="foot__small">מזג אוויר, אוויר וים: Open-Meteo · זמני שבת: Hebcal · מפות: Esri, CARTO, OpenStreetMap · חדשות: מקורות פתוחים ברשת</p>
+        <nav class="foot__links" aria-label="קישורים משפטיים"><a href="accessibility.html">הצהרת נגישות</a><button class="link" data-a11y-open>הגדרות נגישות</button><a href="https://www.tirat-carmel.muni.il" target="_blank" rel="noopener">אתר העירייה</a></nav>
       </footer>
     </div>
+    <div class="legal" role="contentinfo">
+        <p><span>© <span class="legal__y">2026</span> כל הזכויות שמורות לעיריית טירת כרמל</span><span class="legal__sep" aria-hidden="true">|</span><span>האתר נבנה על ידי מחלקת דוברות והסברה | עיריית טירת כרמל</span></p>
+      </div>
   </section>
 
   <nav class="tabbar glass" aria-label="ניווט ראשי">
@@ -274,18 +280,25 @@
       </span>
     </div>
     <div class="now__scroll">
-      <div class="now__art"><span id="now-art" class="art art--lg"></span></div>
+      <div class="now__art" id="now-artbox" title="החליקו לפרק הבא או הקודם · הקשה כפולה לאהבתי"><span id="now-art" class="art art--lg"></span><span class="np-burst" aria-hidden="true"></span>
+        <div class="np-viz" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <p id="np-cap" class="np-cap" aria-live="off"></p>
       <span id="now-cat" class="pill">היסטוריה</span>
       <h2 id="now-title">—</h2>
       <p id="now-sub" class="now__sub"></p>
       <p class="now__meta"><span id="now-dist"></span><span id="now-dur"></span></p>
       <div class="now__progress"><div id="now-progress"></div></div>
-      <div id="wave" class="wave" role="slider" aria-label="מיקום בפרק" tabindex="0"></div>
+      <div id="wave" class="wave" role="slider" aria-label="מיקום בפרק" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="wave__tip" id="wave-tip" hidden></span></div>
+      <div class="np-time"><span id="np-el">0:00</span><span id="np-chap" class="np-chap"></span><span id="np-rem">0:00-</span></div>
       <div class="controls">
         <button id="btn-back" class="ctl" aria-label="אחורה"><svg viewBox="0 0 24 24"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg></button>
         <button id="now-play" class="play play--lg" aria-label="השמעה"><svg viewBox="0 0 24 24"><path class="i-play" d="M8 5v14l11-7z"/><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
         <button id="btn-fwd" class="ctl" aria-label="קדימה"><svg viewBox="0 0 24 24"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"/></svg></button>
       </div>
+      <div class="np-speed" role="group" aria-label="מהירות הקראה">
+        <span>מהירות</span><button data-rate="0.8">×0.8</button><button data-rate="1">×1</button><button data-rate="1.25">×1.25</button><button data-rate="1.5">×1.5</button>
+      </div>
+      <p class="np-keys" aria-hidden="true"><kbd>רווח</kbd> השמעה · <kbd>←</kbd><kbd>→</kbd> משפט · <kbd>N</kbd> הבא · <kbd>L</kbd> אהבתי</p>
       <div class="actions">
         <button id="btn-nav" class="act"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>ניווט למקום</button>
         <button id="btn-rate" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M12 3v2"/></svg><span id="rate-label">×1</span></button>
@@ -408,5 +421,6 @@
   <script src="vendor/qrcode/qrcode.js"></script>
   <script src="js/live.js"></script>
   <script src="js/extras.js"></script>
+  <script src="js/a11y.js"></script>
 </body>
 </html>

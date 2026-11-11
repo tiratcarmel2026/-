@@ -481,7 +481,7 @@
     g.fillStyle = top; g.fillRect(0, 0, W, 220);
     const bot = g.createLinearGradient(0, H - 420, 0, H); bot.addColorStop(0, 'rgba(6,20,46,0)'); bot.addColorStop(.45, 'rgba(6,20,46,.85)'); bot.addColorStop(1, 'rgba(6,20,46,.97)');
     g.fillStyle = bot; g.fillRect(0, H - 420, W, 420);
-    try { const logo = await loadImg('assets/wordmark.png'); const lw = 300, lh = lw * logo.height / logo.width; g.drawImage(logo, W - lw - 50, 50, lw, lh); } catch (e) {}
+    try { const logo = await loadImg('assets/wordmark-navy.png'); const lw = 300, lh = lw * logo.height / logo.width; g.drawImage(logo, W - lw - 50, 50, lw, lh); } catch (e) {}
     g.direction = 'rtl'; g.textAlign = 'right';
     g.fillStyle = '#b9d2ee'; g.font = '500 30px Heebo, sans-serif'; g.fillText('מבית עיריית טירת כרמל', W - 52, 50 + 300 * .3 + 40);
     const sel = $('#photo-place').value, place = A.PLACES.find(p => p.id === sel);

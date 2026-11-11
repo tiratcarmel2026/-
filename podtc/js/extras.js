@@ -102,19 +102,97 @@
     $('#wave').innerHTML = Array.from({ length: BARS }, (_, i) => {
       const env = Math.sin(Math.PI * (i + .5) / BARS) * .55 + .45;          // louder in the middle, like speech
       return `<i style="height:${Math.round((20 + rnd() * 80) * env)}%"></i>`;
-    }).join('');
+    }).join('') + '<span class="wave__tip" id="wave-tip" hidden></span>';
     paintWave(0);
   }
   function paintWave(f) { const n = Math.round(f * BARS); $('#wave').querySelectorAll('i').forEach((b, i) => b.classList.toggle('on', i < n)); }
   N.on('progress', paintWave);
-  $('#wave').addEventListener('click', e => {
-    const r = $('#wave').getBoundingClientRect();
-    const f = Math.min(1, Math.max(0, (r.right - e.clientX) / r.width));    // RTL: progress grows from the right
-    const total = document.querySelectorAll('#transcript span[data-i]').length || 1;
-    const i = Math.min(total - 1, Math.floor(f * total));
-    if (['playing', 'paused', 'skipping'].includes(N.state)) N.seek(i); else { A.play(); setTimeout(() => N.seek(i), 80); }
-    paintWave(f);
+  /* ---- interactive player ---- */
+  const spans = () => document.querySelectorAll('#transcript span[data-i]');
+  const active = () => ['playing', 'paused', 'skipping'].includes(N.state);
+  const totalSec = () => { const c = A.current; if (!c || !c.script) return 0; return c.script.split(/\s+/).length / 120 * 60 / (N.rate || 1); };
+  const fmt = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  let frac = 0;
+  function setTime(f) {
+    frac = f; const T = totalSec();
+    $('#np-el').textContent = fmt(f * T); $('#np-rem').textContent = fmt((1 - f) * T) + '-';
+    $('#wave').setAttribute('aria-valuenow', Math.round(f * 100)); $('#wave').setAttribute('aria-valuetext', `${fmt(f * T)} מתוך ${fmt(T)}`);
+  }
+  N.on('progress', setTime);
+  const seekTo = f => {
+    const total = spans().length || 1, i = Math.min(total - 1, Math.max(0, Math.floor(f * total)));
+    if (active()) N.seek(i); else { A.play(); setTimeout(() => N.seek(i), 80); }
+    paintWave(i / total); setTime(i / total);
+  };
+  const fracAt = x => { const r = $('#wave').getBoundingClientRect(); return Math.min(1, Math.max(0, (r.right - x) / r.width)); }; // RTL
+  function tipAt(f, x) {
+    const tip = $('#wave-tip'); if (!tip) return;
+    const sp = spans()[Math.min(spans().length - 1, Math.floor(f * spans().length))];
+    tip.hidden = false; tip.textContent = `${fmt(f * totalSec())} · ${sp ? sp.textContent.trim().slice(0, 42) + '…' : ''}`;
+    const r = $('#wave').getBoundingClientRect(); tip.style.left = Math.min(r.width - 40, Math.max(40, x - r.left)) + 'px';
+  }
+  let drag = false;
+  $('#wave').addEventListener('pointerdown', e => { drag = true; $('#wave').setPointerCapture(e.pointerId); $('#wave').classList.add('drag'); const f = fracAt(e.clientX); paintWave(f); tipAt(f, e.clientX); });
+  $('#wave').addEventListener('pointermove', e => { const f = fracAt(e.clientX); if (drag) paintWave(f); if (drag || e.pointerType === 'mouse') tipAt(f, e.clientX); });
+  $('#wave').addEventListener('pointerup', e => { if (!drag) return; drag = false; $('#wave').classList.remove('drag'); $('#wave-tip').hidden = true; seekTo(fracAt(e.clientX)); });
+  $('#wave').addEventListener('pointerleave', () => { if (!drag && $('#wave-tip')) $('#wave-tip').hidden = true; });
+  $('#wave').addEventListener('keydown', e => {
+    const n = spans().length || 1, cur = Math.floor(frac * n);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); seekTo(Math.min(n - 1, cur + 1) / n + .001); }       // RTL: left = forward
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); seekTo(Math.max(0, cur - 1) / n + .001); }
+    else if (e.key === 'Home') { e.preventDefault(); seekTo(0); } else if (e.key === 'End') { e.preventDefault(); seekTo((n - 1) / n); }
   });
+  // live captions: the sentence being read, big, under the artwork
+  N.on('chunk', i => {
+    const sp = spans()[i], cap = $('#np-cap'); if (!cap) return;
+    cap.classList.remove('in'); void cap.offsetWidth; cap.textContent = sp ? sp.textContent.trim() : ''; cap.classList.add('in');
+    $('#np-chap').textContent = spans().length ? `משפט ${i + 1} מתוך ${spans().length}` : '';
+  });
+  // speed chips
+  function paintRate() { document.querySelectorAll('.np-speed [data-rate]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.rate === N.rate))); }
+  document.querySelector('.np-speed').addEventListener('click', e => {
+    const b = e.target.closest('[data-rate]'); if (!b) return;
+    N.setRate(+b.dataset.rate); $('#rate-label').textContent = '×' + b.dataset.rate; paintRate(); setTime(frac);
+    if (A.current) $('#now-dur').textContent = A.minutes(A.current);
+  });
+  $('#btn-rate').addEventListener('click', () => setTimeout(paintRate, 0));
+  paintRate();
+  // swipe the artwork for the next / previous episode, double-tap to like
+  function neighbour(d) {
+    const c = A.current; if (!c) return null;
+    const list = A.PLACES.filter(p => p.category === c.category); const pool = list.length > 1 ? list : A.PLACES;
+    const i = pool.findIndex(p => p.id === c.id); return pool[(i + d + pool.length) % pool.length];
+  }
+  function go(d) { const n = neighbour(d); if (!n) return; const box = $('#now-artbox'); box.classList.remove('sw-l', 'sw-r'); void box.offsetWidth; box.classList.add(d > 0 ? 'sw-l' : 'sw-r'); A.select(n); A.play(); }
+  let sx = 0, sy = 0, lastTap = 0;
+  const box = $('#now-artbox');
+  box.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; });
+  box.addEventListener('pointerup', e => {
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { go(dx < 0 ? 1 : -1); return; }   // RTL: swipe left → next
+    const now = Date.now();
+    if (now - lastTap < 320) { like(); lastTap = 0; } else lastTap = now;
+  });
+  function like() {
+    const fav = $('#now-fav'); if (!fav.classList.contains('on')) fav.click();
+    const b = box.querySelector('.np-burst'); b.classList.remove('go'); void b.offsetWidth; b.classList.add('go');
+  }
+  // keyboard shortcuts while the player is open
+  document.addEventListener('keydown', e => {
+    if (!$('#now').classList.contains('open') || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName) || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.target === $('#wave')) return;
+    const k = e.key.toLowerCase();
+    if (k === 'arrowleft') { e.preventDefault(); N.skip(1); } else if (k === 'arrowright') { e.preventDefault(); N.skip(-1); }
+    else if (k === 'n' || k === 'מ') go(1); else if (k === 'p' || k === 'פ') go(-1);
+    else if (k === 'l' || k === 'ך') like();
+    else if (k === ' ' && e.target !== document.body && e.target.tagName !== 'BUTTON') { e.preventDefault(); A.toggle ? A.toggle() : $('#now-play').click(); }
+  });
+  // mini player: tap / drag on its progress bar to seek
+  const mb = document.querySelector('.mini__bar');
+  if (mb) {
+    mb.setAttribute('role', 'slider'); mb.setAttribute('aria-label', 'מיקום בפרק'); mb.tabIndex = 0;
+    mb.addEventListener('click', e => { e.stopPropagation(); const r = mb.getBoundingClientRect(); seekTo(Math.min(1, Math.max(0, (r.right - e.clientX) / r.width))); });
+  }
   function related(ep) {
     const box = $('#related');
     if (!ep || !ep.category || ep.id === 'briefing') { box.innerHTML = ''; return; }
@@ -127,7 +205,7 @@
     box.innerHTML = q.length ? `<h3>הבא בתור · ${esc(A.queueName)}</h3>${q.slice(0, 5).map((p, i) => `<button class="srow" data-x="open" data-id="${p.id}">
       <span class="srow__n">${i + 1}</span><span class="srow__art">${PodCovers.html(p)}</span><span class="srow__t"><b>${esc(p.title)}</b><small>${A.minutes(p)}</small></span></button>`).join('')}` : '';
   }
-  window.addEventListener('pod:select', e => { wave(e.detail); related(e.detail); setTimeout(upnext, 0); markPlaying(); });
+  window.addEventListener('pod:select', e => { wave(e.detail); setTime(0); if ($('#np-cap')) $('#np-cap').textContent = ''; $('#np-chap').textContent = ''; related(e.detail); setTimeout(upnext, 0); markPlaying(); });
   N.on('state', s => { upnext(); markPlaying(); if (s === 'ended' && sleepEnd) { sleepEnd = false; setSleep(0); const c = A.current; if (c) A.select(c); A.toast('לילה טוב! הטיימר עצר אחרי הפרק'); } });
 
   let sleepT = 0, sleepEnd = false, sleepIdx = 0;
@@ -155,6 +233,7 @@
     { root: $('#home'), rootMargin: '0px 0px -8% 0px', threshold: .05 }) : null;
   function animateIn() { document.querySelectorAll('#home .shelf:not(.rise), #home .block:not(.rise), #home .hero:not(.rise)').forEach(el => { el.classList.add('rise'); io ? io.observe(el) : el.classList.add('in'); }); }
 
+  if (A.current) { wave(A.current); related(A.current); setTime(0); }
   renderHome(); animateIn();
   A.onUpdate(() => setTimeout(animateIn, 400));
   if (window.PodIcons) PodIcons.hydrate();
