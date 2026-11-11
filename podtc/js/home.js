@@ -68,10 +68,10 @@
   const cover = (ep, o) => PodCovers.html(ep, o);
   const playIc = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
   /* square tile: artwork + play overlay + title + one meta line (Spotify / BBC Sounds shelf item) */
-  const tile = (ep, meta) => `<div class="tile">
+  const tile = (ep, meta) => `<div class="tile" data-ep="${ep.id}" style="--c:${A.catOf(ep).color}">
       <button class="tile__art" data-act="open" data-id="${ep.id}" aria-label="${esc(ep.title)}">${cover(ep)}${A.played.has(ep.id) ? '<i class="tile__done" aria-label="האזנתם">✓</i>' : ''}</button>
       <button class="tile__play" data-act="listen" data-id="${ep.id}" aria-label="האזנה: ${esc(ep.title)}">${playIc}</button>
-      <b class="tile__t">${esc(ep.title)}</b><small class="tile__m">${meta || `${A.catOf(ep).label} · ${A.minutes(ep)}`}</small>
+      <span class="tile__k">${A.catOf(ep).label}</span><b class="tile__t">${esc(ep.title)}</b><span class="tile__x">${esc(ep.subtitle)}. ${esc(excerpt(ep, 95))}</span><small class="tile__m">${meta || A.minutes(ep)}</small>
     </div>`;
   const shelf = (title, body, action) => `<section class="shelf"><div class="shelf__h"><h2>${title}</h2>${action || ''}</div><div class="shelf__row">${body}</div></section>`;
 
@@ -81,6 +81,7 @@
   function hero() {
     const ep = heroEp(), cat = A.catOf(ep);
     const d = A.pos ? A.distance(A.pos.lat, A.pos.lng, ep.lat, ep.lng) : null;
+    $('#hero').style.setProperty('--c', cat.color);
     $('#hero').innerHTML = `
       <div class="hero__art">${cover(ep, { label: true })}</div>
       <div class="hero__body">
@@ -190,7 +191,7 @@
     $('#sections').innerHTML = ORDER.filter(k => A.CATS[k] && A.PLACES.some(p => p.category === k)).map(k => {
       const cat = A.CATS[k], eps = A.PLACES.filter(p => p.category === k);
       return shelf(`${cat.label} <small>${eps.length} פרקים</small>`, eps.map(ep => tile(ep, A.minutes(ep))).join(''),
-        `<button class="shelf__all" data-act="playcat" data-id="${k}">${playIc} הכול ברצף</button>`);
+        `<button class="shelf__all" data-act="playcat" data-id="${k}">${playIc} הכול ברצף</button>`).replace('<section class="shelf">', `<section class="shelf" id="shelf-${k}" style="--c:${cat.color}">`);
     }).join('');
   }
 
@@ -365,7 +366,7 @@
   /* podcast-app order: listening first, city services further down */
   (function reorder() {
     const inner = document.querySelector('.home__inner'), foot = inner.querySelector('.foot');
-    ['quick', 'resume', 'hero', 'fav-block', 'near-block', 'tours-block', 'sections', 'radio', 'live', 'future', 'kids', 'services',
+    ['quick', 'resume', 'hero', 'recent-block', 'fav-block', 'near-block', 'top10-block', 'tours-block', 'browse-block', 'sections', 'shorts-block', 'wrapped', 'live', 'radio', 'future', 'kids', 'services',
      'social', 'photo', 'install-card', 'links-block'].forEach(id => { const el = document.getElementById(id); if (el) inner.insertBefore(el, foot); });
     const share = inner.querySelector('.share-app'); if (share) inner.insertBefore(share, foot);
   })();

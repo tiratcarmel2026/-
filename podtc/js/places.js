@@ -426,18 +426,18 @@ window.PODTC_PLACES = [
 ];
 
 window.PODTC_CATEGORIES = {
-  history:   { label: 'היסטוריה', color: '#7dd3fc' },
-  community: { label: 'קהילה',    color: '#a5b4fc' },
-  culture:   { label: 'תרבות',    color: '#f0abfc' },
-  nature:    { label: 'טבע',      color: '#86efac' },
-  future:    { label: 'העיר של מחר', color: '#fcd34d' },
-  memory:    { label: 'אירועים חשובים', color: '#fda4af' },
-  heritage:  { label: 'מבנים ובתי כנסת עתיקים', color: '#e7c792' },
-  sport:     { label: 'ספורט',    color: '#5eead4' },
-  city:      { label: 'עירייה',   color: '#93c5fd' },
-  trails:    { label: 'מסלולי הליכה', color: '#bef264' },
-  transport: { label: 'תחבורה',  color: '#fdba74' },
-  news:      { label: 'מהדורה',  color: '#f87171' },
+  history:   { label: 'היסטוריה', color: '#B45309' },
+  community: { label: 'קהילה',    color: '#2563EB' },
+  culture:   { label: 'תרבות',    color: '#DB2777' },
+  nature:    { label: 'טבע',      color: '#15803D' },
+  future:    { label: 'העיר של מחר', color: '#7C3AED' },
+  memory:    { label: 'אירועים חשובים', color: '#DC2626' },
+  heritage:  { label: 'מבנים ובתי כנסת עתיקים', color: '#92400E' },
+  sport:     { label: 'ספורט',    color: '#0F766E' },
+  city:      { label: 'עירייה',   color: '#1E3A8A' },
+  trails:    { label: 'מסלולי הליכה', color: '#4D7C0F' },
+  transport: { label: 'תחבורה',  color: '#C2410C' },
+  news:      { label: 'מהדורה',  color: '#DC2626' },
   live:      { label: 'ויקיפדיה', color: '#cbd5e1' }
 };
 

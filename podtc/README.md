@@ -253,3 +253,9 @@ podtc/
 - [מכבי עירוני טירת כרמל](https://en.wikipedia.org/wiki/Maccabi_Ironi_Tirat_HaCarmel_F.C.)
 
 ספריית המפה Leaflet משמשת לפי רישיון BSD-2 (`vendor/leaflet/LICENSE`). נתוני המפה: © תורמי OpenStreetMap.
+
+## v13 — digital news-site look
+- White page, dark text; each topic in its own colour (kicker, section rule, play button, cover tint).
+- Article cards with kicker, headline, two-line summary and meta; 4-column news grid on desktop.
+- New sections: recently played, top 10, browse by topic, short episodes, "your podtc" stats.
+- Global search (`/`), waveform seek, up next, related episodes, sleep timer, live "now playing" marker on cards, reveal motion.

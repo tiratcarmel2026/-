@@ -18,8 +18,8 @@
       rings.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${(r * wob).toFixed(1)}" ry="${(r / wob).toFixed(1)}" transform="rotate(${Math.round(rnd() * 180)} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`);
     }
     return `<svg class="cover__pat" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <rect width="100" height="100" fill="#154A85"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#1F6FA3" opacity=".55"/>
-      <g fill="none" stroke="#D9E9F7" stroke-opacity=".28" stroke-width=".6">${rings.join('')}</g></svg>`;
+      <rect width="100" height="100" fill="var(--c,#1E3A8A)"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#fff" opacity=".12"/>
+      <g fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6">${rings.join('')}</g></svg>`;
   }
   /* size: 'xs' (list), 'sm' (tile), 'lg' (hero / player). label shows the title on the art. */
   function html(ep, opts = {}) {
@@ -27,7 +27,8 @@
     const img = ep && typeof ep.lat === 'number' && ep.id !== 'briefing'
       ? `<img class="cover__img" src="${tile(ep.lat, ep.lng)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : '';
     const mark = ep && ep.id === 'briefing' ? `<span class="cover__mark">${window.PodIcons ? PodIcons.svg('mic', 44, 1.4) : ''}</span>` : '';
-    return `<span class="cover ${cls}">${pattern(ep ? ep.id : 'x')}${img}<span class="cover__tint"></span>${mark}
+    const cat = ep && window.PODTC_CATEGORIES && PODTC_CATEGORIES[ep.category];
+    return `<span class="cover ${cls}" style="--c:${cat ? cat.color : '#1E3A8A'}">${pattern(ep ? ep.id : 'x')}${img}<span class="cover__tint"></span>${mark}
       ${label ? `<span class="cover__label"><small>podtc</small><b>${esc(ep.title)}</b></span>` : ''}</span>`;
   }
   window.PodCovers = { html, tile, pattern };

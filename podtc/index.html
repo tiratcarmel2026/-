@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0B2E59">
+  <meta name="theme-color" content="#ffffff">
   <title>podtc — טירת כרמל</title>
   <meta name="description" content="פודקאסטים קצרים בעברית על כל מקום בטירת כרמל, לפי המיקום שלכם. מבית עיריית טירת כרמל.">
   <link rel="manifest" href="manifest.webmanifest">
@@ -19,11 +19,13 @@
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/theme-blue.css">
   <link rel="stylesheet" href="css/podcast.css">
+  <link rel="stylesheet" href="css/news.css">
 </head>
 <body>
   <!-- ===== Header ===== -->
   <header class="top glass">
-    <img class="top__logo" src="assets/wordmark-white.png" alt="podtc">
+    <img class="top__logo" src="assets/wordmark.png" alt="podtc">
+    <button id="btn-search" class="top-search" aria-label="חיפוש"><span data-icon="search" data-size="20"></span></button>
     <button id="btn-list" class="ring-chip" aria-label="הספרייה וההתקדמות">
       <svg viewBox="0 0 36 36" class="ring"><circle cx="18" cy="18" r="15.5" class="ring__bg"/><circle id="ring-mini" cx="18" cy="18" r="15.5" class="ring__fg"/></svg>
       <span id="count">0/0</span>
@@ -156,6 +158,11 @@
         <div id="soc-links" class="soc-links"></div>
       </section>
 
+      <section class="shelf" id="recent-block" hidden><div class="shelf__h"><h2>האזנתם לאחרונה</h2></div><div id="recent" class="shelf__row"></div></section>
+      <section class="shelf" id="top10-block"><div class="shelf__h"><h2>10 פרקים שחובה לשמוע</h2><small class="shelf__note">הבחירה של העורכים</small></div><div id="top10" class="shelf__row shelf__row--rank"></div></section>
+      <section class="block" id="browse-block"><h2 class="kicker">עיון לפי נושא</h2><div id="browse" class="browse"></div></section>
+      <section class="shelf" id="shorts-block"><div class="shelf__h"><h2>פרקים קצרים</h2><small class="shelf__note">פחות מדקה וחצי</small></div><div id="shorts" class="shelf__row"></div></section>
+      <section class="block" id="wrapped"></section>
       <div id="sections"></div>
 
       <section class="block reveal" id="links-block">
@@ -203,6 +210,16 @@
       <div class="photo-place"><label>שם המקום על התמונה: <select id="photo-place"></select></label></div>
       <div class="photo-actions"><button id="photo-share" class="cta-btn">שיתוף</button><button id="photo-save" class="ghost-btn">שמירה</button></div>
     </div>
+  </div>
+
+  <div id="search-sheet" class="search-sheet" hidden>
+    <div class="search-sheet__bar">
+      <span data-icon="search" data-size="20"></span>
+      <input id="gsearch" type="search" placeholder="חיפוש פרק, מקום או נושא" aria-label="חיפוש">
+      <button id="search-close" class="x" aria-label="סגירה">✕</button>
+    </div>
+    <div id="gsearch-chips" class="search-chips"></div>
+    <div id="gsearch-res" class="search-res"></div>
   </div>
 
   <div id="install-sheet" class="sheet" hidden>
@@ -263,6 +280,7 @@
       <p id="now-sub" class="now__sub"></p>
       <p class="now__meta"><span id="now-dist"></span><span id="now-dur"></span></p>
       <div class="now__progress"><div id="now-progress"></div></div>
+      <div id="wave" class="wave" role="slider" aria-label="מיקום בפרק" tabindex="0"></div>
       <div class="controls">
         <button id="btn-back" class="ctl" aria-label="אחורה"><svg viewBox="0 0 24 24"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg></button>
         <button id="now-play" class="play play--lg" aria-label="השמעה"><svg viewBox="0 0 24 24"><path class="i-play" d="M8 5v14l11-7z"/><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
@@ -273,12 +291,15 @@
         <button id="btn-rate" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M12 3v2"/></svg><span id="rate-label">×1</span></button>
         <button id="btn-voice" class="act"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg><span id="voice-label">קול</span></button>
         <button id="btn-street" class="act"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M9 21l1-7-2-1 1-4h6l1 4-2 1 1 7"/></svg>מבט מהרחוב</button>
+        <button id="btn-sleep" class="act"><span data-icon="timer" data-size="18"></span><span id="sleep-label">טיימר שינה</span></button>
         <button id="btn-next" class="act"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>הפרק הקרוב</button>
       </div>
       <div class="share-row">
         <span>שתפו את הפרק:</span>
         <div id="share-ep" class="sharebar"></div>
       </div>
+      <section id="upnext" class="np-sec" hidden></section>
+      <section id="related" class="np-sec"></section>
       <section id="quiz" class="quiz" hidden>
         <h3 class="quiz__head">חידון <small id="quiz-state">ענו נכון וצברו נקודות</small></h3>
         <p id="quiz-q" class="quiz__q"></p>
@@ -386,5 +407,6 @@
   <script src="js/home.js"></script>
   <script src="vendor/qrcode/qrcode.js"></script>
   <script src="js/live.js"></script>
+  <script src="js/extras.js"></script>
 </body>
 </html>

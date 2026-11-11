@@ -419,6 +419,7 @@
     $('#transcript').innerHTML = parts.map((t, i) => `<span data-i="${i}">${t} </span>`).join('');
     chunkEls = [...$('#transcript').children];
     renderQuiz(ep); renderEdit(ep); renderFav();
+    window.dispatchEvent(new CustomEvent('pod:select', { detail: ep }));
     setProgress(0);
     updateMeta();
   }
@@ -529,7 +530,9 @@
     { id: 'all', label: 'מכיר/ה כל פינה', test: () => curatedPlayed() >= PLACES.length }
   ];
   function markPlayed(id) {
-    played.add(id); store.set('played', [...played]); refreshPins(); renderList();
+    played.add(id); store.set('played', [...played]);
+    if (byId(id)) { const h = store.get('history', []).filter(x => x !== id); h.unshift(id); store.set('history', h.slice(0, 30)); }
+    refreshPins(); renderList();
   }
   function curatedPlayed() { return PLACES.filter(p => played.has(p.id)).length; }
   function checkBadges() {
@@ -707,6 +710,8 @@
     showOnMap(ep) { select(ep); map.invalidateSize(); map.flyTo([ep.lat, ep.lng], 17, { duration: .9 }); follow = false; },
     startTour(id) { setTour(id); },
     get favs() { return favs; }, toggleFav,
+    history() { return store.get('history', []).map(byId).filter(Boolean); },
+    get queue() { return queue.slice(); }, get queueName() { return queueName; },
     playQueue(ids, name) {
       const list = ids.filter(byId); if (!list.length) return;
       const first = byId(list.shift());
