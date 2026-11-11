@@ -70,6 +70,8 @@
       case 'listen': if (ep) A.listen(ep); break;
       case 'genre': { const sh = document.getElementById('shelf-' + b.dataset.id); if (sh) sh.scrollIntoView({ behavior: 'smooth', block: 'start' }); break; }
       case 'search-hit': closeSearch(); if (ep) { A.select(ep); A.openNow(); } break;
+      case 'share': openShare(ep); break;
+      case 'art-ep': if (ep) A.listen(ep); break;
       case 'search-cat': $('#gsearch').value = A.CATS[b.dataset.id].label; runSearch(); break;
     }
   });
@@ -232,6 +234,73 @@
   const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }),
     { root: $('#home'), rootMargin: '0px 0px -8% 0px', threshold: .05 }) : null;
   function animateIn() { document.querySelectorAll('#home .shelf:not(.rise), #home .block:not(.rise), #home .hero:not(.rise)').forEach(el => { el.classList.add('rise'); io ? io.observe(el) : el.classList.add('in'); }); }
+
+  /* ================= current articles ================= */
+  // hand-picked recent coverage (always shown) + live headlines from the web when they load
+  const PICKS = [
+    { title: 'פי 3 תושבים וחוף ים: תוכנית המתאר של טירת כרמל אושרה', src: 'מרכז הנדל"ן', link: 'https://www.nadlancenter.co.il/article/8168', ep: 'beach-plan' },
+    { title: '1,200 דירות בטירת כרמל: אושרה תוכנית הענק של נופי רוממה וצמח המרמן', src: 'מרכז הנדל"ן', link: 'https://www.nadlancenter.co.il/article/15566', ep: 'weizmann-towers' },
+    { title: 'תושבי הצפון נוהרים לרחוב שיהפוך לדיזנגוף', src: 'מעריב', link: 'https://www.maariv.co.il/economy/realestate/article-1350591', ep: 'herzl-street' },
+    { title: 'למי קראתם פרבר? העיר שהפכה מתחת לרדאר ללהיט של הצפון', src: 'מעריב', link: 'https://www.maariv.co.il/economy/realestate/article-1211715', ep: 'nof-yam' },
+    { title: 'מגדלים בטירת כרמל: תוכניות התחדשות ליותר מ־1,800 דירות יגיעו לדיון על הפקדה', src: 'מרכז הנדל"ן', link: 'https://www.nadlancenter.co.il/article/11512', ep: 'city-renewal' }
+  ];
+  const SRC_C = ['#DC2626', '#2563EB', '#7C3AED', '#0F766E', '#C2410C', '#DB2777', '#15803D', '#1E3A8A'];
+  const srcColor = s => { let h = 0; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return SRC_C[h % SRC_C.length]; };
+  function articles() {
+    const live = (window.PodNews || []).slice(0, 6).map(n => ({ ...n, live: true }));
+    const list = [...live, ...PICKS].slice(0, 9);
+    $('#articles').innerHTML = list.map((a, i) => {
+      const ep = a.ep && byId(a.ep), c = ep ? A.catOf(ep).color : srcColor(a.src);
+      return `<article class="art${i === 0 ? ' art--lead' : ''}" style="--c:${c}">
+        <a class="art__a" href="${esc(a.link)}" target="_blank" rel="noopener">
+          <span class="art__k"><i></i>${esc(a.src || 'חדשות')}${a.live ? ` · <em>${esc(a.ago || 'עכשיו')}</em>` : ''}</span>
+          <b class="art__t">${esc(a.title)}</b>
+          <span class="art__more">לכתבה המלאה ←</span>
+        </a>
+        ${ep ? `<button class="art__ep" data-x="art-ep" data-id="${ep.id}"><span class="art__eq"><i></i><i></i><i></i><i></i></span>האזינו לפרק: ${esc(ep.title)}</button>` : ''}
+      </article>`;
+    }).join('');
+  }
+  window.addEventListener('pod:news', articles);
+
+  /* ================= share sheet ================= */
+  const qrSvg = url => { try { const q = window.qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag({ cellSize: 4, margin: 1, scalable: true }); } catch (e) { return ''; } };
+  const BASE = location.origin + location.pathname;
+  function openShare(ep) {
+    const sh = $('#share-sheet'), bar = $('#ss-bar');
+    if (ep && !ep.live && ep.id !== 'briefing') {
+      bar.dataset.ctx = 'ep'; bar.dataset.id = ep.id;
+      $('#ss-art').innerHTML = PodCovers.html(ep); $('#ss-k').textContent = 'שיתוף פרק · ' + A.catOf(ep).label;
+      $('#ss-title').textContent = ep.title; $('#ss-sub').textContent = ep.subtitle;
+      $('#ss-qr').innerHTML = qrSvg(BASE + '#' + ep.id);
+    } else {
+      bar.dataset.ctx = 'app'; delete bar.dataset.id;
+      $('#ss-art').innerHTML = `<img src="assets/icon-192.png" alt="">`; $('#ss-k').textContent = 'שיתוף האפליקציה';
+      $('#ss-title').textContent = 'podtc: טירת כרמל מספרת את עצמה'; $('#ss-sub').textContent = 'פודקאסטים קצרים על כל מקום בעיר';
+      $('#ss-qr').innerHTML = qrSvg(BASE);
+    }
+    bar.querySelector('[data-share="native"]').hidden = !navigator.share;
+    sh.hidden = false; document.body.classList.add('sharing');
+    if (window.PodIcons) PodIcons.hydrate(sh);
+    setTimeout(() => sh.querySelector('.sb').focus(), 50);
+  }
+  function closeShare() { $('#share-sheet').hidden = true; document.body.classList.remove('sharing'); }
+  $('#share-sheet').addEventListener('click', e => { if (e.target === $('#share-sheet') || e.target.closest('.share-sheet__x')) closeShare(); else if (e.target.closest('[data-share]')) setTimeout(closeShare, 400); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#share-sheet').hidden) closeShare(); });
+  $('#btn-share-top').addEventListener('click', () => openShare(null));
+  // the player's share button opens the big sheet for the current episode
+  $('#now-share').addEventListener('click', e => { e.stopImmediatePropagation(); openShare(A.current); }, true);
+  // a share button on every episode card
+  const shIc = window.PodIcons ? PodIcons.svg('share', 16) : '';
+  function decorate() {
+    document.querySelectorAll('.tile:not([data-sh])').forEach(t => {
+      t.dataset.sh = 1; const id = t.dataset.ep; if (!id || !byId(id)) return;
+      t.insertAdjacentHTML('afterbegin', `<button class="tile__sh" data-x="share" data-id="${id}" aria-label="שיתוף: ${esc(byId(id).title)}">${shIc}</button>`);
+    });
+  }
+  let decT = 0;
+  new MutationObserver(() => { if (!decT) decT = setTimeout(() => { decT = 0; decorate(); }, 80); }).observe($('#home'), { childList: true, subtree: true });
+  articles(); decorate();
 
   if (A.current) { wave(A.current); related(A.current); setTime(0); }
   renderHome(); animateIn();

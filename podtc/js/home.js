@@ -230,7 +230,16 @@
     ['car', 'ניווט לעירייה', 'הרצל 6, בוויז', 'https://waze.com/ul?q=%D7%A2%D7%99%D7%A8%D7%99%D7%99%D7%AA%20%D7%98%D7%99%D7%A8%D7%AA%20%D7%9B%D7%A8%D7%9E%D7%9C&navigate=yes'],
     ['broom', 'ניקי שומרת על הניקיון', 'משחק לילדים של העירייה', '../'],
     ['book', 'טירת כרמל בוויקיפדיה', 'הערך המלא', 'https://he.wikipedia.org/wiki/%D7%98%D7%99%D7%A8%D7%AA_%D7%9B%D7%A8%D7%9E%D7%9C'],
-    ['columns', 'המועצה לשימור אתרי מורשת', 'אתרי מורשת בישראל', 'https://shimur.org/']
+    ['columns', 'המועצה לשימור אתרי מורשת', 'אתרי מורשת בישראל', 'https://shimur.org/'],
+    ['radio', 'רדיו חיפה', 'חדשות וספורט מהצפון', 'https://www.radiohaifa.co.il/'],
+    ['building', 'מנהל התכנון: תוכניות', 'מעקב אחרי תוכניות בנייה בעיר', 'https://mavat.iplan.gov.il/'],
+    ['book', 'כל זכות', 'מידע על זכויות ושירותים', 'https://www.kolzchut.org.il/'],
+    ['card', 'השירותים הממשלתיים', 'gov.il: טפסים ותורים', 'https://www.gov.il/he'],
+    ['siren', 'מגן דוד אדום', 'חירום רפואי 101', 'https://www.mdais.org/'],
+    ['bus', 'מוביט', 'קווי אוטובוס בזמן אמת', 'https://moovitapp.com/'],
+    ['leaf', 'הקרן הקיימת לישראל', 'יערות ומסלולים בכרמל', 'https://www.kkl.org.il/'],
+    ['wave', 'מזג האוויר בים', 'גלים ורוח בחוף הכרמל', 'https://www.windguru.cz/'],
+    ['phone', 'משטרה 100 · כבאות 102', 'מספרי חירום', 'tel:100']
   ];
   function links() {
     $('#links').innerHTML = LINKS.map(([e, t, d, u]) =>
@@ -366,7 +375,7 @@
   /* podcast-app order: listening first, city services further down */
   (function reorder() {
     const inner = document.querySelector('.home__inner'), foot = inner.querySelector('.foot');
-    ['quick', 'resume', 'hero', 'recent-block', 'fav-block', 'near-block', 'top10-block', 'tours-block', 'browse-block', 'sections', 'shorts-block', 'wrapped', 'live', 'radio', 'future', 'kids', 'services',
+    ['quick', 'resume', 'hero', 'articles-block', 'recent-block', 'fav-block', 'near-block', 'top10-block', 'tours-block', 'browse-block', 'sections', 'share-band', 'shorts-block', 'wrapped', 'live', 'radio', 'future', 'kids', 'services',
      'social', 'photo', 'install-card', 'links-block'].forEach(id => { const el = document.getElementById(id); if (el) inner.insertBefore(el, foot); });
     const share = inner.querySelector('.share-app'); if (share) inner.insertBefore(share, foot);
   })();

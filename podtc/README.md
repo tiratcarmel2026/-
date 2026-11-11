@@ -276,3 +276,16 @@ podtc/
   - elapsed and remaining time, "sentence x of y", live captions
   - speed chips; swipe the artwork for the next or previous episode; double-tap the artwork to like
   - keyboard shortcuts; tap the mini-player bar to seek
+
+## v15 — living sound-wave artwork, vivid colour, articles, sharing
+- Artwork: every episode is an animated sound wave in its topic's two-colour gradient, seeded per episode. Only on-screen waves animate, and the wave speeds up while the episode is playing.
+- New researched episodes (35 in total): Rostam Bastuni, Reuven Atar, the planned city beach, the Weizmann–Jabotinsky towers and Herzl Street, each with a quiz question, added to the tours.
+- "Current articles" section: live headlines from 2 Google News feeds and the local sites, plus hand-picked recent coverage linked to the matching episode.
+- Sharing:
+  - green share button in the header
+  - share sheet with large brand buttons and a QR code
+  - share button on every card
+  - full-width "share the city" band
+  - the player's share button opens the sheet
+- More links: Radio Haifa, iplan (mavat), Kol Zchut, gov.il, MDA, Moovit, KKL, sea forecast, emergency numbers.
+- Polish: animated brand gradient under the masthead, colour wash behind the lead story, gradient play buttons, larger radii, coloured shadows.

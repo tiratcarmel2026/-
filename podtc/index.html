@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/theme-blue.css">
   <link rel="stylesheet" href="css/podcast.css">
   <link rel="stylesheet" href="css/news.css">
+  <link rel="stylesheet" href="css/vivid.css">
   <link rel="stylesheet" href="css/a11y.css">
 </head>
 <body>
@@ -27,6 +28,7 @@
   <!-- ===== Header ===== -->
   <header class="top glass">
     <img class="top__logo" src="assets/wordmark-navy.png" alt="podtc - דף הבית">
+    <button id="btn-share-top" class="top-share" aria-label="שיתוף podtc"><span data-icon="share" data-size="18"></span><span>שיתוף</span></button>
     <button id="btn-search" class="top-search" aria-label="חיפוש"><span data-icon="search" data-size="20"></span></button>
     <button id="btn-list" class="ring-chip" aria-label="הספרייה וההתקדמות">
       <svg viewBox="0 0 36 36" class="ring"><circle cx="18" cy="18" r="15.5" class="ring__bg"/><circle id="ring-mini" cx="18" cy="18" r="15.5" class="ring__fg"/></svg>
@@ -160,6 +162,16 @@
         <div id="soc-links" class="soc-links"></div>
       </section>
 
+      <section class="shelf" id="articles-block" style="--c:#DC2626"><div class="shelf__h"><h2>כתבות עדכניות <small>מהרשת ומהעיתונות על טירת כרמל</small></h2></div><div id="articles" class="arts"></div></section>
+      <section class="share-band" id="share-band">
+        <div class="share-band__txt"><span class="share-band__k">שתפו את העיר</span><h2>מכירים מישהו שגר בטירת כרמל?</h2><p>שלחו לו את podtc, ושיגלה את הסיפורים שמסתתרים מעבר לפינה.</p></div>
+        <div class="share-band__btns sharebar" data-ctx="app">
+          <button class="sb sb--wa" data-share="wa"><span data-icon="chat" data-size="20"></span>וואטסאפ</button>
+          <button class="sb sb--fb" data-share="fb"><span data-icon="people" data-size="20"></span>פייסבוק</button>
+          <button class="sb sb--tg" data-share="tg"><span data-icon="send" data-size="20"></span>טלגרם</button>
+          <button class="sb sb--copy" data-share="copy"><span data-icon="link" data-size="20"></span>העתקת קישור</button>
+        </div>
+      </section>
       <section class="shelf" id="recent-block" hidden><div class="shelf__h"><h2>האזנתם לאחרונה</h2></div><div id="recent" class="shelf__row"></div></section>
       <section class="shelf" id="top10-block"><div class="shelf__h"><h2>10 פרקים שחובה לשמוע</h2><small class="shelf__note">הבחירה של העורכים</small></div><div id="top10" class="shelf__row shelf__row--rank"></div></section>
       <section class="block" id="browse-block"><h2 class="kicker">עיון לפי נושא</h2><div id="browse" class="browse"></div></section>
@@ -215,6 +227,23 @@
       <img id="photo-out" alt="התמונה עם מסגרת podtc">
       <div class="photo-place"><label>שם המקום על התמונה: <select id="photo-place"></select></label></div>
       <div class="photo-actions"><button id="photo-share" class="cta-btn">שיתוף</button><button id="photo-save" class="ghost-btn">שמירה</button></div>
+    </div>
+  </div>
+
+  <div id="share-sheet" class="share-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="ss-title">
+    <div class="share-sheet__card">
+      <button class="x share-sheet__x" aria-label="סגירה">✕</button>
+      <div class="ss-prev"><span id="ss-art" class="ss-art"></span><div><span class="ss-k" id="ss-k">podtc</span><h2 id="ss-title">שתפו</h2><p id="ss-sub"></p></div></div>
+      <div id="ss-bar" class="ss-grid sharebar" data-ctx="app">
+        <button class="sb sb--wa" data-share="wa"><span data-icon="chat" data-size="22"></span>וואטסאפ</button>
+        <button class="sb sb--fb" data-share="fb"><span data-icon="people" data-size="22"></span>פייסבוק</button>
+        <button class="sb sb--tg" data-share="tg"><span data-icon="send" data-size="22"></span>טלגרם</button>
+        <button class="sb sb--x" data-share="x"><span data-icon="hash" data-size="22"></span>X</button>
+        <button class="sb sb--mail" data-share="mail"><span data-icon="mail" data-size="22"></span>מייל</button>
+        <button class="sb sb--copy" data-share="copy"><span data-icon="link" data-size="22"></span>העתקה</button>
+        <button class="sb sb--native" data-share="native" hidden><span data-icon="share" data-size="22"></span>עוד…</button>
+      </div>
+      <div class="ss-qr"><div id="ss-qr"></div><small>או סרקו את הקוד מהטלפון</small></div>
     </div>
   </div>
 

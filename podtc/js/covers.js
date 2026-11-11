@@ -21,15 +21,37 @@
       <rect width="100" height="100" fill="var(--c,#1E3A8A)"/><rect width="100" height="100" fill="url(#cg)"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#fff" opacity=".12"/>
       <g class="cover__rings" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6">${rings.join('')}</g></svg>`;
   }
-  /* Illustrated artwork (no photos): the topic colour, a soft light, slowly drifting
-   contour rings and the topic's line icon. label shows the title on the art. */
+  /* Artwork = a living sound wave in the topic's colours (no photos).
+   Bars are seeded by the episode id, so every episode has its own "voice print". */
+  const PAIR = { '#B45309': '#F59E0B', '#2563EB': '#06B6D4', '#DB2777': '#F97316', '#15803D': '#84CC16', '#7C3AED': '#EC4899',
+    '#DC2626': '#FB923C', '#92400E': '#F59E0B', '#0F766E': '#22D3EE', '#1E3A8A': '#3B82F6', '#4D7C0F': '#EAB308', '#C2410C': '#FBBF24' };
+  function bars(seed, n) {
+    let h = hash(seed + 'w'); const rnd = () => (h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0) / 4294967296;
+    let out = '';
+    for (let i = 0; i < n; i++) {
+      const env = Math.sin(Math.PI * (i + .5) / n) * .6 + .4;
+      const v = Math.max(.18, Math.min(1, (.35 + rnd() * .65) * env));
+      out += `<i style="--h:${v.toFixed(2)};--d:${(0.7 + rnd() * 0.9).toFixed(2)}s;--o:${(-rnd() * 2).toFixed(2)}s"></i>`;
+    }
+    return out;
+  }
   function html(ep, opts = {}) {
     const { label = false, cls = '' } = opts;
     const cat = ep && window.PODTC_CATEGORIES && PODTC_CATEGORIES[ep.category];
-    const ic = window.PodIcons ? (ep && ep.id === 'briefing' ? PodIcons.svg('mic', 44, 1.4) : PodIcons.cat(ep && ep.category ? ep : 'city', 44)) : '';
+    const c = cat ? cat.color : '#1E3A8A', c2 = PAIR[c.toUpperCase()] || '#3B82F6';
+    const ic = window.PodIcons ? (ep && ep.id === 'briefing' ? PodIcons.svg('mic', 20, 1.8) : PodIcons.cat(ep && ep.category ? ep : 'city', 20)) : '';
     const sd = ep ? hash(ep.id) % 360 : 0;
-    return `<span class="cover cover--art ${cls}" style="--c:${cat ? cat.color : '#1E3A8A'};--r:${sd}deg" role="img" aria-label="${esc(ep ? ep.title : '')}">${pattern(ep ? ep.id : 'x')}<span class="cover__mark">${ic}</span>
+    return `<span class="cover cover--wave ${cls}" style="--c:${c};--c2:${c2};--r:${sd}deg" role="img" aria-label="${esc(ep ? ep.title : '')}">
+      <span class="cover__glow"></span><span class="cover__bars" aria-hidden="true">${bars(ep ? ep.id : 'x', 15)}</span>
+      <span class="cover__ic" aria-hidden="true">${ic}</span>
       ${label ? `<span class="cover__label"><small>podtc</small><b>${esc(ep.title)}</b></span>` : ''}</span>`;
+  }
+  /* only animate the waves that are on screen (battery & smoothness) */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('vis', e.isIntersecting)), { rootMargin: '80px' });
+    const scan = root => (root.querySelectorAll ? root.querySelectorAll('.cover--wave:not([data-io])') : []).forEach(el => { el.dataset.io = 1; io.observe(el); });
+    const start = () => { scan(document); new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => n.nodeType === 1 && (n.matches && n.matches('.cover--wave:not([data-io])') ? (n.dataset.io = 1, io.observe(n)) : scan(n))))).observe(document.body, { childList: true, subtree: true }); };
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
   }
   window.PodCovers = { html, tile, pattern };
 })();

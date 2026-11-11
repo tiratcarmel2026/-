@@ -191,8 +191,9 @@
     const d = await getJSON(`${base}/wp-json/wp/v2/posts?per_page=6&_fields=title,link,date`, 8000);
     return d.map(p => ({ title: decode(p.title.rendered), link: p.link, date: p.date, src: name }));
   }
-  async function fromGoogle() {
-    const d = await getJSON(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(GNEWS)}`, 9000);
+  const GNEWS2 = 'https://news.google.com/rss/search?q=%22%D7%98%D7%99%D7%A8%D7%AA+%D7%94%D7%9B%D7%A8%D7%9E%D7%9C%22&hl=he&gl=IL&ceid=IL:he';
+  async function fromGoogle(feed = GNEWS) {
+    const d = await getJSON(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`, 9000);
     if (d.status !== 'ok') throw new Error('rss');
     return d.items.map(i => {
       const m = i.title.match(/^(.*) - ([^-]+)$/);
@@ -200,13 +201,14 @@
     });
   }
   async function news() {
-    const results = await Promise.allSettled([...NEWS_SITES.map(fromWP), fromGoogle()]);
+    const results = await Promise.allSettled([...NEWS_SITES.map(fromWP), fromGoogle(), fromGoogle(GNEWS2)]);
     const seen = new Set();
     const items = results.flatMap(r => r.status === 'fulfilled' ? r.value : [])
       .filter(i => i.title && !seen.has(i.title) && seen.add(i.title))
-      .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+      .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 12);
+    window.PodNews = items.map(i => ({ ...i, ago: ago(i.date) })); window.dispatchEvent(new Event('pod:news'));
     LIVE.news = items.slice(0, 3).map(i => i.title);
-    $('#news-list').innerHTML = items.length ? items.map(i => `<li><a href="${esc(i.link)}" target="_blank" rel="noopener">
+    $('#news-list').innerHTML = items.length ? items.slice(0, 8).map(i => `<li><a href="${esc(i.link)}" target="_blank" rel="noopener">
         <b>${esc(i.title)}</b><small>${esc(i.src)} · ${ago(i.date)}</small></a></li>`).join('')
       : `<li class="news__empty">לא הצלחנו לטעון כותרות כרגע. אפשר לקרוא את החדשות ישירות במקורות:</li>`;
     $('#news-more').innerHTML = [
