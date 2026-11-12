@@ -1,5 +1,5 @@
 /* PODTC service worker — app shell offline; map tiles & Wikipedia cached as you go. */
-const V = 'podtc-v27';
+const V = 'podtc-v28';
 const SHELL = ['./', 'index.html', 'css/app.css', 'css/theme.css', 'css/theme-blue.css', 'css/podcast.css', 'css/news.css', 'css/vivid.css', 'css/a11y.css', 'js/a11y.js', 'js/city.js', 'js/muni.js', 'css/muni.css', 'assets/muni-logo.png', 'accessibility.html', 'assets/wordmark-navy.png', 'js/art.js', 'js/covers.js', 'js/extras.js', 'js/icons.js', 'assets/wordmark-white.png', 'js/geo.js', 'js/config.js', 'js/places.js', 'js/quiz.js', 'js/narrator.js', 'js/wiki.js', 'js/app.js', 'js/home.js', 'js/live.js', 'vendor/qrcode/qrcode.js', 'manifest.webmanifest', 'assets/wordmark.png', 'assets/logo-full.png', 'assets/icon-192.png', 'assets/icon-512.png',
   'vendor/leaflet/leaflet.css', 'vendor/leaflet/leaflet.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
@@ -7,7 +7,7 @@ self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Pr
 self.addEventListener('fetch', e => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.hostname.endsWith('basemaps.cartocdn.com') || url.hostname === 'server.arcgisonline.com') { // cache-first for tiles
+  if (url.hostname.endsWith('basemaps.cartocdn.com') || url.hostname === 'server.arcgisonline.com' || url.hostname === 'tile.openstreetmap.org') { // cache-first for tiles
     e.respondWith(caches.open(V + '-tiles').then(async c => (await c.match(req)) || fetch(req).then(r => { c.put(req, r.clone()); return r; })));
     return;
   }

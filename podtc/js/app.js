@@ -34,7 +34,8 @@
   let favs = new Set(store.get('favs', []));
   let queue = [], queueName = '';            // back-to-back playback ("listen from home")
   const byId = id => PLACES.find(p => p.id === id);
-  let mapStyle = store.get('mapStyle', 'sat');
+  if (!store.get('mapV2', false)) { store.set('mapV2', true); store.set('mapStyle', 'city'); }   // one-time move to the new default map
+  let mapStyle = store.get('mapStyle', 'city');
   let chunkEls = [];
   let follow = true; // map follows the user until they drag it
 
@@ -67,23 +68,26 @@
   const OSM = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
   const CARTO = '© <a href="https://carto.com/attributions">CARTO</a>';
   const STYLES = {
+    // default: the OpenStreetMap city map, with every street name in Hebrew, tinted to the site's blues
+    city: { icon: 'pin', label: 'מפת העיר', make: () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 20, maxNativeZoom: 19, attribution: OSM }) },
+    street: { icon: 'bulb', label: 'בהירה', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) },
     sat: { icon: 'globe', label: 'לוויין', make: () => L.layerGroup([
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 20, maxNativeZoom: 19, attribution: 'צילום אוויר © Esri, Maxar, Earthstar Geographics' }),
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png', {
         maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO })
     ]) },
-    street: { icon: 'pin', label: 'רחובות', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) },
     night: { icon: 'moon', label: 'לילה', make: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 20, maxNativeZoom: 19, subdomains: 'abcd', attribution: OSM + ' · ' + CARTO }) }
   };
   function setStyle(name, silent) {
-    if (!STYLES[name]) name = 'sat';
+    if (!STYLES[name]) name = 'city';
     if (baseLayer) map.removeLayer(baseLayer);
     baseLayer = STYLES[name].make().addTo(map);
     mapStyle = name; store.set('mapStyle', name);
-    document.body.classList.remove('style-sat', 'style-street', 'style-night');
+    document.body.classList.remove('style-sat', 'style-street', 'style-night', 'style-city');
     document.body.classList.add('style-' + name);
     const order = Object.keys(STYLES), next = STYLES[order[(order.indexOf(name) + 1) % order.length]];
     $('#style-icon').innerHTML = PodIcons.svg(next.icon, 18); $('#style-label').textContent = next.label; // the button shows what you switch TO
@@ -649,6 +653,7 @@
     const lon2x = (lon, z) => Math.floor((lon + 180) / 360 * 2 ** z);
     const lat2y = (lat, z) => { const t = lat * Math.PI / 180; return Math.floor((1 - Math.log(Math.tan(t) + 1 / Math.cos(t)) / Math.PI) / 2 * 2 ** z); };
     const tpl = {
+      city: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
       sat: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png'],
       street: ['https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'],
       night: ['https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png']

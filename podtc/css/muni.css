@@ -314,3 +314,13 @@ html.a11y-noimg .cover__art{visibility:hidden}
 @media (max-width:599px){.car{width:38px;height:38px}.car--prev{right:2px}.car--next{left:2px}}
 .np-sec.has-car .car{width:34px;height:34px}
 html.a11y-hc .car{border:2px solid #fff!important}
+
+/* ---------- the new city map: OpenStreetMap tinted to the site's blues ---------- */
+.style-city .leaflet-tile-pane{filter:saturate(.62) hue-rotate(-12deg) brightness(1.03) contrast(1.04)}
+.style-city .leaflet-container{background:#E8F3FC}
+.style-city .leaflet-tile-pane::after{content:'';position:absolute;inset:0;pointer-events:none}
+.leaflet-container{font-family:inherit}
+.pin{background:#fff!important;color:var(--blue)!important;border:3px solid var(--blue)!important;box-shadow:0 6px 14px -4px rgba(11,46,89,.55)!important}
+.pin--near,.pin.on,.pin--active{background:linear-gradient(135deg,var(--navy),var(--blue))!important;color:#fff!important;border-color:#fff!important}
+.leaflet-control-attribution{font-size:10px!important;background:rgba(255,255,255,.8)!important}
+.fchip,.fab,.status,.tour{border-radius:var(--bx,6px)!important}
