@@ -36,6 +36,9 @@
           : `<a class="qa__i" href="${u}" ${u.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}><span>${ic(i, 26)}</span><b>${t}</b></a>`).join('')}</div></nav>`);
     const hs = $('#hsearch'); if (hs) $('#mhero-search').appendChild(hs);
   }
+  // a resident's priorities first: notices, services and buses come right after the news
+  (function order() { const ref = document.getElementById('articles-block'); if (!ref) return; let after = ref.nextElementSibling && ref.nextElementSibling.classList.contains('notice') ? ref.nextElementSibling : ref;
+    ['services', 'bus-block', 'board-block'].forEach(id => { const el = document.getElementById(id); if (el) { after.insertAdjacentElement('afterend', el); after = el; } }); })();
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-qa]'); if (!b) return; const u = b.dataset.qa;
     if (u === '@map') { const t = document.querySelector('.tab[data-view="map"]'); if (t) t.click(); }

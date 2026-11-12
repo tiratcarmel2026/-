@@ -145,3 +145,24 @@ a{color:var(--blue)}
 html.a11y-hc .top__muni img{filter:none;background:#fff;border-radius:4px}
 @media (prefers-reduced-motion:reduce){.mhero__waves i{animation:none}}
 .art--lead .art__t{color:#fff!important}
+
+/* ---------- v18 fixes after a full-page audit ---------- */
+/* readable text everywhere (WCAG AA) */
+.svc__item small,.svc__item b+small{color:#51627A!important;opacity:1!important}
+.svc__item b{color:var(--navy)!important}
+.sb--wa,.sh--wa{background:#0E7A5F!important}
+.sb--tg,.sh--tg{background:#17719E!important}
+.sb--fb,.sh--fb{background:#1465D8!important}
+.st__logo{text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.rank__n{color:#fff!important;-webkit-text-stroke:2px var(--sky)!important}
+.shelf__note,.bus-note,.tile__m,.art__more,.notice__m,.bnote small{color:#51627A!important}
+.foot .link,#city-fb{color:var(--blue)!important;text-decoration:underline}
+/* desktop: topic shelves are one tidy row each instead of half-empty grids */
+@media (min-width:1024px){
+  #sections .shelf__row:not(.shelf__row--rank):not(.shelf__row--sm){grid-auto-flow:column!important;grid-template-columns:none!important;grid-auto-columns:calc((100% - 48px) / 4)!important;overflow-x:auto!important;scroll-snap-type:x proximity;padding-bottom:10px!important;row-gap:0}
+  #sections .tile{scroll-snap-align:start}
+  #sections .shelf{margin-bottom:8px}
+}
+@media (min-width:1500px){#sections .shelf__row:not(.shelf__row--rank):not(.shelf__row--sm){grid-auto-columns:calc((100% - 64px) / 5)!important}}
+/* quick actions never hide under the mini player on small phones */
+@media (max-width:599px){.qa__row{gap:14px 4px}.qa__i b{font-size:12.5px}}

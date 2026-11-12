@@ -303,3 +303,8 @@ podtc/
 - Logos: the municipality's logo sits beside the podtc logo in the masthead and the footer (`assets/muni-logo.png`).
 - Voice studio: 8 narration styles (news, storyteller, deep, bright, calm, kids, fast, standard), every Hebrew voice on the device with a sample button, pitch and speed sliders, a music toggle, and instructions for installing more voices.
 - All topic colours, tags and cards were remapped to the blue palette. Brand colours remain only on the WhatsApp, Facebook, Telegram and X share buttons.
+
+## v18 — fixes after a full-page audit
+- Contrast: service descriptions, small grey text and the WhatsApp, Telegram and Facebook share buttons now meet WCAG AA.
+- Desktop: each topic shelf is one scrollable row instead of a half-empty grid.
+- Order: services, bus lines and the notice board moved up, right after the articles.
