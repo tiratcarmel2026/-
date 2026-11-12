@@ -212,3 +212,7 @@ html.a11y-hc .rlogo__t b,html.a11y-hc .rlogo__t b i{color:#fff!important}
 @media (max-width:459px){.top__muni{display:flex!important}.top__muni img{height:28px!important}.rlogo__t small{display:none}.rlogo__t b{font-size:20px}.rlive{padding:0 10px}}
 @media (max-width:359px){.top__muni{display:none!important}}
 .home__inner>section.rhero:not(#x):not(#y){padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+/* the original podtc wordmark in the masthead */
+.rlogo--img .top__logo{height:40px!important;width:auto;display:block}
+@media (max-width:1023px){.rlogo--img .top__logo{height:30px!important}}
+@media (max-width:359px){.rlogo--img .top__logo{height:26px!important}}

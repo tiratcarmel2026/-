@@ -24,7 +24,7 @@
   /* ---------- masthead ---------- */
   if (top) {
     const oldLogo = top.querySelector('.top__logo');
-    const logo = `<a class="rlogo" href="./" aria-label="PODTC, דף הבית"><span class="rlogo__ic">${MIC(24)}</span><span class="rlogo__t"><b>POD<i>TC</i></b><small>THE CITY HAS A VOICE</small></span></a>`;
+    const logo = `<a class="rlogo rlogo--img" href="./" aria-label="podtc, דף הבית"><img class="top__logo" src="assets/wordmark-navy.png" alt="podtc"></a>`;
     if (oldLogo) oldLogo.outerHTML = logo; else top.insertAdjacentHTML('afterbegin', logo);
     top.insertAdjacentHTML('afterbegin', `<div class="util"><div class="util__in">
         <span class="util__r"><i class="util__dot"></i><b>הקול של העיר, בכל מקום</b><span class="util__sep">|</span><span>חדשות • פודקאסטים • רדיו</span></span>
