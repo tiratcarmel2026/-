@@ -115,6 +115,24 @@
   // the player's voice button and the library's voice box open the studio
   const bv = $('#btn-voice'); if (bv) bv.addEventListener('click', e => { e.stopImmediatePropagation(); openVoice(); }, true);
   const vb = document.querySelector('.voice-box'); if (vb) vb.insertAdjacentHTML('beforeend', `<button class="mini-btn vs-open" data-qa="@voice">אולפן הקולות: 8 סגנונות קריינות</button>`);
+  /* ---------- opening screen: logos only for 3 seconds, then straight into the site ---------- */
+  (function intro() {
+    const sp = $('#splash'), btn = $('#btn-start'); if (!sp || !btn || sp.hidden) return;
+    const deep = A.PLACES.some(p => '#' + p.id === location.hash);
+    if (deep) return;                      // QR / shared episode: playing sound needs one tap, so that screen keeps its button
+    sp.classList.add('splash--auto');
+    const lg = sp.querySelector('.splash__logo');
+    if (lg) lg.insertAdjacentHTML('afterend', `<span class="splash__sep" aria-hidden="true"></span><img class="splash__muni" src="assets/muni-logo.png" alt="עיריית טירת כרמל"><span class="splash__bar" aria-hidden="true"><i></i></span>`);
+    let done = false;
+    const enter = () => { if (done) return; done = true; btn.click(); };
+    const t = setTimeout(enter, 3000);
+    sp.addEventListener('click', () => { clearTimeout(t); enter(); });
+    // browsers allow sound only after a touch: unlock the narrator on the first one
+    const unlock = () => { try { N && N.unlock(); } catch (e) {} };
+    document.addEventListener('pointerdown', unlock, { once: true, capture: true });
+    document.addEventListener('keydown', unlock, { once: true, capture: true });
+  })();
+
   window.PodVoice = { open: openVoice, STYLES };
   if (window.PodIcons) PodIcons.hydrate();
 })();

@@ -166,3 +166,17 @@ html.a11y-hc .top__muni img{filter:none;background:#fff;border-radius:4px}
 @media (min-width:1500px){#sections .shelf__row:not(.shelf__row--rank):not(.shelf__row--sm){grid-auto-columns:calc((100% - 64px) / 5)!important}}
 /* quick actions never hide under the mini player on small phones */
 @media (max-width:599px){.qa__row{gap:14px 4px}.qa__i b{font-size:12.5px}}
+
+/* ---------- opening screen: logos only ---------- */
+.splash--auto{background:#fff!important;cursor:pointer}
+.splash--auto .splash__inner>*:not(.splash__logo):not(.splash__muni):not(.splash__sep):not(.splash__bar){display:none!important}
+.splash--auto .splash__inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:100%}
+.splash--auto .splash__logo{width:min(62vw,300px)!important;animation:lin .7s cubic-bezier(.2,.8,.2,1) both}
+.splash--auto .splash__sep{width:64px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--tch-2));animation:lin .7s .15s both}
+.splash--auto .splash__muni{width:min(52vw,230px);height:auto;animation:lin .7s .3s cubic-bezier(.2,.8,.2,1) both}
+.splash--auto .splash__bar{width:min(46vw,180px);height:4px;border-radius:4px;background:var(--wash-2);overflow:hidden;margin-top:14px}
+.splash--auto .splash__bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--blue),var(--tch));transform-origin:right;animation:lbar 3s linear both}
+@keyframes lin{from{opacity:0;transform:translateY(14px) scale(.96)}}
+@keyframes lbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+html.a11y-still .splash--auto .splash__bar i{transform:none}
+body:has(.splash--auto:not([hidden])) .a11y-fab{display:none}
