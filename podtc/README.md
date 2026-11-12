@@ -319,3 +319,9 @@ podtc/
 
 ## v22 — an illustration for every episode
 - `js/art.js` now holds a separate vector scene for each of the 35 episodes (tents of the 1949 transit camp, the almond tree in blossom, the Carmel fire with a firefighting plane, the spring tunnel at Ein Kedem, the Metronit, and so on). The 12 topic scenes remain as a fallback for future episodes.
+
+## v24 — "digital radio" front, built to the approved mock-up
+- `css/radio.css`, `js/radio.js`: navy and cyan on white. Utility bar, text logo "PODTC · THE CITY HAS A VOICE", main navigation, cyan LIVE button, "what's new" strip, welcome card ("העיר מדברת. אנחנו מקשיבים.") beside the PODTC radio card, three-point strip, "latest news", English eyebrows above section titles.
+- "PODTC radio" plays all 35 episodes one after another, starting from a different episode each day.
+- Player bar across the bottom on desktop: artwork, title, play, elapsed and total time, progress line with a knob, volume slider and copy-link button.
+- Default map changed to the OpenStreetMap city map (Hebrew street names); satellite, light and night remain.
