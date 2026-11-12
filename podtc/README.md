@@ -333,3 +333,6 @@ podtc/
 - **Colour**: navy and cyan still lead; sun, coral, green and violet accents appear on eyebrows, quick actions, figures, topic tiles, notices and cards (`css/pop.css`).
 - **Sharing**: floating share rail on wide screens, share rows in both main cards, share buttons on news cards and notices, a share button in the player bar.
 - **Motion**: scroll progress line, live clock, a marquee of topics, numbers that count up, moving colour in the welcome card, back-to-top button.
+
+## v26 — the daily update
+- Management screen, "העדכון היומי": title, date, speaker, text, and a recording made in the browser (microphone, listen, keep or discard) or an uploaded audio file. The newest entry is shown under the two main cards with a play button, share buttons and an archive of the previous seven. Without a recording the text is read by the device voice.

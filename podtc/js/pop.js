@@ -36,6 +36,28 @@
   }
   let dt = 0; new MutationObserver(() => { if (!dt) dt = setTimeout(() => { dt = 0; decorate(); }, 200); }).observe(home, { childList: true, subtree: true }); decorate();
 
+  /* ---------- the daily update: a recorded voice note from the municipality ---------- */
+  const DAILY = window.PODTC_DAILY || [];
+  if (DAILY.length) {
+    const fmtD = d => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); if (!m) return ''; const dt = new Date(+m[1], +m[2] - 1, +m[3]), today = new Date(); today.setHours(0, 0, 0, 0); const diff = Math.round((today - dt) / 864e5);
+      return diff === 0 ? 'היום' : diff === 1 ? 'אתמול' : dt.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }); };
+    const asEp = (d, i) => ({ id: 'daily-' + (d.date || i), category: 'news', title: d.title || 'העדכון היומי', subtitle: [fmtD(d.date), d.by].filter(Boolean).join(' · ') || 'העדכון היומי', lat: 32.761, lng: 34.9705, radius: 1,
+      script: d.text || d.title || 'העדכון היומי של עיריית טירת כרמל.', audio: d.audio || undefined, sources: [] });
+    const d0 = DAILY[0], rest = DAILY.slice(1, 8), ref = document.querySelector('.rhero');
+    const PL = '<svg viewBox="0 0 24 24" width="22" height="22" style="width:22px;height:22px;fill:currentColor;stroke:none" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+    if (ref) ref.insertAdjacentHTML('afterend', `<section class="daily" id="daily-block" aria-label="העדכון היומי">
+        <button class="daily__play" data-daily="0" aria-label="האזנה לעדכון היומי">${PL}</button>
+        <div class="daily__b"><span class="daily__k"><i></i>העדכון היומי${d0.audio ? ' · הקלטה' : ''}</span><h2>${esc(d0.title || 'מה חדש היום בטירת כרמל')}</h2>
+          <p class="daily__m">${esc([fmtD(d0.date), d0.by].filter(Boolean).join(' · '))}</p>${d0.text ? `<p class="daily__t">${esc(d0.text.length > 200 ? d0.text.slice(0, 200).replace(/\s+\S*$/, '') + '…' : d0.text)}</p>` : ''}
+          <span class="daily__eq" aria-hidden="true">${'<i></i>'.repeat(24)}</span></div>
+        <div class="daily__side" data-surl="${esc(BASE)}" data-stext="${esc('העדכון היומי של טירת כרמל: ' + (d0.title || ''))}"><span>שתפו</span>${row('daily__sb', [BTN[0], BTN[1], BTN[5]])}</div>
+        ${rest.length ? `<details class="daily__old"><summary>עדכונים קודמים (${rest.length})</summary>${rest.map((d, i) => `<button data-daily="${i + 1}"><b>${esc(d.title || 'עדכון')}</b><small>${esc(fmtD(d.date))}${d.audio ? ' · הקלטה' : ''}</small></button>`).join('')}</details>` : ''}
+      </section>`);
+    document.addEventListener('click', e => { const b = e.target.closest('[data-daily]'); if (!b) return; const i = +b.dataset.daily, ep = asEp(DAILY[i], i);
+      if (A.current && A.current.id === ep.id && A.isActive()) { const m = $('#mini-play'); if (m) m.click(); return; } A.select(ep); A.play(); });
+    const N = window.Narrator; if (N && N.on) N.on('state', s => { const on = (s === 'playing' || s === 'skipping') && A.current && String(A.current.id).indexOf('daily-') === 0; document.body.classList.toggle('daily-on', !!on); });
+  }
+
   /* ---------- scroll progress + back to top ---------- */
   document.body.insertAdjacentHTML('beforeend', `<div class="sprog" aria-hidden="true"><i></i></div><button class="totop" id="totop" aria-label="חזרה לראש העמוד" hidden>${ic('share', 20)}</button>`);
   const bar = $('.sprog i'), tt = $('#totop');

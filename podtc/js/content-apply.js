@@ -27,6 +27,7 @@
   if (Array.isArray(C.gallery)) CFG.gallery = C.gallery;
   if (Array.isArray(C.articles)) window.PODTC_ARTICLES = C.articles;
   if (Array.isArray(C.links)) window.PODTC_LINKS = C.links;
+  window.PODTC_DAILY = (C.daily || []).filter(d => d && (d.title || d.text || d.audio));
   if (C.settings) { CFG.social = Object.assign({}, CFG.social, ['tiktok', 'facebook', 'youtubeChannel'].reduce((o, k) => { if (C.settings[k]) o[k] = C.settings[k]; return o; }, {}));
     if (C.settings.radioStream) CFG.radio = { stream: C.settings.radioStream, name: C.settings.radioName || 'רדיו PODTC' }; }
 

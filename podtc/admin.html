@@ -100,6 +100,11 @@
     .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--cy);background:#fff;outline:0}
     .up{flex:none;display:grid;place-items:center;padding:0 12px;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap}
     .up.busy{opacity:.6;pointer-events:none}
+    .up--rec{border:0;background:#D6336C}.up--rec.on{background:#0B1F47;animation:recp 1s infinite}
+    @keyframes recp{50%{opacity:.6}}
+    .recbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;padding:10px;border-radius:12px;background:#fff;border:1.5px solid var(--cy)}
+    .recbox audio{flex:1;min-width:220px;height:40px}
+    .fld__c{flex-wrap:wrap}
     .tag{flex:none;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--wash);color:var(--muted)}
     .tag--ok{background:#D9F5EA;color:#0A7B55}.tag--new{background:#FFE9C2;color:#8A5A00}.tag--ed{background:#DCF4FC;color:#06688A}.tag--off{background:#FFE0E8;color:#A8214F}
     .empty{color:var(--muted);text-align:center;padding:20px;background:#fff;border-radius:14px;border:1px dashed var(--line);margin:0}
@@ -161,6 +166,7 @@
     <nav class="side" aria-label="תפריט ניהול">
       <button data-tab="dash" class="on"><i style="--c:#06B6E8"></i>לוח בקרה</button>
       <small>תוכן</small>
+      <button data-tab="daily"><i style="--c:#FF6B5E"></i>העדכון היומי</button>
       <button data-tab="eps"><i style="--c:#06B6E8"></i>פרקים</button>
       <button data-tab="notices"><i style="--c:#F5B301"></i>לוח המודעות</button>
       <button data-tab="articles"><i style="--c:#FF6B5E"></i>כתבות</button>

@@ -70,7 +70,7 @@
   function ensure() {
     C.episodes = C.episodes || {}; ['added', 'hidden', 'order'].forEach(k => { C.episodes[k] = C.episodes[k] || []; }); C.episodes.edits = C.episodes.edits || {};
     C.layout = C.layout || {}; C.layout.order = C.layout.order && C.layout.order.length ? C.layout.order : SECTIONS.map(s => s[0]); SECTIONS.forEach(s => { if (!C.layout.order.includes(s[0])) C.layout.order.push(s[0]); });
-    C.layout.hidden = C.layout.hidden || []; C.texts = C.texts || {}; C.settings = C.settings || {}; C.blocks = C.blocks || []; C.links = C.links || []; C.ticker = C.ticker || [];
+    C.layout.hidden = C.layout.hidden || []; C.texts = C.texts || {}; C.settings = C.settings || {}; C.blocks = C.blocks || []; C.daily = C.daily || []; C.links = C.links || []; C.ticker = C.ticker || [];
     if (!Array.isArray(C.notices)) C.notices = clone(CFG.notices || []); if (!Array.isArray(C.articles)) C.articles = clone(ARTICLES0); if (!Array.isArray(C.gallery)) C.gallery = clone(CFG.gallery || []);
   }
   const toast = (m, bad) => { const t = $('#toast'); t.textContent = m; t.className = 'toast show' + (bad ? ' bad' : ''); clearTimeout(toast.t); toast.t = setTimeout(() => { t.className = 'toast'; }, 4200); };
@@ -82,7 +82,7 @@
     if (f.type === 'area') ctl = `<textarea ${common} rows="${f.rows || 4}" placeholder="${esc(f.ph || '')}">${esc(v)}</textarea>`;
     else if (f.type === 'select') ctl = `<select ${common}>${f.options().map(([k, l]) => `<option value="${esc(k)}" ${k === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
     else ctl = `<input ${common} type="${f.type === 'date' ? 'date' : f.type === 'number' ? 'number' : 'text'}" ${f.type === 'number' ? 'step="any"' : ''} value="${esc(v)}" placeholder="${esc(f.ph || '')}" ${f.ltr ? 'dir="ltr"' : ''}>`;
-    const up = f.upload ? `<label class="up"><input type="file" accept="${f.upload === 'audio' ? 'audio/*' : 'image/*'}" data-up="${f.upload}" data-for="${id}" hidden>העלאת קובץ</label>` : '';
+    const up = f.upload ? `<label class="up"><input type="file" accept="${f.upload === 'audio' ? 'audio/*' : 'image/*'}" data-up="${f.upload}" data-for="${id}" hidden>העלאת קובץ</label>${f.upload === 'audio' ? `<button type="button" class="up up--rec" data-rec="${id}">● הקלטה</button>` : ''}` : '';
     return `<label class="fld${f.wide ? ' wide' : ''}"><span>${esc(f.label)}${f.help ? `<em>${esc(f.help)}</em>` : ''}</span><div class="fld__c">${ctl}${up}</div></label>`;
   }
   function listEditor(host, items, schema, opt) {
@@ -96,7 +96,7 @@
     paint(-1);
     host.onclick = e => {
       const b = e.target.closest('button'); if (!b) return; const it = e.target.closest('.item'), i = it ? +it.dataset.i : -1;
-      if (b.dataset.add != null) { items.push(opt.make ? opt.make() : {}); touch(); paint(items.length - 1); }
+      if (b.dataset.add != null) { const n = opt.make ? opt.make() : {}; if (opt.top) { items.unshift(n); touch(); paint(0); } else { items.push(n); touch(); paint(items.length - 1); } }
       else if (b.dataset.del != null) { e.preventDefault(); if (confirm('למחוק את הפריט?')) { items.splice(i, 1); touch(); paint(-1); } }
       else if (b.dataset.mv) { e.preventDefault(); const j = i + +b.dataset.mv; if (j < 0 || j >= items.length) return; [items[i], items[j]] = [items[j], items[i]]; touch(); paint(-1); }
     };
@@ -112,6 +112,33 @@
     lab.classList.remove('busy'); lab.lastChild.textContent = 'העלאת קובץ'; inp.value = '';
   });
 
+  // record straight from the microphone, listen, then keep or discard
+  let rec = null;
+  document.addEventListener('click', async e => {
+    const b = e.target.closest('[data-rec]'); if (!b) return; e.preventDefault();
+    if (rec && rec.btn === b) { rec.mr.stop(); return; }
+    if (rec) { toast('כבר מתבצעת הקלטה', true); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('הדפדפן הזה לא תומך בהקלטה. אפשר להעלות קובץ', true); return; }
+    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); } catch (x) { toast('אין גישה למיקרופון. אשרו אותה בדפדפן', true); return; }
+    const type = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+    const mr = new MediaRecorder(stream, type ? { mimeType: type } : {}), chunks = [], t0 = Date.now();
+    rec = { mr, btn: b }; b.classList.add('on');
+    const tick = setInterval(() => { const s = Math.round((Date.now() - t0) / 1000); b.textContent = `■ עצירה ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }, 500);
+    mr.ondataavailable = ev => { if (ev.data.size) chunks.push(ev.data); };
+    mr.onstop = () => {
+      clearInterval(tick); stream.getTracks().forEach(t => t.stop()); b.classList.remove('on'); b.textContent = '● הקלטה'; rec = null;
+      const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' }), ext = /mp4/.test(blob.type) ? 'm4a' : 'webm', url = URL.createObjectURL(blob);
+      const host = b.closest('.fld'); const old = host.querySelector('.recbox'); if (old) old.remove();
+      host.insertAdjacentHTML('beforeend', `<div class="recbox"><audio controls src="${url}"></audio><button type="button" class="btn btn--pri btn--sm" data-keep>שמירת ההקלטה</button><button type="button" class="btn btn--sm" data-drop>מחיקה</button></div>`);
+      const box = host.querySelector('.recbox');
+      box.querySelector('[data-drop]').onclick = () => { URL.revokeObjectURL(url); box.remove(); };
+      box.querySelector('[data-keep]').onclick = async ev => { const k = ev.target; k.disabled = true; k.textContent = 'מעלה…';
+        try { const path = await upload(new File([blob], 'recording.' + ext, { type: blob.type }), 'audio'); const target = document.getElementById(b.dataset.rec); target.value = path; target.dispatchEvent(new Event('input', { bubbles: true })); box.remove(); toast('ההקלטה נשמרה. לחצו "פרסום" כדי שתופיע באתר'); }
+        catch (x) { toast(x.message, true); k.disabled = false; k.textContent = 'שמירת ההקלטה'; } };
+    };
+    mr.start();
+  });
+
   /* ---------------- screens ---------------- */
   const episodes = () => { const E = C.episodes; const all = PLACES0.map(p => Object.assign({}, p, E.edits[p.id] || {}, { _base: true })).concat(E.added.map(a => Object.assign({ _added: true }, a)));
     if (E.order.length) all.sort((a, b) => { const i = E.order.indexOf(a.id), j = E.order.indexOf(b.id); return (i < 0 ? 1e6 : i) - (j < 0 ? 1e6 : j); }); return all; };
@@ -125,11 +152,13 @@
     dash() {
       const E = C.episodes, n = episodes().length - E.hidden.length;
       return `<h1>שלום, ${esc(user)}</h1><p class="lead">כאן מנהלים את התוכן של podtc. כל שינוי נשמר כטיוטה במחשב הזה. לחצו "תצוגה מקדימה" כדי לראות אותו באתר, ו"פרסום" כדי שכולם יראו.</p>
-        <div class="cards">${[['eps', n, 'פרקים'], ['notices', C.notices.length, 'מודעות'], ['articles', C.articles.length, 'כתבות'], ['gallery', C.gallery.length, 'תמונות בגלריה'], ['blocks', C.blocks.length, 'בלוקים חופשיים'], ['layout', C.layout.hidden.length, 'מדורים מוסתרים']]
+        <div class="cards">${[['daily', C.daily.length, 'עדכונים יומיים'], ['eps', n, 'פרקים'], ['notices', C.notices.length, 'מודעות'], ['articles', C.articles.length, 'כתבות'], ['gallery', C.gallery.length, 'תמונות בגלריה'], ['blocks', C.blocks.length, 'בלוקים חופשיים'], ['layout', C.layout.hidden.length, 'מדורים מוסתרים']]
           .map(([t, v, l]) => `<button class="card" data-tab="${t}"><b>${v}</b><span>${l}</span></button>`).join('')}</div>
         <div class="tips"><h3>איך זה עובד</h3><ol><li><b>עורכים</b> באחת הלשוניות שבצד.</li><li><b>תצוגה מקדימה</b> פותחת את האתר עם השינויים, רק אצלכם.</li><li><b>פרסום</b> שולח את השינויים לאתר. העדכון מופיע לכולם בתוך דקה או שתיים.</li></ol>
           <p>${C.updated ? `פורסם לאחרונה: ${new Date(C.updated).toLocaleString('he-IL')}${C.by ? ' · ' + esc(C.by) : ''}` : 'עדיין לא פורסם תוכן מהמערכת.'}</p></div>`;
     },
+    daily() { return `<h1>העדכון היומי</h1><p class="lead">עדכון קולי קצר שמופיע בראש האתר. מקליטים כאן בקול שלכם או מעלים הקלטה מוכנה, מוסיפים כותרת וטקסט, ולוחצים "פרסום". העדכון העליון ברשימה הוא זה שמוצג; הקודמים נשמרים בארכיון.</p><div id="host"></div>
+        <div class="tips"><h3>טיפים להקלטה</h3><ol><li>הקליטו בחדר שקט, כשהטלפון או המיקרופון קרובים לפה.</li><li>דקה עד שתיים זה האורך הנכון.</li><li>האזינו להקלטה לפני השמירה. אפשר למחוק ולהקליט שוב.</li></ol><p>אם אין הקלטה, העדכון יוקרא בקול האוטומטי לפי הטקסט שכתבתם.</p></div>`; },
     eps() { return `<h1>פרקים</h1><p class="lead">עריכת הטקסטים, הוספת פרקים חדשים, שינוי הסדר והעלאת הקלטות. פרק עם הקלטה מושמע בקול אמיתי במקום בהקראה האוטומטית.</p><div id="host"></div>`; },
     notices() { return `<h1>לוח המודעות</h1><p class="lead">המודעות מופיעות בלוח המודעות ובין המדורים בעמוד הראשי. הראשונה ברשימה מוצגת ראשונה.</p><div id="host"></div>`; },
     articles() { return `<h1>כתבות</h1><p class="lead">כתבות נבחרות במדור "החדשות האחרונות". כותרות חיות מהרשת מתווספות אליהן אוטומטית.</p><div id="host"></div>`; },
@@ -160,6 +189,10 @@
     }
   };
   const LISTS = {
+    daily: () => [C.daily, [{ k: 'title', label: 'כותרת', wide: true, ph: 'מה חדש היום בטירת כרמל' }, { k: 'date', label: 'תאריך', type: 'date' }, { k: 'by', label: 'מי מדבר', ph: 'שם הדובר או הדוברת' },
+      { k: 'audio', label: 'ההקלטה', help: 'הקלטה מהמיקרופון או קובץ', ltr: true, upload: 'audio', wide: true, ph: 'לחצו "הקלטה" או "העלאת קובץ"' }, { k: 'text', label: 'טקסט העדכון', type: 'area', rows: 6, wide: true, help: 'מוצג כתמליל, ומוקרא אם אין הקלטה' }],
+      { title: d => (d.date ? d.date.split('-').reverse().join('.') + ' · ' : '') + (d.title || 'עדכון חדש'), add: 'עדכון חדש', badge: d => d.audio ? '<span class="tag tag--ok">הקלטה</span>' : '<span class="tag">טקסט בלבד</span>',
+        make: () => ({ date: new Date().toISOString().slice(0, 10), title: '', text: '' }), top: true }],
     notices: () => [C.notices, [{ k: 'title', label: 'כותרת', wide: true }, { k: 'text', label: 'פירוט', type: 'area', rows: 3, wide: true }, { k: 'tag', label: 'תחום', ph: 'חינוך, תרבות…' }, { k: 'date', label: 'תאריך', type: 'date' }, { k: 'src', label: 'מקור', ph: 'עיריית טירת כרמל' }, { k: 'url', label: 'קישור לפרטים', ltr: true }],
       { title: n => n.title, add: 'מודעה חדשה', make: () => ({ date: new Date().toISOString().slice(0, 10), tag: 'עירייה', src: 'עיריית טירת כרמל' }) }],
     articles: () => [C.articles, [{ k: 'title', label: 'כותרת', wide: true }, { k: 'src', label: 'מקור', ph: 'שם האתר או העיתון' }, { k: 'link', label: 'קישור לכתבה', ltr: true }, { k: 'ep', label: 'פרק קשור', type: 'select', options: () => [['', 'ללא']].concat(episodes().map(p => [p.id, p.title])) }], { title: a => a.title, add: 'כתבה חדשה' }],
