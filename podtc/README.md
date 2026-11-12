@@ -325,3 +325,11 @@ podtc/
 - "PODTC radio" plays all 35 episodes one after another, starting from a different episode each day.
 - Player bar across the bottom on desktop: artwork, title, play, elapsed and total time, progress line with a knob, volume slider and copy-link button.
 - Default map changed to the OpenStreetMap city map (Hebrew street names); satellite, light and night remain.
+
+## v25 — content management, speech fix, colour accents, sharing
+- **Management screen** (`admin.html`, `js/admin.js`): sign in with the GitHub user name and a fine-grained access token (Contents: Read and write on this repository). The screen edits episodes (text, order, hide, add, upload an mp3 recording), notices, articles, gallery, links, free blocks placed after any section, the "what's new" strip, section order and visibility, fixed texts and settings. Drafts stay in the manager's browser, "preview" shows them on the real site, and "publish" writes `js/content.js` to the deploy branch through the GitHub API. `js/content-apply.js` merges that file into the built-in content before the app starts.
+- Because the screen commits straight to `claude/nicky-cleanup-game-g4cvvu`, fetch and merge that branch before pushing code to it.
+- **Speech**: every sentence is watched. A silent primer runs inside the tap so the first sentence is allowed on phones; a sentence that never starts is retried once without a fixed voice; if it still fails the music stops and the listener is told and shown the transcript (`silent` event).
+- **Colour**: navy and cyan still lead; sun, coral, green and violet accents appear on eyebrows, quick actions, figures, topic tiles, notices and cards (`css/pop.css`).
+- **Sharing**: floating share rail on wide screens, share rows in both main cards, share buttons on news cards and notices, a share button in the player bar.
+- **Motion**: scroll progress line, live clock, a marquee of topics, numbers that count up, moving colour in the welcome card, back-to-top button.

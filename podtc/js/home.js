@@ -242,7 +242,8 @@
     ['phone', 'משטרה 100 · כבאות 102', 'מספרי חירום', 'tel:100']
   ];
   function links() {
-    $('#links').innerHTML = LINKS.map(([e, t, d, u]) =>
+    const all = (window.PODTC_LINKS || []).map(l => [l.icon || 'link', l.title, l.text || '', l.url]).concat(LINKS);   // links added in the management screen come first
+    $('#links').innerHTML = all.filter(l => l[1] && l[3]).map(([e, t, d, u]) =>
       `<a class="lnk" href="${u}" ${u.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}><span>${PodIcons.svg(e, 22)}</span><b>${t}</b><small>${d}</small></a>`).join('');
   }
 

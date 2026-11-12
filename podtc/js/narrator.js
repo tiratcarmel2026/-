@@ -5,7 +5,7 @@
 (function () {
   const synth = window.speechSynthesis;
   let voice = null, chunks = [], idx = 0, audioEl = null, state = 'idle';
-  let listeners = { state: [], progress: [], chunk: [], voices: [] };
+  let listeners = { state: [], progress: [], chunk: [], voices: [], silent: [] };
   const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
                set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
   const RATE_KEY = 'podtc.rate';
@@ -67,20 +67,47 @@
     return out;
   }
 
+  /* Speech can fail silently (no Hebrew voice, the browser's speech engine stuck after a pause, or a
+     first sentence spoken outside a tap). Each sentence is watched: if it never starts we retry once,
+     without a fixed voice; if it still does not start, the music stops and the app is told ("silent"). */
+  let watch = 0, tries = 0;
   function speakNext() {
     if (idx >= chunks.length) { setState('ended'); return; }
     emit('chunk', idx);
-    const u = new SpeechSynthesisUtterance(chunks[idx]);
+    const my = idx, u = new SpeechSynthesisUtterance(chunks[idx]);
     u.lang = voice ? voice.lang : 'he-IL'; u.rate = rate; u.pitch = pitch;
-    if (voice) u.voice = voice;
+    if (voice && tries === 0) u.voice = voice;
+    let started = false;
+    const ok = () => { started = true; tries = 0; clearTimeout(watch); };
+    u.onstart = ok;
+    u.onboundary = ok;
     u.onend = () => {
-      if (state !== 'playing') return;
+      clearTimeout(watch); tries = 0;
+      if (state !== 'playing' || my !== idx) return;
       const gap = paraEnds.has(idx) ? 650 : 220;   // breathe between sentences, longer between paragraphs
       idx++; emit('progress', idx / chunks.length);
       clearTimeout(speakNext.t); speakNext.t = setTimeout(() => { if (state === 'playing') speakNext(); }, gap);
     };
-    u.onerror = (e) => { if (e.error === 'interrupted' || e.error === 'canceled') return; idx++; speakNext(); };
-    try { synth.speak(u); } catch (e) { setState('unsupported'); }
+    u.onerror = (e) => {
+      if (e.error === 'interrupted' || e.error === 'canceled') return;
+      clearTimeout(watch);
+      if (tries < 1) { tries++; setTimeout(() => { if (state === 'playing' && my === idx) speakNext(); }, 250); return; }
+      silent(e.error || 'error');
+    };
+    try { if (synth.paused) synth.resume(); synth.speak(u); } catch (e) { setState('unsupported'); return; }
+    clearTimeout(watch);
+    watch = setTimeout(() => {
+      if (started || state !== 'playing' || my !== idx) return;
+      if (synth.speaking && !synth.pending) return;                 // some engines never fire onstart: it is speaking, leave it
+      if (tries < 1) { tries++; try { synth.cancel(); synth.resume(); } catch (e) {} setTimeout(() => { if (state === 'playing' && my === idx) speakNext(); }, 200); }
+      else silent('no-start');
+    }, 4500);
+  }
+  function silent(why) {
+    tries = 0; clearTimeout(watch);
+    try { synth.cancel(); } catch (e) {}
+    setState('paused');                                              // also stops the music bed
+    emit('silent', why);
   }
 
   /* jump straight to sentence i (tap on transcript) */
@@ -93,6 +120,7 @@
   }
   function stop() {
     if (audioEl) { audioEl.pause(); audioEl = null; }
+    clearTimeout(watch); tries = 0;
     if (synth) synth.cancel();
     chunks = []; idx = 0; setState('idle');
   }
@@ -117,6 +145,8 @@
     paraEnds = split.lastEnds || new Set();
     idx = 0; setState('playing'); emit('progress', 0);
     // podcast feel: a short sting, then the voice over a very soft music bed
+    tries = 0;
+    try { const pr = new SpeechSynthesisUtterance(' '); pr.volume = 0; pr.lang = 'he-IL'; if (synth.paused) synth.resume(); synth.speak(pr); } catch (e) {}
     if (music && Studio.ready()) { Studio.sting(); Studio.bed(true); clearTimeout(speakNext.t); speakNext.t = setTimeout(() => { if (state === 'playing') speakNext(); }, 1500); }
     else speakNext();
   }
@@ -157,7 +187,7 @@
 
   function pause() {
     if (audioEl) { audioEl.pause(); setState('paused'); return; }
-    if (synth && state === 'playing') { setState('paused'); synth.cancel(); } // resume restarts current sentence (more reliable than synth.pause on mobile)
+    if (synth && state === 'playing') { clearTimeout(watch); setState('paused'); synth.cancel(); } // resume restarts current sentence (more reliable than synth.pause on mobile)
   }
   function resume() {
     if (audioEl) { audioEl.play(); setState('playing'); return; }

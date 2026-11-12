@@ -237,7 +237,7 @@
 
   /* ================= current articles ================= */
   // hand-picked recent coverage (always shown) + live headlines from the web when they load
-  const PICKS = [
+  const PICKS = window.PODTC_ARTICLES || [
     { title: 'פי 3 תושבים וחוף ים: תוכנית המתאר של טירת כרמל אושרה', src: 'מרכז הנדל"ן', link: 'https://www.nadlancenter.co.il/article/8168', ep: 'beach-plan' },
     { title: '1,200 דירות בטירת כרמל: אושרה תוכנית הענק של נופי רוממה וצמח המרמן', src: 'מרכז הנדל"ן', link: 'https://www.nadlancenter.co.il/article/15566', ep: 'weizmann-towers' },
     { title: 'תושבי הצפון נוהרים לרחוב שיהפוך לדיזנגוף', src: 'מעריב', link: 'https://www.maariv.co.il/economy/realestate/article-1350591', ep: 'herzl-street' },

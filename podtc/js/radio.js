@@ -112,5 +112,12 @@
       try { await navigator.clipboard.writeText(url); A.toast('הקישור הועתק'); } catch (e) { prompt('העתיקו את הקישור:', url); }
     });
   }
+  /* speech did not start on this device: say so clearly and offer the transcript, instead of music with no voice */
+  if (N && N.on) N.on('silent', () => {
+    const he = N.hebrewVoices ? N.hebrewVoices().length : 0;
+    A.toast(he ? 'ההקראה לא התחילה. לחצו שוב על הפעלה, או קראו את התמליל' : 'אין במכשיר קול בעברית, ולכן אי אפשר להקריא. אפשר לקרוא את התמליל');
+    A.openNow(); setTimeout(() => { const t = document.getElementById('transcript'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
+    if (!he && window.PodVoice) setTimeout(() => PodVoice.open(), 2600);
+  });
   if (window.PodIcons) PodIcons.hydrate();
 })();
