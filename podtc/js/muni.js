@@ -121,6 +121,38 @@
     document.addEventListener('keydown', unlock, { once: true, capture: true });
   })();
 
+  /* ---------- carousels: right / left buttons on every scrolling row of episodes ---------- */
+  (function carousels() {
+    const home = $('#home'); if (!home) return;
+    const arrow = d => `<svg viewBox="0 0 24 24" width="22" height="22" style="width:22px;height:22px" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+    function sync(row) {
+      const box = row.parentElement, pv = box.querySelector(':scope > .car--prev'), nx = box.querySelector(':scope > .car--next'); if (!pv || !nx) return;
+      const max = row.scrollWidth - row.clientWidth, pos = Math.abs(row.scrollLeft), scrolls = max > 8 && getComputedStyle(row).overflowX !== 'visible';
+      pv.hidden = nx.hidden = !scrolls; if (!scrolls) return;
+      pv.disabled = pos < 20; nx.disabled = pos > max - 20;
+      const art = row.querySelector('.tile__art, .tour-tile__art, .cover'), h = art ? art.getBoundingClientRect().height : row.clientHeight;
+      const top = row.offsetTop + Math.max(22, h / 2) + 'px'; pv.style.top = nx.style.top = top;
+    }
+    function attach(row) {
+      if (row.dataset.car) return; const box = row.parentElement; if (!box) return;
+      row.dataset.car = 1; box.classList.add('has-car');
+      const name = (box.querySelector('h2, h3') || {}).textContent || 'פרקים';
+      // RTL: the list starts on the right, so "next" moves left
+      box.insertAdjacentHTML('beforeend', `<button class="car car--prev" type="button" aria-label="הקודמים: ${esc(name.trim())}">${arrow('M9 6l6 6-6 6')}</button><button class="car car--next" type="button" aria-label="הבאים: ${esc(name.trim())}">${arrow('M15 6l-6 6 6 6')}</button>`);
+      const step = dir => row.scrollBy({ left: dir * Math.max(240, row.clientWidth * .85), behavior: 'smooth' });
+      box.querySelector(':scope > .car--prev').addEventListener('click', () => step(1));
+      box.querySelector(':scope > .car--next').addEventListener('click', () => step(-1));
+      row.addEventListener('scroll', () => sync(row), { passive: true });
+      sync(row);
+    }
+    const scan = () => document.querySelectorAll('#home .shelf__row, #now .shelf__row').forEach(r => { attach(r); sync(r); });
+    let t = 0; const later = () => { if (!t) t = setTimeout(() => { t = 0; scan(); }, 150); };
+    new MutationObserver(later).observe(home, { childList: true, subtree: true });
+    const now = $('#now'); if (now) new MutationObserver(later).observe(now, { childList: true, subtree: true });
+    window.addEventListener('resize', later); window.addEventListener('pod:select', later);
+    scan(); setTimeout(scan, 1200);
+  })();
+
   window.PodVoice = { open: openVoice, STYLES };
   if (window.PodIcons) PodIcons.hydrate();
 })();

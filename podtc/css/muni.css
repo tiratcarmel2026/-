@@ -301,3 +301,16 @@ html.a11y-noimg .cover__art{visibility:hidden}
 @keyframes a-bounce{50%{translate:0 -10px;rotate:40deg}}
 .a-ball,.a-beat,.a-sun,.a-flame,.a-flag,.a-ring{transform-box:fill-box;transform-origin:center}
 .a-flame{transform-origin:50% 100%}.a-flag{transform-origin:0 50%}
+
+/* ---------- carousel buttons ---------- */
+.has-car{position:relative}
+.car{position:absolute;z-index:6;transform:translateY(-50%);width:44px;height:44px;border-radius:var(--bx,6px);border:0;display:grid;place-items:center;cursor:pointer;
+  background:var(--navy);color:#fff;box-shadow:0 8px 20px -8px rgba(11,46,89,.7);transition:background .15s,transform .15s,opacity .15s}
+.car[hidden]{display:none}
+.car--prev{right:4px}.car--next{left:4px}
+.car:hover:not(:disabled){background:var(--blue);transform:translateY(-50%) scale(1.08)}
+.car:disabled{opacity:.28;cursor:default;box-shadow:none}
+.car:focus-visible{outline:3px solid var(--tch);outline-offset:2px}
+@media (max-width:599px){.car{width:38px;height:38px}.car--prev{right:2px}.car--next{left:2px}}
+.np-sec.has-car .car{width:34px;height:34px}
+html.a11y-hc .car{border:2px solid #fff!important}
