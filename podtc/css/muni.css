@@ -292,3 +292,12 @@ html.a11y-noimg .cover__art{visibility:hidden}
 .cover--art2 .cover__bars,.cover--art2:has(.cover__label) .cover__bars{inset:auto 7% 5% 7%!important;height:12%!important;align-items:flex-end}
 .cover--art2 .cover__bars i{transform-origin:bottom}
 .cover__art{scale:var(--fx,1) 1}
+/* drawing animations use the individual transform properties, so they add to each shape's own position */
+@keyframes a-pulse{50%{scale:1.1}}
+@keyframes a-drift{to{translate:14px 0}}
+@keyframes a-flick{to{scale:.92 1.08;rotate:-3deg}}
+@keyframes a-wave{to{scale:.94 1}}
+@keyframes a-ring{from{scale:.7;opacity:.6}to{scale:1.25;opacity:0}}
+@keyframes a-bounce{50%{translate:0 -10px;rotate:40deg}}
+.a-ball,.a-beat,.a-sun,.a-flame,.a-flag,.a-ring{transform-box:fill-box;transform-origin:center}
+.a-flame{transform-origin:50% 100%}.a-flag{transform-origin:0 50%}

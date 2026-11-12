@@ -316,3 +316,6 @@ podtc/
 ## v21 — illustrated topic scenes
 - `js/art.js`: one hand-drawn vector scene per podcast topic (12 scenes), in the site's blues, with small looping motion. They are SVG, so they are sharp at any size and work offline.
 - Covers show the topic's scene with the live sound wave as a small strip along the bottom. Episodes of the same topic alternate a mirrored version.
+
+## v22 — an illustration for every episode
+- `js/art.js` now holds a separate vector scene for each of the 35 episodes (tents of the 1949 transit camp, the almond tree in blossom, the Carmel fire with a firefighting plane, the spring tunnel at Ein Kedem, the Metronit, and so on). The 12 topic scenes remain as a fallback for future episodes.
