@@ -33,11 +33,11 @@
     ['21', 'טירת כרמל', 'חיפה', 'עוצר בתחנת בסיס תובלה', 'c'],
     ['921', 'טירת כרמל', 'חיפה', 'עוצר בתחנת בסיס תובלה', 'i']
   ];
-  const KIND = { c: ['עירוני', '#15803D'], r: ['אזורי', '#2563EB'], i: ['בין־עירוני', '#C2410C'] };
+  const KIND = { c: ['עירוני', '#0E86B8'], r: ['אזורי', '#2563EB'], i: ['בין־עירוני', '#12407A'] };
   const busUrl = n => `https://busnearby.co.il/%D7%A7%D7%95%D7%95%D7%99%D7%9D/%D7%98%D7%99%D7%A8%D7%AA%20%D7%9B%D7%A8%D7%9E%D7%9C`;
   const busRow = ([n, a, b, note, k]) => `<a class="bus" style="--c:${KIND[k][1]}" href="${busUrl()}" target="_blank" rel="noopener" data-q="${esc(n + ' ' + a + ' ' + b + ' ' + note + ' ' + KIND[k][0])}">
       <b class="bus__n">${n}</b><span class="bus__r"><strong>${esc(a)} <i aria-hidden="true">⇄</i> ${esc(b)}</strong><small>${KIND[k][0]} · ${esc(note)}</small></span></a>`;
-  before(`<section class="shelf block" id="bus-block" style="--c:#15803D">
+  before(`<section class="shelf block" id="bus-block" style="--c:#0E86B8">
       <div class="shelf__h"><h2>קווי אוטובוס <small>${BUS.length} קווים שעוברים בטירת כרמל</small></h2></div>
       <div class="bus-tools">
         <label class="bus-find">${ic('search', 18)}<input id="bus-q" type="search" placeholder="מספר קו או יעד, למשל 45 או נשר" aria-label="חיפוש קו אוטובוס"></label>
@@ -48,10 +48,10 @@
       <div class="bus-grid" id="bus-grid">${BUS.map(busRow).join('')}</div>
       <p class="bus-empty" id="bus-empty" hidden>לא נמצא קו מתאים.</p>
       <div class="bus-more">
-        <a class="pillc" style="--c:#15803D" href="${busUrl()}" target="_blank" rel="noopener">${ic('bus', 18)}זמני הגעה בזמן אמת</a>
+        <a class="pillc" style="--c:#0E86B8" href="${busUrl()}" target="_blank" rel="noopener">${ic('bus', 18)}זמני הגעה בזמן אמת</a>
         <a class="pillc" style="--c:#2563EB" href="https://www.bus.co.il/otobusimmvc/Lines/0/0/972478/Tirat%20Carmel" target="_blank" rel="noopener">${ic('calendar', 18)}לוחות זמנים מלאים</a>
-        <a class="pillc" style="--c:#7C3AED" href="https://www.rail.co.il/" target="_blank" rel="noopener">${ic('train', 18)}רכבת: חוף הכרמל</a>
-        <a class="pillc" style="--c:#C2410C" href="tel:*8787">${ic('phone', 18)}מוקד כל־קו <bdi dir="ltr">*8787</bdi></a>
+        <a class="pillc" style="--c:#1E6FC2" href="https://www.rail.co.il/" target="_blank" rel="noopener">${ic('train', 18)}רכבת: חוף הכרמל</a>
+        <a class="pillc" style="--c:#12407A" href="tel:*8787">${ic('phone', 18)}מוקד כל־קו <bdi dir="ltr">*8787</bdi></a>
       </div>
       <p class="shelf__note bus-note">המטרונית (קו 1) והרכבת עוצרות במרכזית חוף הכרמל, ומשם ממשיכים לעיר בקווים 45, 47 ו־49. המידע לפי מאגרי תחבורה ציבורית פתוחים. מסלולים וזמנים משתנים, ולכן כדאי לבדוק לפני היציאה.</p>
     </section>`, 'services');
@@ -67,13 +67,13 @@
   /* ================= 3. the city in facts ================= */
   const FACTS = [
     ['31,579', 'תושבים', 'נכון ל־1.10.2026, לפי הביטוח הלאומי', '#2563EB'],
-    ['28%', 'ילדים ונוער', 'עד גיל 18', '#DB2777'],
-    ['16%', 'אזרחים ותיקים', 'מתושבי העיר', '#C2410C'],
-    ['1949', 'העולים הראשונים', 'מרכזי קליטה ומעברות', '#B45309'],
-    ['1954', 'מועצה מקומית', 'איחוד מרכזי הקליטה', '#0F766E'],
-    ['1992', 'הכרזה כעיר', 'טירת כרמל הופכת לעיר', '#7C3AED'],
-    ['86,000', 'תושבים בעתיד', 'היעד של תוכנית המתאר', '#15803D'],
-    ['12,000', 'דירות חדשות', 'מתוכננות בתוכנית המתאר', '#DC2626']
+    ['28%', 'ילדים ונוער', 'עד גיל 18', '#2A8AD6'],
+    ['16%', 'אזרחים ותיקים', 'מתושבי העיר', '#12407A'],
+    ['1949', 'העולים הראשונים', 'מרכזי קליטה ומעברות', '#12407A'],
+    ['1954', 'מועצה מקומית', 'איחוד מרכזי הקליטה', '#0A6E9E'],
+    ['1992', 'הכרזה כעיר', 'טירת כרמל הופכת לעיר', '#1E6FC2'],
+    ['86,000', 'תושבים בעתיד', 'היעד של תוכנית המתאר', '#0E86B8'],
+    ['12,000', 'דירות חדשות', 'מתוכננות בתוכנית המתאר', '#1557A8']
   ];
   const INFO = [
     ['pin', 'איפה אנחנו', 'מדרום לחיפה, בין כביש 4 ומישור החוף ממערב לבין מורדות הר הכרמל ממזרח, ומצפון למועצה האזורית חוף הכרמל.'],
@@ -86,7 +86,7 @@
     ['star', 'אנשים', 'מבני העיר: הכדורגלנים ראובן עטר, רועי עטר, מרקו בלבול, רפי כהן וחיים מגרלשווילי, והשחקן והקומיקאי שלום אסייג.'],
     ['crane', 'העיר של מחר', 'תוכנית המתאר מתכננת חוף רחצה עירוני, טיילת, שכונה חדשה במתחם תע"ש והתחדשות עירונית רחבה במרכז.']
   ];
-  before(`<section class="shelf block" id="city-block" style="--c:#1E3A8A">
+  before(`<section class="shelf block" id="city-block" style="--c:#123E7C">
       <div class="shelf__h"><h2>טירת כרמל בקצרה <small>מספרים, עובדות ומה שכדאי לדעת</small></h2></div>
       <div class="facts">${FACTS.map(([n, l, d, c]) => `<div class="fact" style="--c:${c}"><b>${n}</b><span>${l}</span><small>${d}</small></div>`).join('')}</div>
       <div class="infos">${INFO.map(([i, t, d]) => `<details class="info"><summary>${ic(i, 20)}<b>${t}</b></summary><p>${esc(d)}</p></details>`).join('')}</div>
@@ -101,7 +101,7 @@
     const dt = new Date(+m[1], +m[2] - 1, +m[3]), days = Math.round((Date.now() - dt) / 864e5);
     return [days <= 0 ? 'היום' : days === 1 ? 'אתמול' : days < 7 ? `לפני ${days} ימים` : `${+m[3]} ב${MONTHS[+m[2] - 1]}`, days <= 31]; };
   const NOTICES = (CFG.notices || []).slice();
-  const TAGC = ['#DC2626', '#2563EB', '#7C3AED', '#0F766E', '#C2410C', '#DB2777'];
+  const TAGC = ['#1557A8', '#2563EB', '#1E6FC2', '#0A6E9E', '#12407A', '#2A8AD6'];
   const notice = (n, i) => { const [w, fresh] = when(n.date), c = TAGC[i % TAGC.length], ep = n.ep && A.PLACES.find(p => p.id === n.ep);
     return `<aside class="notice" style="--c:${c}" aria-label="מודעת עירייה">
       <span class="notice__pin" aria-hidden="true">${ic('news', 22)}</span>
@@ -112,20 +112,20 @@
   const SLOTS = ['recent-block', 'top10-block', 'browse-block', 'shorts-block', 'radio', 'kids'];
   NOTICES.slice(0, SLOTS.length).forEach((n, i) => before(notice(n, i), SLOTS[i]));
   // the board itself: every notice + the municipality's channels
-  before(`<section class="shelf block" id="board-block" style="--c:#DC2626">
+  before(`<section class="shelf block" id="board-block" style="--c:#1557A8">
       <div class="shelf__h"><h2>לוח המודעות של העירייה <small>עדכונים מהחודש האחרון</small></h2></div>
       <div class="board">${NOTICES.map((n, i) => { const [w, fresh] = when(n.date); return `<a class="bnote" style="--c:${TAGC[i % TAGC.length]}" href="${esc(n.url || '#')}" target="_blank" rel="noopener">
         <span class="bnote__k">${esc(n.tag || 'עירייה')}${fresh ? '<em>חדש</em>' : ''}</span><b>${esc(n.title)}</b><small>${w}${n.src ? ' · ' + esc(n.src) : ''}</small></a>`; }).join('')}</div>
       <div class="bus-more">
         <a class="pillc" style="--c:#1877F2" href="https://www.facebook.com/${FB}" target="_blank" rel="noopener">${ic('facebook', 18)}כל המודעות בפייסבוק של העירייה</a>
         <a class="pillc" style="--c:#111827" href="https://www.tiktok.com/@${(CFG.social && CFG.social.tiktok) || 'tiratcarmel.muni'}" target="_blank" rel="noopener">${ic('tiktok', 18)}טיקטוק העירייה</a>
-        <a class="pillc" style="--c:#1E3A8A" href="https://www.tirat-carmel.muni.il/" target="_blank" rel="noopener">${ic('building', 18)}הודעות באתר העירייה</a>
+        <a class="pillc" style="--c:#123E7C" href="https://www.tirat-carmel.muni.il/" target="_blank" rel="noopener">${ic('building', 18)}הודעות באתר העירייה</a>
       </div></section>`, 'live');
 
   /* ================= 5. photo gallery ================= */
   const G = CFG.gallery || [];
   const fbPlugin = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent('https://www.facebook.com/' + FB)}&tabs=timeline&width=500&height=640&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false`;
-  after(`<section class="shelf block" id="gallery-block" style="--c:#DB2777">
+  after(`<section class="shelf block" id="gallery-block" style="--c:#2A8AD6">
       <div class="shelf__h"><h2>גלריית העיר <small>תמונות מעמוד הפייסבוק של העירייה</small></h2></div>
       ${G.length ? `<div class="gal">${G.map((g, i) => `<button class="gal__i" data-gi="${i}"><img src="${esc(g.src)}" alt="${esc(g.caption || 'תמונה מטירת כרמל')}" loading="lazy" onerror="this.closest('.gal__i').remove()"><span>${esc(g.caption || '')}</span></button>`).join('')}</div>` : ''}
       <div class="galfb">
@@ -133,9 +133,9 @@
           <div class="galfb__ph"><span>${ic('camera', 30)}</span><b>התמונות נטענות מפייסבוק</b><small>אם העמוד לא נטען, פתחו את האלבומים בכפתורים שלצד</small></div></div>
         <div class="galfb__side">
           <a class="galbtn" style="--c:#1877F2" href="https://www.facebook.com/${FB}/photos" target="_blank" rel="noopener">${ic('camera', 22)}<b>כל התמונות</b><small>אלבומי העירייה בפייסבוק</small></a>
-          <a class="galbtn" style="--c:#DB2777" href="https://www.facebook.com/${FB}/videos" target="_blank" rel="noopener">${ic('youtube', 22)}<b>סרטונים</b><small>וידאו מאירועי העיר</small></a>
-          <a class="galbtn" style="--c:#7C3AED" href="https://www.facebook.com/${FB}/events" target="_blank" rel="noopener">${ic('calendar', 22)}<b>אירועים</b><small>מה קורה בקרוב</small></a>
-          <button class="galbtn" style="--c:#0F766E" id="gal-photo">${ic('star', 22)}<b>צלמו את העיר</b><small>מסגרת podtc לתמונה שלכם</small></button>
+          <a class="galbtn" style="--c:#2A8AD6" href="https://www.facebook.com/${FB}/videos" target="_blank" rel="noopener">${ic('youtube', 22)}<b>סרטונים</b><small>וידאו מאירועי העיר</small></a>
+          <a class="galbtn" style="--c:#1E6FC2" href="https://www.facebook.com/${FB}/events" target="_blank" rel="noopener">${ic('calendar', 22)}<b>אירועים</b><small>מה קורה בקרוב</small></a>
+          <button class="galbtn" style="--c:#0A6E9E" id="gal-photo">${ic('star', 22)}<b>צלמו את העיר</b><small>מסגרת podtc לתמונה שלכם</small></button>
         </div>
       </div></section>`, 'social');
   // load the Facebook frame only when the gallery scrolls into view

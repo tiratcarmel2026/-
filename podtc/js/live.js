@@ -273,23 +273,23 @@
   const KAN_HLS = id => `https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/${id}/live.livx/playlist.m3u8?renditions`;
   const STATIONS = [
     { id: 'haifa', name: 'רדיו חיפה', freq: '107.5', tag: 'מקומי', color: '#0ea5e9', url: 'https://1075.livecdn.biz/radiohaifa', site: G('רדיו חיפה 107.5 שידור חי') },
-    { id: 'tzafon', name: 'רדיו צפון', freq: '104.5', tag: 'אזורי', color: '#22c55e', url: 'https://radio.streamgates.net/stream/1045fm', alt: ['https://cdn.cybercdn.live/Tzafon_NonStop/Live_Audio/icecast.audio'], site: G('רדיו צפון 104.5 שידור חי') },
-    { id: 'kanbet', name: 'כאן ב', freq: 'רשת ב', tag: 'חדשות', color: '#ef4444', url: STW('KAN_BET'), alt: [KAN_HLS('kan_reshet_bet')], site: 'https://www.kan.org.il/live/radio/' },
-    { id: 'kangimel', name: 'כאן גימל', freq: 'גימל', tag: 'מוזיקה ישראלית', color: '#f97316', url: STW('KAN_GIMMEL'), alt: [KAN_HLS('kan_gimel')], site: 'https://www.kan.org.il/live/radio/' },
-    { id: 'kan88', name: 'כאן 88', freq: '88', tag: 'מוזיקה', color: '#eab308', url: STW('KAN_88'), alt: [KAN_HLS('kan_88')], site: 'https://www.kan.org.il/live/radio/' },
-    { id: 'glglz', name: 'גלגלצ', freq: '91.8', tag: 'להיטים', color: '#10b981', url: 'https://glzwizzlv.bynetcdn.com/glglz_mp3', site: 'https://glz.co.il/' },
+    { id: 'tzafon', name: 'רדיו צפון', freq: '104.5', tag: 'אזורי', color: '#38A3E0', url: 'https://radio.streamgates.net/stream/1045fm', alt: ['https://cdn.cybercdn.live/Tzafon_NonStop/Live_Audio/icecast.audio'], site: G('רדיו צפון 104.5 שידור חי') },
+    { id: 'kanbet', name: 'כאן ב', freq: 'רשת ב', tag: 'חדשות', color: '#1557A8', url: STW('KAN_BET'), alt: [KAN_HLS('kan_reshet_bet')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: 'kangimel', name: 'כאן גימל', freq: 'גימל', tag: 'מוזיקה ישראלית', color: '#5BBCEB', url: STW('KAN_GIMMEL'), alt: [KAN_HLS('kan_gimel')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: 'kan88', name: 'כאן 88', freq: '88', tag: 'מוזיקה', color: '#5BBCEB', url: STW('KAN_88'), alt: [KAN_HLS('kan_88')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: 'glglz', name: 'גלגלצ', freq: '91.8', tag: 'להיטים', color: '#38A3E0', url: 'https://glzwizzlv.bynetcdn.com/glglz_mp3', site: 'https://glz.co.il/' },
     { id: 'glz', name: 'גלי צה"ל', freq: 'גל"צ', tag: 'חדשות ותרבות', color: '#3b82f6', url: 'https://glzwizzlv.bynetcdn.com/glz_mp3', site: 'https://glz.co.il/' },
-    { id: '103', name: '103FM', freq: '103', tag: 'אקטואליה', color: '#6366f1', url: 'https://cdn.cybercdn.live/103FM/Live/icecast.audio', site: 'https://103fm.maariv.co.il/' },
-    { id: 'radios', name: 'רדיוס', freq: '100FM', tag: 'מוזיקה', color: '#ec4899', url: 'https://cdn.cybercdn.live/Radios_100FM/Audio/icecast.audio', site: 'https://100fm.co.il/' },
-    { id: 'kantarbut', name: 'כאן תרבות', freq: 'תרבות', tag: 'תרבות', color: '#a855f7', url: STW('KAN_TARBUT'), alt: [KAN_HLS('kan_tarbut')], site: 'https://www.kan.org.il/live/radio/' },
-    { id: 'kanmoreshet', name: 'כאן מורשת', freq: 'מורשת', tag: 'יהדות', color: '#14b8a6', url: STW('KAN_MORESHET'), alt: [KAN_HLS('kan_moreshet')], site: 'https://www.kan.org.il/live/radio/' },
-    { id: 'kanreka', name: 'כאן רקע', freq: 'רקע', tag: 'עלייה ושפות', color: '#84cc16', url: STW('KAN_REKA'), alt: [KAN_HLS('kan_reka')], site: 'https://www.kan.org.il/live/radio/' },
-    { id: 'kankol', name: 'כאן קול המוזיקה', freq: 'קלאסי', tag: 'מוזיקה קלאסית', color: '#d946ef', url: STW('KAN_KOL_HAMUSICA'), alt: [KAN_HLS('kan_kol_hamuzika')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: '103', name: '103FM', freq: '103', tag: 'אקטואליה', color: '#1E6FC2', url: 'https://cdn.cybercdn.live/103FM/Live/icecast.audio', site: 'https://103fm.maariv.co.il/' },
+    { id: 'radios', name: 'רדיוס', freq: '100FM', tag: 'מוזיקה', color: '#5BBCEB', url: 'https://cdn.cybercdn.live/Radios_100FM/Audio/icecast.audio', site: 'https://100fm.co.il/' },
+    { id: 'kantarbut', name: 'כאן תרבות', freq: 'תרבות', tag: 'תרבות', color: '#2A8AD6', url: STW('KAN_TARBUT'), alt: [KAN_HLS('kan_tarbut')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: 'kanmoreshet', name: 'כאן מורשת', freq: 'מורשת', tag: 'יהדות', color: '#38A3E0', url: STW('KAN_MORESHET'), alt: [KAN_HLS('kan_moreshet')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: 'kanreka', name: 'כאן רקע', freq: 'רקע', tag: 'עלייה ושפות', color: '#5BBCEB', url: STW('KAN_REKA'), alt: [KAN_HLS('kan_reka')], site: 'https://www.kan.org.il/live/radio/' },
+    { id: 'kankol', name: 'כאן קול המוזיקה', freq: 'קלאסי', tag: 'מוזיקה קלאסית', color: '#2A8AD6', url: STW('KAN_KOL_HAMUSICA'), alt: [KAN_HLS('kan_kol_hamuzika')], site: 'https://www.kan.org.il/live/radio/' },
     { id: 'kolchai', name: 'קול חי', freq: '93FM', tag: 'מוזיקה יהודית', color: '#0891b2', url: 'https://media2.93fm.co.il/live-new', site: 'https://www.93fm.co.il/' },
-    { id: 'kz', name: 'רדיו הקצה', freq: 'KZ', tag: 'אלטרנטיבי', color: '#64748b', url: 'https://kzradio.mediacast.co.il/kzradio_live/kzradio/icecast.audio', site: G('רדיו הקצה שידור חי') },
-    { id: 'kids', name: 'שירי ילדים', freq: '100%', tag: 'לילדים', color: '#f59e0b', url: 'https://gb25.streamgates.net/radios-audio/100Kids/icecast.audio', site: 'https://100fm.co.il/' },
-    { id: 'disney', name: 'שירי דיסני', freq: '100%', tag: 'לילדים', color: '#8b5cf6', url: 'https://gb25.streamgates.net/radios-audio/100Disney/icecast.audio', site: 'https://100fm.co.il/' },
-    { id: '102', name: 'רדיו תל אביב', freq: '102FM', tag: 'אזורי', color: '#f43f5e', url: 'https://102.livecdn.biz/102fm_aac', site: G('102FM רדיו תל אביב שידור חי') }
+    { id: 'kz', name: 'רדיו הקצה', freq: 'KZ', tag: 'אלטרנטיבי', color: '#2A8AD6', url: 'https://kzradio.mediacast.co.il/kzradio_live/kzradio/icecast.audio', site: G('רדיו הקצה שידור חי') },
+    { id: 'kids', name: 'שירי ילדים', freq: '100%', tag: 'לילדים', color: '#5BBCEB', url: 'https://gb25.streamgates.net/radios-audio/100Kids/icecast.audio', site: 'https://100fm.co.il/' },
+    { id: 'disney', name: 'שירי דיסני', freq: '100%', tag: 'לילדים', color: '#2A8AD6', url: 'https://gb25.streamgates.net/radios-audio/100Disney/icecast.audio', site: 'https://100fm.co.il/' },
+    { id: '102', name: 'רדיו תל אביב', freq: '102FM', tag: 'אזורי', color: '#2A8AD6', url: 'https://102.livecdn.biz/102fm_aac', site: G('102FM רדיו תל אביב שידור חי') }
   ];
   const audio = $('#radio-audio');
   let station = null, tries = [], sleepT = 0, sleepUntil = 0;

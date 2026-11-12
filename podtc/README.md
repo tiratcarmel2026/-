@@ -297,3 +297,9 @@ podtc/
 - Gallery: the municipality's Facebook feed, buttons to its photo, video and event pages, and an optional `gallery` list of image links in `js/config.js` with a lightbox.
 - Search: a search bar on the front page; results now include bus lines, city facts, notices, services and sections.
 - Responsive audit at 320, 360, 390, 600, 768, 1024, 1280 and 1920 px: no horizontal overflow and no overlapping header items.
+
+## v17 — municipal portal look, both logos, voice studio
+- Look: white page with one family of blues from navy to tchelet. Welcome banner with the search field, a row of 12 round quick actions, and blue section titles (`css/muni.css`, `js/muni.js`).
+- Logos: the municipality's logo sits beside the podtc logo in the masthead and the footer (`assets/muni-logo.png`).
+- Voice studio: 8 narration styles (news, storyteller, deep, bright, calm, kids, fast, standard), every Hebrew voice on the device with a sample button, pitch and speed sliders, a music toggle, and instructions for installing more voices.
+- All topic colours, tags and cards were remapped to the blue palette. Brand colours remain only on the WhatsApp, Facebook, Telegram and X share buttons.

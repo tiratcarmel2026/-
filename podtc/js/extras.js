@@ -244,7 +244,7 @@
     { title: 'למי קראתם פרבר? העיר שהפכה מתחת לרדאר ללהיט של הצפון', src: 'מעריב', link: 'https://www.maariv.co.il/economy/realestate/article-1211715', ep: 'nof-yam' },
     { title: 'מגדלים בטירת כרמל: תוכניות התחדשות ליותר מ־1,800 דירות יגיעו לדיון על הפקדה', src: 'מרכז הנדל"ן', link: 'https://www.nadlancenter.co.il/article/11512', ep: 'city-renewal' }
   ];
-  const SRC_C = ['#DC2626', '#2563EB', '#7C3AED', '#0F766E', '#C2410C', '#DB2777', '#15803D', '#1E3A8A'];
+  const SRC_C = ['#1557A8', '#2563EB', '#1E6FC2', '#0A6E9E', '#12407A', '#2A8AD6', '#0E86B8', '#123E7C'];
   const srcColor = s => { let h = 0; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return SRC_C[h % SRC_C.length]; };
   function articles() {
     const live = (window.PodNews || []).slice(0, 6).map(n => ({ ...n, live: true }));

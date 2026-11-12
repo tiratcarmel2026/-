@@ -18,13 +18,12 @@
       rings.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${(r * wob).toFixed(1)}" ry="${(r / wob).toFixed(1)}" transform="rotate(${Math.round(rnd() * 180)} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`);
     }
     return `<svg class="cover__pat" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>
-      <rect width="100" height="100" fill="var(--c,#1E3A8A)"/><rect width="100" height="100" fill="url(#cg)"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#fff" opacity=".12"/>
+      <rect width="100" height="100" fill="var(--c,#123E7C)"/><rect width="100" height="100" fill="url(#cg)"/><circle cx="${(100 - cx).toFixed(1)}" cy="${(100 - cy).toFixed(1)}" r="26" fill="#fff" opacity=".12"/>
       <g class="cover__rings" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6">${rings.join('')}</g></svg>`;
   }
   /* Artwork = a living sound wave in the topic's colours (no photos).
    Bars are seeded by the episode id, so every episode has its own "voice print". */
-  const PAIR = { '#B45309': '#F59E0B', '#2563EB': '#06B6D4', '#DB2777': '#F97316', '#15803D': '#84CC16', '#7C3AED': '#EC4899',
-    '#DC2626': '#FB923C', '#92400E': '#F59E0B', '#0F766E': '#22D3EE', '#1E3A8A': '#3B82F6', '#4D7C0F': '#EAB308', '#C2410C': '#FBBF24' };
+  const LIGHT = ['#38A3E0', '#5BBCEB', '#2A8AD6', '#7CD0F2', '#4FB3E8'];
   function bars(seed, n) {
     let h = hash(seed + 'w'); const rnd = () => (h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0) / 4294967296;
     let out = '';
@@ -38,7 +37,7 @@
   function html(ep, opts = {}) {
     const { label = false, cls = '' } = opts;
     const cat = ep && window.PODTC_CATEGORIES && PODTC_CATEGORIES[ep.category];
-    const c = cat ? cat.color : '#1E3A8A', c2 = PAIR[c.toUpperCase()] || '#3B82F6';
+    const c = cat ? cat.color : '#123E7C', c2 = LIGHT[hash((ep && ep.id) || 'x') % LIGHT.length];
     const ic = window.PodIcons ? (ep && ep.id === 'briefing' ? PodIcons.svg('mic', 20, 1.8) : PodIcons.cat(ep && ep.category ? ep : 'city', 20)) : '';
     const sd = ep ? hash(ep.id) % 360 : 0;
     return `<span class="cover cover--wave ${cls}" style="--c:${c};--c2:${c2};--r:${sd}deg" role="img" aria-label="${esc(ep ? ep.title : '')}">
