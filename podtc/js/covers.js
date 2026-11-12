@@ -40,8 +40,8 @@
     const c = cat ? cat.color : '#123E7C', c2 = LIGHT[hash((ep && ep.id) || 'x') % LIGHT.length];
     const ic = window.PodIcons ? (ep && ep.id === 'briefing' ? PodIcons.svg('mic', 20, 1.8) : PodIcons.cat(ep && ep.category ? ep : 'city', 20)) : '';
     const sd = ep ? hash(ep.id) % 360 : 0;
-    return `<span class="cover cover--wave ${cls}" style="--c:${c};--c2:${c2};--r:${sd}deg" role="img" aria-label="${esc(ep ? ep.title : '')}">
-      <span class="cover__glow"></span><span class="cover__bars" aria-hidden="true">${bars(ep ? ep.id : 'x', 15)}</span>
+    return `<span class="cover cover--wave cover--art2 ${cls}" style="--c:${c};--c2:${c2};--r:${sd}deg;--fx:${sd % 2 ? -1 : 1}" role="img" aria-label="${esc(ep ? ep.title : '')}">
+      ${window.PodArt ? PodArt.svg(ep && ep.id === 'briefing' ? 'news' : ep && ep.live ? 'live' : (ep && ep.category) || 'city') : ''}<span class="cover__glow"></span><span class="cover__bars" aria-hidden="true">${bars(ep ? ep.id : 'x', 15)}</span>
       <span class="cover__ic" aria-hidden="true">${ic}</span>
       ${label ? `<span class="cover__label"><small>podtc</small><b>${esc(ep.title)}</b></span>` : ''}</span>`;
   }

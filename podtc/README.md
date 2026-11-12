@@ -312,3 +312,7 @@ podtc/
 ## v20 — logo-only opening, boxed municipal grid
 - Opening screen: only the podtc logo, pulsing with three "thinking" dots, for 3 seconds; then the site opens.
 - Layout: every section sits in its own white box on a pale blue page, cards have square corners, and the quick actions are a grid of square tiles.
+
+## v21 — illustrated topic scenes
+- `js/art.js`: one hand-drawn vector scene per podcast topic (12 scenes), in the site's blues, with small looping motion. They are SVG, so they are sharp at any size and work offline.
+- Covers show the topic's scene with the live sound wave as a small strip along the bottom. Episodes of the same topic alternate a mirrored version.

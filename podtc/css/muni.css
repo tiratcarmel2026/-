@@ -243,3 +243,52 @@ body:has(.splash--auto:not([hidden])) .a11y-fab{display:none}
 /* no welcome banner: the search box opens the page */
 .home__inner>.hsearch{height:58px;margin:0 0 16px!important;background:#fff!important;border:2px solid var(--tch-3)!important;font-size:16.5px;box-shadow:0 8px 24px -16px rgba(21,87,168,.5)}
 .home__inner>.hsearch:hover,.home__inner>.hsearch:focus-visible{border-color:var(--blue)!important}
+
+/* ---------- illustrated topic scenes on every cover ---------- */
+.cover--art2{background:linear-gradient(180deg,var(--c2) 0%,var(--c) 78%)!important}
+.cover__art{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.cover--art2 .cover__glow{display:none}
+.cover--art2::after{background:linear-gradient(to top,rgba(11,46,89,.55),transparent 34%)!important;z-index:1}
+/* the sound wave becomes a small live strip along the bottom */
+.cover--art2 .cover__bars{inset:auto 8% 6% 8%!important;height:14%;z-index:2;gap:3%;justify-content:flex-start}
+.cover--art2 .cover__bars i{max-width:5px;box-shadow:none;opacity:.95}
+.cover--art2 .cover__ic{display:none}
+.cover--art2 .cover__label{z-index:3;padding-bottom:22%!important}
+.cover--art2:has(.cover__label) .cover__bars{inset:auto 8% 6% 8%!important}
+.srow__art .cover--art2 .cover__bars,.qp__art .cover--art2 .cover__bars,#mini-art .cover--art2 .cover__bars,.ss-art .cover--art2 .cover__bars,.tour-tile__stops .cover__bars,.genre__art .cover__bars{display:none!important}
+.tile:hover .cover__art{transform:scale(1.05)}
+.cover__art{transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+/* gentle life inside the drawings (only while on screen) */
+.cover__art *{animation-play-state:paused}
+.cover.vis .cover__art *{animation-play-state:running}
+.a-sun{transform-box:fill-box;transform-origin:center;animation:a-pulse 5s ease-in-out infinite}
+.a-cloud{animation:a-drift 16s ease-in-out infinite alternate}.a-cloud2{animation-duration:22s;animation-direction:alternate-reverse}
+.a-flame{transform-box:fill-box;transform-origin:50% 100%;animation:a-flick 1.4s ease-in-out infinite alternate}
+.a-flag{transform-box:fill-box;transform-origin:0 50%;animation:a-wave 2.4s ease-in-out infinite alternate}
+.a-ball{animation:a-bounce 2.2s ease-in-out infinite}
+.a-note{animation:a-float 3s ease-in-out infinite}.a-note2{animation-delay:-1.4s}
+.a-hook{animation:a-lift 4s ease-in-out infinite alternate}
+.a-beat{transform-box:fill-box;transform-origin:center;animation:a-pulse 1.3s ease-in-out infinite}
+.a-flow{stroke-dashoffset:0;animation:a-dash 3s linear infinite}
+.a-train{animation:a-train 7s ease-in-out infinite}
+.a-bus{animation:a-busm 6s ease-in-out infinite}
+.a-ring{transform-box:fill-box;transform-origin:center;animation:a-ring 2.6s ease-out infinite}.a-ring2{animation-delay:-1.3s}
+@keyframes a-pulse{50%{transform:scale(1.1)}}
+@keyframes a-drift{to{transform:translateX(14px)}}
+@keyframes a-flick{to{transform:scale(.92,1.08) rotate(-3deg)}}
+@keyframes a-wave{to{transform:skewY(6deg) scaleX(.94)}}
+@keyframes a-bounce{50%{translate:0 -10px;rotate:40deg}}
+@keyframes a-float{50%{translate:0 -8px}}
+@keyframes a-lift{to{translate:0 -12px}}
+@keyframes a-dash{to{stroke-dashoffset:-22}}
+@keyframes a-train{0%,100%{translate:-6px 0}50%{translate:8px 0}}
+@keyframes a-busm{0%,100%{translate:0 0}50%{translate:70px 0}}
+@keyframes a-ring{from{transform:scale(.7);opacity:.6}to{transform:scale(1.25);opacity:0}}
+.a-cloud{translate:0 0}
+html.a11y-still .cover__art *{animation:none!important}
+html.a11y-noimg .cover__art{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.cover__art *{animation:none!important}}
+.cover--art2 .cover__label{display:none!important}
+.cover--art2 .cover__bars,.cover--art2:has(.cover__label) .cover__bars{inset:auto 7% 5% 7%!important;height:12%!important;align-items:flex-end}
+.cover--art2 .cover__bars i{transform-origin:bottom}
+.cover__art{scale:var(--fx,1) 1}
