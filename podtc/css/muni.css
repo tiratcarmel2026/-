@@ -180,3 +180,63 @@ html.a11y-hc .top__muni img{filter:none;background:#fff;border-radius:4px}
 @keyframes lbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 html.a11y-still .splash--auto .splash__bar i{transform:none}
 body:has(.splash--auto:not([hidden])) .a11y-fab{display:none}
+
+/* ---------- opening screen v2: only the logo, "thinking" ---------- */
+.splash--auto .splash__inner>*:not(.splash__logo):not(.splash__dots){display:none!important}
+.splash--auto .splash__logo{animation:lin .6s cubic-bezier(.2,.8,.2,1) both,think 1.5s ease-in-out .6s infinite!important}
+@keyframes think{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.045);opacity:.82}}
+.splash__dots{display:flex!important;gap:9px;margin-top:10px}
+.splash__dots i{width:10px;height:10px;border-radius:2px;background:var(--blue);animation:dot 1.2s ease-in-out infinite}
+.splash__dots i:nth-child(2){animation-delay:.18s;background:var(--sky)}.splash__dots i:nth-child(3){animation-delay:.36s;background:var(--tch-2)}
+@keyframes dot{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-9px);opacity:1}}
+
+/* =====================================================================
+   v20 · everything in boxes: a municipal portal grid of square tiles
+   ===================================================================== */
+:root{--bx:6px}
+.home{background:#EEF5FB!important}
+.home__inner{padding-top:14px}
+/* every section is a white box */
+.home__inner>section:not(.mhero):not(.share-band),.home__inner>article,.home__inner>nav.qa,.home__inner>.dateline,.home__inner>#quick,.home__inner>#sections>section,.home__inner>.foot{
+  background:#fff;border:1px solid var(--line);border-radius:var(--bx)!important;padding:20px 18px!important;margin:0 0 16px!important;box-shadow:0 1px 0 rgba(11,46,89,.04)}
+.home__inner>#sections{background:none!important;border:0!important;padding:0!important;margin:0!important}
+.home__inner>#sections>section{border-top:4px solid var(--blue)}
+.home__inner>section.shelf,.home__inner>section.block{border-top:4px solid var(--blue)}
+.home__inner>.jump{background:#fff;border:1px solid var(--line)!important;border-radius:var(--bx);padding:10px 12px!important;margin:0 0 16px!important}
+.home__inner>.notice{margin:0 0 16px!important;border-radius:var(--bx)!important;background:#fff!important}
+.home__inner>.mhero,.home__inner>.share-band{border-radius:var(--bx)!important;margin:0 0 16px!important}
+.home__inner>.dateline{display:flex;align-items:center;justify-content:space-between}
+.hero{border-bottom:1px solid var(--line)!important}
+.hero::before{display:none}
+@media (min-width:1024px){.home__inner>section:not(.mhero):not(.share-band),.home__inner>article,.home__inner>#sections>section{padding:26px 24px!important}}
+
+/* square corners on every card inside */
+.tile__art,.tile__art .cover,.cover,.qp,.art,.bnote,.bus,.bus__n,.fact,.info,.genre,.galbtn,.lc,.svc__item,.svc__item span,.lnk,.kid,.wrap,.hsearch,.mhero .hsearch,.galfb__frame,.gal__i,
+.news,.wiki-live,.future,.fnum,.photo-card,.install-card,.share-app,.emerg,.tour-tile,.tour-tile__art,.soc-frame,.soc-card,.notice__pin,.weather,.bus-find,.vstyle,.vvoice__pick,.vvoice__try,
+.hero__art .cover,#now-art .cover,.mini,.ss-art,.ss-qr,.sb,.pillc,.bchip,.schip,.np-speed button,.notice__act a,.notice__act button,.top-share,.mhero__k,.jump a,.tab,.srow__art .cover,.qp__art .cover{border-radius:var(--bx)!important}
+.st__logo{border-radius:var(--bx)!important}
+.tile__art .cover{aspect-ratio:1/1!important}
+.tile__play{top:10px!important;left:10px;right:auto;border-radius:var(--bx)!important}
+.tile__sh{border-radius:var(--bx)!important}
+.bigplay,.mini .play,.now .play,.ctl,.icon-btn,.top-search,.ring-chip{border-radius:var(--bx)!important}
+
+/* quick actions: a grid of square tiles */
+.qa__h{text-align:right;font-size:clamp(20px,3.6vw,26px);font-weight:900;color:var(--navy);letter-spacing:0;margin-bottom:14px}
+.qa__row{gap:10px!important}
+.qa__i{aspect-ratio:1/1;justify-content:center;gap:10px;padding:8px!important;border:1px solid var(--line)!important;border-radius:var(--bx);background:var(--wash)!important;transition:transform .2s,background .2s,color .2s,box-shadow .2s}
+.qa__i span{width:auto!important;height:auto!important;background:none!important;border:0!important;border-radius:0!important;color:var(--blue);transform:none!important;box-shadow:none!important}
+.qa__i span svg{width:34px!important;height:34px!important}
+.qa__i:hover,.qa__i:focus-visible{background:linear-gradient(135deg,var(--blue),var(--tch))!important;color:#fff!important;transform:translateY(-3px);box-shadow:0 14px 24px -14px var(--blue)}
+.qa__i:hover span,.qa__i:focus-visible span{color:#fff!important;background:none!important}
+.qa__i:nth-child(1){background:linear-gradient(135deg,var(--navy),var(--blue))!important;color:#fff!important;border-color:transparent!important}
+.qa__i:nth-child(1) span{color:#fff}
+@media (min-width:1024px){.qa__row{grid-template-columns:repeat(6,minmax(0,1fr))!important}.qa__i{aspect-ratio:auto;min-height:118px}}
+@media (max-width:599px){.qa__row{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+
+/* radio stations and genres as squares */
+.st__logo{aspect-ratio:1/1}
+.genre{aspect-ratio:1/1;min-height:0!important}
+@media (min-width:1024px){.genre{aspect-ratio:auto;min-height:110px!important}}
+.fact{aspect-ratio:auto}
+.legal{border-radius:0}
+.splash--auto .splash__inner>.splash__dots:not(#x):not(#y):not(#z){display:flex!important}

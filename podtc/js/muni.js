@@ -122,7 +122,7 @@
     if (deep) return;                      // QR / shared episode: playing sound needs one tap, so that screen keeps its button
     sp.classList.add('splash--auto');
     const lg = sp.querySelector('.splash__logo');
-    if (lg) lg.insertAdjacentHTML('afterend', `<span class="splash__sep" aria-hidden="true"></span><img class="splash__muni" src="assets/muni-logo.png" alt="עיריית טירת כרמל"><span class="splash__bar" aria-hidden="true"><i></i></span>`);
+    if (lg) lg.insertAdjacentHTML('afterend', `<span class="splash__dots" aria-hidden="true"><i></i><i></i><i></i></span>`);
     let done = false;
     const enter = () => { if (done) return; done = true; btn.click(); };
     const t = setTimeout(enter, 3000);

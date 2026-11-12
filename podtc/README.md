@@ -308,3 +308,7 @@ podtc/
 - Contrast: service descriptions, small grey text and the WhatsApp, Telegram and Facebook share buttons now meet WCAG AA.
 - Desktop: each topic shelf is one scrollable row instead of a half-empty grid.
 - Order: services, bus lines and the notice board moved up, right after the articles.
+
+## v20 — logo-only opening, boxed municipal grid
+- Opening screen: only the podtc logo, pulsing with three "thinking" dots, for 3 seconds; then the site opens.
+- Layout: every section sits in its own white box on a pale blue page, cards have square corners, and the quick actions are a grid of square tiles.
