@@ -22,19 +22,10 @@
     ['camera', 'גלריה', '#gallery-block'], ['building', 'על העיר', '#city-block'], ['mic', 'קולות', '@voice'], ['people', 'נגישות', '@a11y']
   ];
   if (dl) {
-    dl.insertAdjacentHTML('beforebegin', `<section class="mhero" aria-label="ברוכים הבאים">
-        <div class="mhero__waves" aria-hidden="true">${Array.from({ length: 40 }, (_, i) => `<i style="--h:${(.25 + Math.abs(Math.sin(i * 1.7)) * .75).toFixed(2)};--d:${(1 + (i % 5) * .22).toFixed(2)}s"></i>`).join('')}</div>
-        <div class="mhero__in">
-          <span class="mhero__k">עיריית טירת כרמל · דוברות והסברה</span>
-          <h1>טירת כרמל מספרת את עצמה</h1>
-          <p>פודקאסטים קצרים על כל מקום בעיר, חדשות, שירותים ומידע לתושב. הכול במקום אחד.</p>
-          <div class="mhero__search" id="mhero-search"></div>
-        </div>
-      </section>
-      <nav class="qa" aria-label="פעולות מהירות"><h2 class="qa__h">פעולות מהירות</h2><div class="qa__row">${QA.map(([i, t, u]) =>
+    dl.insertAdjacentHTML('beforebegin', `<nav class="qa" aria-label="פעולות מהירות"><h2 class="qa__h">פעולות מהירות</h2><div class="qa__row">${QA.map(([i, t, u]) =>
         u.startsWith('#') || u.startsWith('@') ? `<button class="qa__i" data-qa="${u}"><span>${ic(i, 26)}</span><b>${t}</b></button>`
           : `<a class="qa__i" href="${u}" ${u.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}><span>${ic(i, 26)}</span><b>${t}</b></a>`).join('')}</div></nav>`);
-    const hs = $('#hsearch'); if (hs) $('#mhero-search').appendChild(hs);
+    const hs = $('#hsearch'), qa = $('.qa'); if (hs && qa) qa.insertAdjacentElement('beforebegin', hs);   // search first, then quick actions
   }
   // a resident's priorities first: notices, services and buses come right after the news
   (function order() { const ref = document.getElementById('articles-block'); if (!ref) return; let after = ref.nextElementSibling && ref.nextElementSibling.classList.contains('notice') ? ref.nextElementSibling : ref;

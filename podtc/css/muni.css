@@ -240,3 +240,6 @@ body:has(.splash--auto:not([hidden])) .a11y-fab{display:none}
 .fact{aspect-ratio:auto}
 .legal{border-radius:0}
 .splash--auto .splash__inner>.splash__dots:not(#x):not(#y):not(#z){display:flex!important}
+/* no welcome banner: the search box opens the page */
+.home__inner>.hsearch{height:58px;margin:0 0 16px!important;background:#fff!important;border:2px solid var(--tch-3)!important;font-size:16.5px;box-shadow:0 8px 24px -16px rgba(21,87,168,.5)}
+.home__inner>.hsearch:hover,.home__inner>.hsearch:focus-visible{border-color:var(--blue)!important}
