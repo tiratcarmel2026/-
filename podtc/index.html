@@ -23,6 +23,12 @@
   <link rel="stylesheet" href="css/vivid.css">
   <link rel="stylesheet" href="css/muni.css">
   <link rel="stylesheet" href="css/a11y.css">
+  <style>
+    .splash--auto{position:fixed;inset:0;z-index:3000;background:#fff!important;display:flex;align-items:center;justify-content:center}
+    .splash--auto .splash__inner>*{display:none}
+    .splash--auto .splash__inner>.splash__logo{display:block;width:min(62vw,300px);height:auto}
+    .splash--auto .splash__inner>.splash__dots{display:flex}
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#home">דלגו לתוכן הראשי</a>
@@ -418,9 +424,10 @@
   <div id="scrim" class="scrim"></div>
 
   <!-- ===== Splash ===== -->
-  <div id="splash" class="splash">
+  <div id="splash" class="splash splash--auto">
     <div class="splash__inner">
-      <img class="splash__logo" src="assets/wordmark-white.png" alt="podtc">
+      <img class="splash__logo" src="assets/wordmark-navy.png" alt="podtc">
+      <span class="splash__dots" aria-hidden="true"><i></i><i></i><i></i></span>
       <span class="splash__by">מבית עיריית טירת כרמל</span>
       <p class="splash__lead">טירת כרמל מספרת את עצמה</p>
       <p class="splash__text">הפעילו מיקום והתחילו ללכת. בכל מקום עם סיפור תשמעו פרק קצר בעברית, דקה או שתיים, על המקום שבו אתם עומדים.</p>

@@ -1,5 +1,5 @@
 /* PODTC service worker — app shell offline; map tiles & Wikipedia cached as you go. */
-const V = 'podtc-v22';
+const V = 'podtc-v23';
 const SHELL = ['./', 'index.html', 'css/app.css', 'css/theme.css', 'css/theme-blue.css', 'css/podcast.css', 'css/news.css', 'css/vivid.css', 'css/a11y.css', 'js/a11y.js', 'js/city.js', 'js/muni.js', 'css/muni.css', 'assets/muni-logo.png', 'accessibility.html', 'assets/wordmark-navy.png', 'js/covers.js', 'js/extras.js', 'js/icons.js', 'assets/wordmark-white.png', 'js/geo.js', 'js/config.js', 'js/places.js', 'js/quiz.js', 'js/narrator.js', 'js/wiki.js', 'js/app.js', 'js/home.js', 'js/live.js', 'vendor/qrcode/qrcode.js', 'manifest.webmanifest', 'assets/wordmark.png', 'assets/logo-full.png', 'assets/icon-192.png', 'assets/icon-512.png',
   'vendor/leaflet/leaflet.css', 'vendor/leaflet/leaflet.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });

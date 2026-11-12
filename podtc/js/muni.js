@@ -119,10 +119,7 @@
   (function intro() {
     const sp = $('#splash'), btn = $('#btn-start'); if (!sp || !btn || sp.hidden) return;
     const deep = A.PLACES.some(p => '#' + p.id === location.hash);
-    if (deep) return;                      // QR / shared episode: playing sound needs one tap, so that screen keeps its button
-    sp.classList.add('splash--auto');
-    const lg = sp.querySelector('.splash__logo');
-    if (lg) lg.insertAdjacentHTML('afterend', `<span class="splash__dots" aria-hidden="true"><i></i><i></i><i></i></span>`);
+    if (deep) { sp.classList.remove('splash--auto'); const d = sp.querySelector('.splash__dots'); if (d) d.remove(); return; }   // QR / shared episode: sound needs one tap, so that screen keeps its button
     let done = false;
     const enter = () => { if (done) return; done = true; btn.click(); };
     const t = setTimeout(enter, 3000);
