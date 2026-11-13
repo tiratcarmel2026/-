@@ -112,32 +112,105 @@
     lab.classList.remove('busy'); lab.lastChild.textContent = 'העלאת קובץ'; inp.value = '';
   });
 
-  // record straight from the microphone, listen, then keep or discard
+  // record straight from the microphone (cleaned up and saved as MP3), listen, then keep or discard
   let rec = null;
   document.addEventListener('click', async e => {
     const b = e.target.closest('[data-rec]'); if (!b) return; e.preventDefault();
-    if (rec && rec.btn === b) { rec.mr.stop(); return; }
+    if (rec && rec.btn === b) { clearInterval(rec.tick); b.textContent = 'מעבד…'; let r; try { r = await rec.c.stop(); } catch (x) { toast(x.message, true); b.textContent = '● הקלטה'; b.classList.remove('on'); rec = null; return; }
+      b.classList.remove('on'); b.textContent = '● הקלטה'; rec = null; preview(b.closest('.fld'), r, path => { const t = document.getElementById(b.dataset.rec); t.value = path; t.dispatchEvent(new Event('input', { bubbles: true })); }); return; }
     if (rec) { toast('כבר מתבצעת הקלטה', true); return; }
-    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('הדפדפן הזה לא תומך בהקלטה. אפשר להעלות קובץ', true); return; }
-    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); } catch (x) { toast('אין גישה למיקרופון. אשרו אותה בדפדפן', true); return; }
-    const type = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
-    const mr = new MediaRecorder(stream, type ? { mimeType: type } : {}), chunks = [], t0 = Date.now();
-    rec = { mr, btn: b }; b.classList.add('on');
-    const tick = setInterval(() => { const s = Math.round((Date.now() - t0) / 1000); b.textContent = `■ עצירה ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }, 500);
-    mr.ondataavailable = ev => { if (ev.data.size) chunks.push(ev.data); };
-    mr.onstop = () => {
-      clearInterval(tick); stream.getTracks().forEach(t => t.stop()); b.classList.remove('on'); b.textContent = '● הקלטה'; rec = null;
-      const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' }), ext = /mp4/.test(blob.type) ? 'm4a' : 'webm', url = URL.createObjectURL(blob);
-      const host = b.closest('.fld'); const old = host.querySelector('.recbox'); if (old) old.remove();
-      host.insertAdjacentHTML('beforeend', `<div class="recbox"><audio controls src="${url}"></audio><button type="button" class="btn btn--pri btn--sm" data-keep>שמירת ההקלטה</button><button type="button" class="btn btn--sm" data-drop>מחיקה</button></div>`);
-      const box = host.querySelector('.recbox');
-      box.querySelector('[data-drop]').onclick = () => { URL.revokeObjectURL(url); box.remove(); };
-      box.querySelector('[data-keep]').onclick = async ev => { const k = ev.target; k.disabled = true; k.textContent = 'מעלה…';
-        try { const path = await upload(new File([blob], 'recording.' + ext, { type: blob.type }), 'audio'); const target = document.getElementById(b.dataset.rec); target.value = path; target.dispatchEvent(new Event('input', { bubbles: true })); box.remove(); toast('ההקלטה נשמרה. לחצו "פרסום" כדי שתופיע באתר'); }
-        catch (x) { toast(x.message, true); k.disabled = false; k.textContent = 'שמירת ההקלטה'; } };
-    };
-    mr.start();
+    try { const c = await PodRec.start(); rec = { c, btn: b, tick: setInterval(() => { b.textContent = '■ עצירה ' + mmss(c.seconds); }, 500) }; b.classList.add('on'); }
+    catch (x) { toast(x.message, true); }
   });
+  const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  // a finished take: listen, keep (upload) or discard
+  function preview(host, r, onSaved) {
+    const old = host.querySelector('.recbox'); if (old) old.remove();
+    host.insertAdjacentHTML('beforeend', `<div class="recbox"><audio controls src="${r.url}"></audio><span class="recbox__m">${mmss(r.seconds)} · ${r.blob.size > 1048576 ? (r.blob.size / 1048576).toFixed(1) + "MB" : Math.round(r.blob.size / 1024) + "KB"}</span><button type="button" class="btn btn--pri btn--sm" data-keep>שמירת ההקלטה</button><button type="button" class="btn btn--sm" data-drop>מחיקה</button></div>`);
+    const box = host.querySelector('.recbox');
+    box.querySelector('[data-drop]').onclick = () => { URL.revokeObjectURL(r.url); box.remove(); };
+    box.querySelector('[data-keep]').onclick = async ev => { const k = ev.target; k.disabled = true; k.textContent = 'מעלה…';
+      try { const path = await upload(new File([r.blob], 'recording.mp3', { type: 'audio/mpeg' }), 'audio'); onSaved(path); box.remove(); toast('ההקלטה נשמרה. לחצו "פרסום" כדי שתופיע באתר'); }
+      catch (x) { toast(x.message, true); k.disabled = false; k.textContent = 'שמירת ההקלטה'; } };
+    return box;
+  }
+
+  /* ---------------- recording studio: every episode, two narrators ---------------- */
+  const VOICES = { f: { k: 'audioF', t: 'קריינית', d: 'קול נשי' }, m: { k: 'audioM', t: 'קריין', d: 'קול גברי' } };
+  let sv = 'f', sid = null, take = null, live = null, prompter = 0;
+  function setEp(id, k, v) { const E = C.episodes, add = E.added.find(a => a.id === id);
+    if (add) { if (v) add[k] = v; else delete add[k]; } else { const ed = E.edits[id] = E.edits[id] || {}; if (v) ed[k] = v; else delete ed[k]; if (!Object.keys(ed).length) delete E.edits[id]; } touch(); }
+  const recOf = (p, v) => p[VOICES[v].k] || '';
+  function studio() {
+    const list = episodes().filter(p => !C.episodes.hidden.includes(p.id)), done = v => list.filter(p => recOf(p, v)).length;
+    if (!sid || !list.some(p => p.id === sid)) sid = (list.find(p => !recOf(p, sv)) || list[0] || {}).id;
+    const ep = list.find(p => p.id === sid) || {}, has = recOf(ep, sv), V = VOICES[sv], pct = Math.round(done(sv) / Math.max(1, list.length) * 100);
+    $('#main').innerHTML = `<h1>אולפן הקלטות</h1><p class="lead">מקליטים כאן את כל הפרקים בקול אנושי, בשני קולות: קריינית וקריין. המאזינים בוחרים באתר באיזה קול לשמוע. פרק שעוד לא הוקלט מושמע בקול האוטומטי.</p>
+      <div class="st-top"><div class="st-voices" role="group" aria-label="מי מקליט">${Object.keys(VOICES).map(k => `<button class="st-v${k === sv ? ' on' : ''}" data-sv="${k}"><b>${VOICES[k].t}</b><small>${done(k)} מתוך ${list.length} פרקים</small></button>`).join('')}</div>
+        <div class="st-prog"><span>${V.t}: הוקלטו ${done(sv)} מתוך ${list.length}</span><i><b style="width:${pct}%"></b></i></div></div>
+      <div class="st">
+        <nav class="st-list" aria-label="פרקים">${list.map((p, i) => `<button class="st-ep${p.id === sid ? ' on' : ''}${recOf(p, sv) ? ' ok' : ''}" data-sid="${esc(p.id)}"><span class="st-ep__n">${recOf(p, sv) ? '✓' : i + 1}</span><b>${esc(p.title)}</b></button>`).join('')}</nav>
+        <section class="st-main">
+          <div class="st-head"><div><span class="st-k">${esc((CATS[ep.category] || {}).label || '')} · כ־${Math.max(1, Math.round(String(ep.script || '').split(/\s+/).length / 120))} דק׳ הקראה</span><h2>${esc(ep.title || '')}</h2></div>
+            ${has ? `<span class="tag tag--ok">יש הקלטה (${V.t})</span>` : `<span class="tag">עדיין לא הוקלט</span>`}</div>
+          <div class="st-tp" id="st-tp" tabindex="0" aria-label="הטקסט להקראה">${String(ep.script || '').split(/\n+/).map(par => `<p>${esc(par)}</p>`).join('')}</div>
+          <div class="st-ctl">
+            <button class="st-rec" id="st-rec" aria-label="התחלת הקלטה"><i></i><span>הקלטה</span></button>
+            <div class="st-meter" aria-hidden="true"><i id="st-lvl"></i></div><span class="st-time" id="st-time">0:00</span>
+            <label class="st-scroll"><input type="checkbox" id="st-auto" checked> גלילה אוטומטית של הטקסט</label>
+          </div>
+          <p class="st-clip" id="st-clip" hidden>הקול חזק מדי, התרחקו קצת מהמיקרופון</p>
+          <div id="st-take"></div>
+          ${has ? `<div class="st-cur"><span>ההקלטה השמורה:</span><audio controls preload="none" src="${esc(has)}"></audio><button class="btn btn--sm" id="st-del">מחיקת ההקלטה</button></div>` : ''}
+          <label class="st-file">או העלאת קובץ מוכן (mp3, m4a, wav)<input type="file" accept="audio/*" id="st-file"></label>
+          <details class="st-tips"><summary>טיפים להקלטה טובה</summary><ol>
+            <li>חדר קטן ושקט, עם וילונות או ארון בגדים, נשמע טוב יותר מחדר גדול וריק.</li><li>אוזניות עם מיקרופון או מיקרופון USB עדיפים על מיקרופון המחשב. החזיקו אותו בכף יד מהפה, קצת מהצד.</li>
+            <li>קראו פעם אחת בשקט לפני ההקלטה. דברו לאט מעט ממה שנראה לכם טבעי, וחייכו: שומעים את זה.</li><li>טעיתם? עצרו שנייה וחזרו על המשפט. או פשוט הקליטו מחדש.</li>
+            <li>השקט בהתחלה ובסוף נחתך אוטומטית, והעוצמה מאוזנת לבד.</li></ol></details>
+        </section>
+      </div>`;
+    if (take) showTake();
+  }
+  function showTake() {
+    const host = $('#st-take'); if (!host || !take) return;
+    host.innerHTML = `<div class="recbox recbox--big"><audio controls src="${take.url}"></audio><span class="recbox__m">${mmss(take.seconds)} · ${take.blob.size > 1048576 ? (take.blob.size / 1048576).toFixed(1) + "MB" : Math.round(take.blob.size / 1024) + "KB"}${take.trimmed > .5 ? ` · נחתכו ${take.trimmed.toFixed(1)} שניות של שקט` : ''}</span>
+      <button class="btn btn--pri" id="st-save">שמירה ומעבר לפרק הבא</button><button class="btn" id="st-redo">הקלטה מחדש</button></div>`;
+  }
+  async function saveTake() {
+    const b = $('#st-save'); b.disabled = true; b.textContent = 'מעלה…';
+    try { const path = await upload(new File([take.blob], `${sid}-${sv}.mp3`, { type: 'audio/mpeg' }), 'audio'); setEp(sid, VOICES[sv].k, path); URL.revokeObjectURL(take.url); take = null;
+      const list = episodes().filter(p => !C.episodes.hidden.includes(p.id)), i = list.findIndex(p => p.id === sid), nx = list.slice(i + 1).concat(list.slice(0, i)).find(p => !recOf(p, sv));
+      toast(nx ? 'נשמר! עוברים לפרק הבא. בסוף לחצו "פרסום"' : 'נשמר! כל הפרקים הוקלטו. לחצו "פרסום"'); if (nx) sid = nx.id; studio(); }
+    catch (x) { toast(x.message, true); b.disabled = false; b.textContent = 'שמירה ומעבר לפרק הבא'; }
+  }
+  document.addEventListener('click', async e => {
+    if (tab !== 'studio') return; const t = e.target;
+    const v = t.closest('[data-sv]'); if (v && !live) { sv = v.dataset.sv; take = null; studio(); return; }
+    const ep = t.closest('[data-sid]'); if (ep && !live) { if (take && !confirm('יש הקלטה שלא נשמרה. לעבור בכל זאת?')) return; take = null; sid = ep.dataset.sid; studio(); $('#main').scrollTop = 0; return; }
+    if (t.closest('#st-rec')) {
+      const btn = $('#st-rec');
+      if (live) { clearInterval(live.tick); cancelAnimationFrame(prompter); btn.classList.remove('on'); btn.querySelector('span').textContent = 'מעבד…'; btn.disabled = true;
+        try { take = await live.c.stop(); } catch (x) { toast(x.message, true); } live = null; btn.disabled = false; btn.querySelector('span').textContent = 'הקלטה'; document.body.classList.remove('recording'); showTake(); return; }
+      if (take && !confirm('להקליט מחדש? ההקלטה הקודמת שלא נשמרה תימחק.')) return; take = null; $('#st-take').innerHTML = '';
+      try { const c = await PodRec.start({ onLevel: (l, clip) => { const m = $('#st-lvl'); if (m) m.style.transform = `scaleX(${l})`; if (clip) { const w = $('#st-clip'); if (w) { w.hidden = false; clearTimeout(w.t); w.t = setTimeout(() => { w.hidden = true; }, 1800); } } } });
+        live = { c, tick: setInterval(() => { const tm = $('#st-time'); if (tm) tm.textContent = mmss(c.seconds); }, 250) };
+        btn.classList.add('on'); btn.querySelector('span').textContent = 'עצירה'; btn.setAttribute('aria-label', 'עצירת ההקלטה'); document.body.classList.add('recording');
+        // teleprompter: scroll at reading pace (about 2 words a second)
+        const tp = $('#st-tp'); tp.scrollTop = 0; const words = tp.textContent.split(/\s+/).length, total = Math.max(20, words / 2.0), t0 = performance.now();
+        const roll = now => { if (!live) return; if ($('#st-auto').checked) { const max = tp.scrollHeight - tp.clientHeight; tp.scrollTop = Math.min(max, max * Math.max(0, (now - t0) / 1000 - 3) / total); } prompter = requestAnimationFrame(roll); }; prompter = requestAnimationFrame(roll);
+      } catch (x) { toast(x.message, true); }
+      return;
+    }
+    if (t.closest('#st-save')) return saveTake();
+    if (t.closest('#st-redo')) { URL.revokeObjectURL(take.url); take = null; $('#st-take').innerHTML = ''; return; }
+    if (t.closest('#st-del')) { if (confirm('למחוק את ההקלטה של הפרק הזה? הפרק יחזור להקראה האוטומטית.')) { setEp(sid, VOICES[sv].k, ''); studio(); } return; }
+  });
+  document.addEventListener('change', async e => {
+    if (e.target.id !== 'st-file' || !e.target.files[0]) return; const f = e.target.files[0];
+    if (f.size > 60 * 1024 * 1024) { toast('הקובץ גדול מדי', true); return; }
+    toast('מעבד את הקובץ…'); try { take = await PodRec.fromFile(f); showTake(); } catch (x) { toast('לא הצלחנו לקרוא את הקובץ. נסו mp3 או m4a', true); } e.target.value = '';
+  });
+  document.addEventListener('keydown', e => { if (tab !== 'studio' || e.target.matches('input,textarea,select')) return; if (e.code === 'Space') { e.preventDefault(); const r = $('#st-rec'); if (r) r.click(); } });
 
   /* ---------------- screens ---------------- */
   const episodes = () => { const E = C.episodes; const all = PLACES0.map(p => Object.assign({}, p, E.edits[p.id] || {}, { _base: true })).concat(E.added.map(a => Object.assign({ _added: true }, a)));
@@ -145,7 +218,8 @@
   const EP_F = [
     { k: 'title', label: 'כותרת' }, { k: 'subtitle', label: 'כותרת משנה' },
     { k: 'category', label: 'נושא', type: 'select', options: catOpts },
-    { k: 'audio', label: 'הקלטה (mp3)', help: 'קריין אמיתי במקום ההקראה האוטומטית', ltr: true, upload: 'audio', ph: 'קישור לקובץ או העלאה' },
+    { k: 'audioF', label: 'הקלטה: קריינית', help: 'או הקליטו באולפן ההקלטות', ltr: true, upload: 'audio', ph: 'קישור לקובץ או העלאה' },
+    { k: 'audioM', label: 'הקלטה: קריין', ltr: true, upload: 'audio', ph: 'קישור לקובץ או העלאה' },
     { k: 'youtube', label: 'קישור יוטיוב', help: 'אם קיים, השיתוף בוואטסאפ ישלח אותו והפרק יתנגן בתוך וואטסאפ', ltr: true, wide: true, ph: 'https://youtu.be/…' },
     { k: 'script', label: 'הטקסט של הפרק', type: 'area', rows: 9, wide: true, help: 'זה הטקסט שמוקרא ומוצג כתמליל' },
     { k: 'lat', label: 'קו רוחב', type: 'number', ltr: true }, { k: 'lng', label: 'קו אורך', type: 'number', ltr: true }];
@@ -153,7 +227,7 @@
     dash() {
       const E = C.episodes, n = episodes().length - E.hidden.length;
       return `<h1>שלום, ${esc(user)}</h1><p class="lead">כאן מנהלים את התוכן של podtc. כל שינוי נשמר כטיוטה במחשב הזה. לחצו "תצוגה מקדימה" כדי לראות אותו באתר, ו"פרסום" כדי שכולם יראו.</p>
-        <div class="cards">${[['daily', C.daily.length, 'עדכונים יומיים'], ['eps', n, 'פרקים'], ['notices', C.notices.length, 'מודעות'], ['articles', C.articles.length, 'כתבות'], ['gallery', C.gallery.length, 'תמונות בגלריה'], ['blocks', C.blocks.length, 'בלוקים חופשיים'], ['layout', C.layout.hidden.length, 'מדורים מוסתרים']]
+        <div class="cards">${[['studio', episodes().filter(p => p.audioF || p.audioM).length, 'פרקים מוקלטים'], ['daily', C.daily.length, 'עדכונים יומיים'], ['eps', n, 'פרקים'], ['notices', C.notices.length, 'מודעות'], ['articles', C.articles.length, 'כתבות'], ['gallery', C.gallery.length, 'תמונות בגלריה'], ['blocks', C.blocks.length, 'בלוקים חופשיים'], ['layout', C.layout.hidden.length, 'מדורים מוסתרים']]
           .map(([t, v, l]) => `<button class="card" data-tab="${t}"><b>${v}</b><span>${l}</span></button>`).join('')}</div>
         <div class="tips"><h3>איך זה עובד</h3><ol><li><b>עורכים</b> באחת הלשוניות שבצד.</li><li><b>תצוגה מקדימה</b> פותחת את האתר עם השינויים, רק אצלכם.</li><li><b>פרסום</b> שולח את השינויים לאתר. העדכון מופיע לכולם בתוך דקה או שתיים.</li></ol>
           <p>${C.updated ? `פורסם לאחרונה: ${new Date(C.updated).toLocaleString('he-IL')}${C.by ? ' · ' + esc(C.by) : ''}` : 'עדיין לא פורסם תוכן מהמערכת.'}</p></div>`;
@@ -175,6 +249,7 @@
         <div class="tips"><h3>ההתראה הנוכחית</h3><p>${P.id ? `<b>${esc(P.title || '')}</b><br>${esc(P.text || '')}<br><small>${new Date(P.date).toLocaleString('he-IL')}</small>` : 'אין התראה פעילה.'}</p>
           <h3>חשוב לדעת</h3><p>ההתראה נשלחת כשלוחצים "פרסום". היא מגיעה למכשירים שבהם האתר פתוח או מותקן ופועל ברקע. התראות למכשירים שהאתר סגור בהם לגמרי דורשות שירות דחיפה חיצוני (למשל OneSignal, שיש לו מסלול חינמי).</p></div>`;
     },
+    studio() { return ''; },
     daily() { return `<h1>העדכון היומי</h1><p class="lead">עדכון קולי קצר שמופיע בראש האתר. מקליטים כאן בקול שלכם או מעלים הקלטה מוכנה, מוסיפים כותרת וטקסט, ולוחצים "פרסום". העדכון העליון ברשימה הוא זה שמוצג; הקודמים נשמרים בארכיון.</p><div id="host"></div>
         <div class="tips"><h3>טיפים להקלטה</h3><ol><li>הקליטו בחדר שקט, כשהטלפון או המיקרופון קרובים לפה.</li><li>דקה עד שתיים זה האורך הנכון.</li><li>האזינו להקלטה לפני השמירה. אפשר למחוק ולהקליט שוב.</li></ol><p>אם אין הקלטה, העדכון יוקרא בקול האוטומטי לפי הטקסט שכתבתם.</p></div>`; },
     eps() { return `<h1>פרקים</h1><p class="lead">עריכת הטקסטים, הוספת פרקים חדשים, שינוי הסדר והעלאת הקלטות. פרק עם הקלטה מושמע בקול אמיתי במקום בהקראה האוטומטית.</p><div id="host"></div>`; },
@@ -228,6 +303,7 @@
     if (t === 'ticker') { const rows = C.ticker.map(x => ({ t: x })); listEditor(host, rows, [{ k: 't', label: 'טקסט', wide: true }], { title: r => r.t, add: 'שורה חדשה' });
       const sync = () => { C.ticker = rows.map(r => r.t).filter(Boolean); saveDraft(); }; host.addEventListener('input', sync); host.addEventListener('click', () => setTimeout(sync, 0)); }
     if (t === 'eps') paintEpisodes(host);
+    if (t === 'studio') studio();
     if (t === 'layout') wireLayout();
     if (t === 'live') { const fm = $('#live'); fm.oninput = fm.onchange = e => { const el = e.target; if (!el.dataset.k) return; if (el.type === 'checkbox') { C.live.on = el.checked; el.parentElement.querySelector('span').textContent = el.checked ? 'השידור פעיל באתר' : 'השידור כבוי'; } else C.live[el.dataset.k] = el.value; if (!C.live.type) C.live.type = 'youtube'; touch(); }; }
     if (t === 'push') { $('#push-send').onclick = () => { const g = k => $(`#pushf [data-k="${k}"]`).value.trim(); if (!g('title') && !g('text')) { toast('כתבו כותרת או תוכן', true); return; }
@@ -240,7 +316,7 @@
     const E = C.episodes, list = episodes();
     host.innerHTML = `<div class="list">${list.map((p, i) => { const hid = E.hidden.includes(p.id), ed = p._base && E.edits[p.id] && Object.keys(E.edits[p.id]).length;
       return `<details class="item${hid ? ' off' : ''}" data-id="${esc(p.id)}" ${open === p.id ? 'open' : ''}><summary><span class="item__n">${i + 1}</span><b>${esc(p.title || 'פרק חדש')}</b>
-        <span class="tag">${esc((CATS[p.category] || {}).label || '')}</span>${p.audio ? '<span class="tag tag--ok">הקלטה</span>' : ''}${p._added ? '<span class="tag tag--new">חדש</span>' : ed ? '<span class="tag tag--ed">נערך</span>' : ''}${hid ? '<span class="tag tag--off">מוסתר</span>' : ''}
+        <span class="tag">${esc((CATS[p.category] || {}).label || '')}</span>${p.audioF || p.audio ? '<span class="tag tag--ok">קריינית</span>' : ''}${p.audioM ? '<span class="tag tag--ok">קריין</span>' : ''}${p._added ? '<span class="tag tag--new">חדש</span>' : ed ? '<span class="tag tag--ed">נערך</span>' : ''}${hid ? '<span class="tag tag--off">מוסתר</span>' : ''}
         <span class="item__act"><button data-mv="-1" aria-label="הזזה למעלה">▲</button><button data-mv="1" aria-label="הזזה למטה">▼</button>${p._added ? '<button data-del class="danger" aria-label="מחיקה">✕</button>' : `<button data-hide>${hid ? 'הצגה' : 'הסתרה'}</button>`}</span></summary>
         <div class="item__b">${EP_F.map(f => field(f, p[f.k], p.id)).join('')}${p._base && ed ? '<button class="btn btn--sm" data-reset>שחזור הטקסט המקורי</button>' : ''}</div></details>`; }).join('')}</div><button class="btn btn--add" data-add>+ פרק חדש</button>`;
     host.onclick = e => {

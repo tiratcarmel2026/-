@@ -125,10 +125,17 @@
     chunks = []; idx = 0; setState('idle');
   }
 
+  /* human recordings: a female and a male narrator; the listener's choice wins, the other one is the fallback */
+  function recording(ep) {
+    const pref = ls.get('podtc.narr', 'f'), f = ep.audioF || ep.audio, m = ep.audioM || ep.audio;
+    if (pref === 'tts') return ep.audio && !ep.audioF && !ep.audioM ? ep.audio : '';
+    return pref === 'm' ? (m || f || '') : (f || m || '');
+  }
   function play(episode) {
     stop();
-    if (episode.audio) {
-      audioEl = new Audio(episode.audio);
+    const src = recording(episode);
+    if (src) {
+      audioEl = new Audio(src);
       audioEl.ontimeupdate = () => emit('progress', audioEl.currentTime / (audioEl.duration || 1));
       audioEl.onended = () => setState('ended');
       audioEl.onerror = () => { audioEl = null; playTTS(episode); };
@@ -223,6 +230,7 @@
   }
 
   window.Narrator = {
+    recording, setNarr(v) { ls.set('podtc.narr', v); }, get narr() { return ls.get('podtc.narr', 'f'); },
     setMusic(on) { music = !!on; ls.set('podtc.music', on ? '1' : '0'); if (!on) Studio.bed(false); }, get music() { return music; },
     isNatural: () => !!(voice && /natural|online|neural|google|premium|enhanced/i.test(voice.name + ' ' + voice.voiceURI)),
     play, pause, resume, stop, unlock, setRate, skip, seek, split, setVoice, setPitch, preview, hebrewVoices, allVoices,

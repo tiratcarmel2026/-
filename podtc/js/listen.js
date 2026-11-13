@@ -6,7 +6,7 @@
   const $ = s => document.querySelector(s), esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const SITE = new URL('../', location.href).href, here = location.href.split('#')[0];
   if (!ep) { location.replace(SITE); return; }
-  if (ep.audio && !/^(https?:|\/)/.test(ep.audio)) ep.audio = '../' + ep.audio;
+  ['audio', 'audioF', 'audioM'].forEach(k => { if (ep[k] && !/^(https?:|\/)/.test(ep[k])) ep[k] = '../' + ep[k]; });
   if (ep.youtube) { /* an episode with a YouTube link is shared as that link; this page still plays it */ }
   const cat = CATS[ep.category] || { label: 'podtc' }, parts = N.split(ep.script);
   const mins = Math.max(1, Math.round(ep.script.split(/\s+/).length / 120));
@@ -18,6 +18,7 @@
       <div class="lart">${window.PodArt ? PodArt.svg(ep.category, ep.id) : ''}<span class="leq" aria-hidden="true">${'<i></i>'.repeat(18)}</span></div>
       <span class="lk">${esc(cat.label)} · כ־${mins} דק׳</span>
       <h1>${esc(ep.title)}</h1><p class="lsub">${esc(ep.subtitle || '')}</p>
+      ${(ep.audioF || ep.audio) && ep.audioM ? `<div class="lnarr" role="group" aria-label="מי מקריא"><button data-n="f">קריינית</button><button data-n="m">קריין</button></div>` : ''}
       <button class="lplay" id="lplay" aria-label="השמעה">${PLAY}</button>
       <div class="lbar" id="lbar" role="slider" aria-label="מיקום בפרק" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="lprog"></i></div>
       <p class="lcap" id="lcap" aria-live="off">לחצו על הכפתור כדי להאזין</p>
@@ -39,6 +40,8 @@
   const spans = [...document.querySelectorAll('#ltext span')], active = () => ['playing', 'paused', 'skipping'].includes(N.state);
   const toggle = () => { const s = N.state; if (s === 'playing' || s === 'skipping') N.pause(); else if (s === 'paused') N.resume(); else { N.unlock(); N.play(ep); } };
   $('#lplay').addEventListener('click', toggle);
+  const paintN = () => document.querySelectorAll('.lnarr [data-n]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.n === (N.narr === 'm' ? 'm' : 'f'))));
+  document.querySelectorAll('.lnarr [data-n]').forEach(b => b.addEventListener('click', () => { N.setNarr(b.dataset.n); paintN(); if (active()) { N.stop(); N.unlock(); N.play(ep); } })); paintN();
   N.on('state', s => { const on = s === 'playing' || s === 'skipping'; document.body.classList.toggle('playing', on); $('#lplay').setAttribute('aria-label', on ? 'השהיה' : 'השמעה');
     if (s === 'ended') { $('#lprog').style.width = '100%'; $('#lcap').textContent = 'תודה שהאזנתם. יש עוד פרקים למטה'; }
     if (s === 'unsupported') $('#lcap').textContent = 'הדפדפן הזה לא תומך בהקראה. אפשר לקרוא את התמליל למטה';

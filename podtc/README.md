@@ -350,3 +350,8 @@ podtc/
 - **Welcome screens** (`js/welcome.js`): three screens on the first visit (what podtc is, location, install + notifications), shown once.
 - **Episode pages** (`e/<id>.html`): a map of the place with walking and Waze directions, schema.org PodcastEpisode data, dark mode, and `sitemap.xml` for search engines. The player has a link to the episode page.
 - **Visit counting**: GoatCounter (free, no cookies) loads only when a code is entered in the management screen, under Settings.
+
+## v29 — recording studio, two human narrators
+- Management screen → "אולפן הקלטות": every episode with its text as a scrolling teleprompter, one-click recording, a level meter with a "too loud" warning, playback, and "save and go to the next episode". Progress is tracked separately for a female and a male narrator (`audioF` / `audioM` on each episode). A ready-made file can be uploaded instead.
+- Every take is cleaned up in the browser (`js/recorder.js`): mono, silence trimmed at both ends, volume evened out with a soft limit, short fades, encoded to 80 kbps MP3 with `vendor/lame` (lamejs, LGPL-3.0, unmodified) so it plays on every phone. The daily-update recorder uses the same path.
+- Listeners choose "קריינית", "קריין" or "קול המכשיר" in the voice sheet; the other recording is the fallback, and episodes with no recording still use the device voice. Share pages offer the same choice when both recordings exist.

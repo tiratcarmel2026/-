@@ -324,3 +324,9 @@ html.a11y-hc .car{border:2px solid #fff!important}
 .pin--near,.pin.on,.pin--active{background:linear-gradient(135deg,var(--navy),var(--blue))!important;color:#fff!important;border-color:#fff!important}
 .leaflet-control-attribution{font-size:10px!important;background:rgba(255,255,255,.8)!important}
 .fchip,.fab,.status,.tour{border-radius:var(--bx,6px)!important}
+.vs-narr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.vnarr{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:14px;border:2px solid var(--line);background:#fff;color:var(--navy);text-align:right;cursor:pointer;font:inherit}
+.vnarr b{font-size:15.5px}.vnarr small{font-size:12px;color:var(--muted)}
+.vnarr.on{border-color:var(--blue);background:linear-gradient(135deg,var(--blue),var(--tch));color:#fff}.vnarr.on small{color:#fff}
+html.dark .vnarr{background:var(--surf)!important;color:var(--dtext)!important;border-color:var(--dline)!important}
+html.dark .vnarr.on{background:#06B6E8!important;color:#0B1F47!important}

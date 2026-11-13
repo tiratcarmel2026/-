@@ -56,7 +56,7 @@
   document.body.insertAdjacentHTML('beforeend', `<div id="voice-sheet" class="share-sheet voice-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="vs-title">
       <div class="share-sheet__card"><button class="x share-sheet__x" aria-label="סגירה">✕</button>
         <span class="ss-k">אולפן הקולות</span><h2 id="vs-title">בחרו את הקריין שלכם</h2>
-        <h3 class="vs-h">סגנון קריינות</h3><div class="vs-styles" id="vs-styles"></div>
+        <h3 class="vs-h">מי מקריא</h3><div class="vs-narr" id="vs-narr" role="group" aria-label="מי מקריא"></div><h3 class="vs-h">סגנון הקול האוטומטי <small>לפרקים שעוד לא הוקלטו</small></h3><div class="vs-styles" id="vs-styles"></div>
         <h3 class="vs-h">קולות במכשיר <small id="vs-count"></small></h3><div class="vs-voices" id="vs-voices"></div>
         <div class="vs-fine">
           <label>גובה הקול <input type="range" id="vs-pitch" min="0.5" max="1.6" step="0.05"><output id="vs-pitch-o"></output></label>
@@ -72,6 +72,8 @@
   function paint() {
     if (!N) return;
     const cur = ls.get('podtc.vstyle', 'std');
+    const P = A.PLACES, nF = P.filter(p => p.audioF || p.audio).length, nM = P.filter(p => p.audioM || p.audio).length, nr = N.narr || 'f';
+    $('#vs-narr').innerHTML = [['f', 'קריינית', nF], ['m', 'קריין', nM], ['tts', 'קול המכשיר', null]].map(([k, t, n]) => `<button class="vnarr${k === nr ? ' on' : ''}" data-narr="${k}" aria-pressed="${k === nr}"><b>${t}</b><small>${n == null ? 'הקראה אוטומטית' : n ? `${n} מתוך ${P.length} פרקים מוקלטים` : 'ההקלטות בדרך'}</small></button>`).join('');
     $('#vs-styles').innerHTML = STYLES.map(s => `<button class="vstyle${s.id === cur ? ' on' : ''}" data-vs="${s.id}">${ic(s.icon, 22)}<b>${s.t}</b><small>${s.d}</small></button>`).join('');
     const he = N.supported ? N.hebrewVoices() : [];
     $('#vs-count').textContent = he.length ? `${he.length} קולות עבריים` : '';
@@ -91,6 +93,8 @@
   function closeVoice() { sheet.hidden = true; }
   sheet.addEventListener('click', e => {
     if (e.target === sheet || e.target.closest('.share-sheet__x')) return closeVoice();
+    const nb = e.target.closest('[data-narr]'); if (nb) { N.setNarr(nb.dataset.narr); paint(); const c = A.current, on = A.isActive && A.isActive();
+      A.toast(nb.dataset.narr === 'tts' ? 'הפרקים יוקראו בקול המכשיר' : c && N.recording(c) ? (on ? 'הקול יתחלף מהפרק הבא' : 'נבחר. לחצו הפעלה כדי לשמוע') : 'נבחר. פרקים שעוד לא הוקלטו יוקראו בקול המכשיר'); return; }
     const s = e.target.closest('[data-vs]'), v = e.target.closest('[data-vv]'), t = e.target.closest('[data-vt]');
     if (s) { const st = STYLES.find(x => x.id === s.dataset.vs); ls.set('podtc.vstyle', st.id); N.setPitch(st.pitch); N.setRate(st.rate); paint(); N.preview(SAMPLE) || A.toast(`${st.t}: יופעל מהמשפט הבא`); }
     else if (v) { N.setVoice(v.dataset.vv); paint(); N.preview(SAMPLE) || A.toast('הקול החדש יופעל מהמשפט הבא'); }
