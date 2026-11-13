@@ -11,26 +11,21 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <!-- built by tools/build.js from the files listed in tools/sources.json -->
+  <link rel="stylesheet" href="css/site.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/theme-blue.css">
-  <link rel="stylesheet" href="css/podcast.css">
-  <link rel="stylesheet" href="css/news.css">
-  <link rel="stylesheet" href="css/vivid.css">
-  <link rel="stylesheet" href="css/muni.css">
-  <link rel="stylesheet" href="css/radio.css">
-  <link rel="stylesheet" href="css/pop.css">
-  <link rel="stylesheet" href="css/a11y.css">
   <style>
-    .splash--auto{position:fixed;inset:0;z-index:3000;background:#fff!important;display:flex;align-items:center;justify-content:center}
+    .splash--auto{position:fixed;inset:0;z-index:3000;background:#fff!important;}
+    html.dark .splash--auto{background:#0A1428!important}
+    html.dark .splash--auto .splash__logo{filter:brightness(0) invert(1)}
+    .splash--auto{display:flex;align-items:center;justify-content:center}
     .splash--auto .splash__inner>*{display:none}
     .splash--auto .splash__inner>.splash__logo{display:block;width:min(62vw,300px);height:auto}
     .splash--auto .splash__inner>.splash__dots{display:flex}
   </style>
+  <script>try{var m=localStorage.getItem('podtc.theme')||'auto';if(m==='dark'||(m==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
 </head>
 <body>
   <a class="skip-link" href="#home">דלגו לתוכן הראשי</a>
@@ -162,10 +157,10 @@
 
       <section class="block" id="social">
         <h2 class="kicker"><i style="--c:#111827"></i>העירייה ברשתות</h2>
-        <div class="soc-tabs" role="tablist">
-          <button class="soc-tab on" data-soc="tiktok">טיקטוק</button>
-          <button class="soc-tab" data-soc="facebook">פייסבוק</button>
-          <button class="soc-tab" data-soc="youtube">▶יוטיוב</button>
+        <div class="soc-tabs" role="group" aria-label="רשת חברתית">
+          <button class="soc-tab on" data-soc="tiktok" aria-pressed="true">טיקטוק</button>
+          <button class="soc-tab" data-soc="facebook" aria-pressed="false">פייסבוק</button>
+          <button class="soc-tab" data-soc="youtube" aria-pressed="false">יוטיוב</button>
         </div>
         <div id="soc-frame" class="soc-frame"></div>
         <div id="soc-links" class="soc-links"></div>
@@ -469,6 +464,8 @@
   <script src="js/share-pages.js"></script>
   <script src="js/onair.js"></script>
   <script src="js/pop.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/welcome.js"></script>
   <script src="js/a11y.js"></script>
 </body>
 </html>

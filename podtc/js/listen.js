@@ -24,6 +24,10 @@
       <div class="lshare"><span>שתפו</span>
         <a class="ls ls--wa" id="s-wa" target="_blank" rel="noopener">וואטסאפ</a><a class="ls ls--fb" id="s-fb" target="_blank" rel="noopener">פייסבוק</a><a class="ls ls--tg" id="s-tg" target="_blank" rel="noopener">טלגרם</a><button class="ls ls--copy" id="s-copy">העתקה</button></div>
       <details class="ltr"><summary>התמליל המלא</summary><div id="ltext">${parts.map((t, i) => `<span data-i="${i}">${esc(t)} </span>`).join('')}</div></details>
+      <section class="lmap" aria-label="מיקום המקום"><h2 class="lmore__h">איפה זה</h2>
+        <iframe title="מפה: ${esc(ep.title)}" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${(ep.lng - .004).toFixed(5)},${(ep.lat - .0028).toFixed(5)},${(ep.lng + .004).toFixed(5)},${(ep.lat + .0028).toFixed(5)}&layer=mapnik&marker=${ep.lat},${ep.lng}"></iframe>
+        <div class="lmap__a"><a href="https://www.google.com/maps/dir/?api=1&destination=${ep.lat},${ep.lng}&travelmode=walking" target="_blank" rel="noopener">ניווט ברגל</a><a href="https://waze.com/ul?ll=${ep.lat},${ep.lng}&navigate=yes" target="_blank" rel="noopener">וייז</a><a href="${SITE}#${esc(ep.id)}">על המפה באתר</a></div>
+        <small>המיקום משוער</small></section>
       ${more.length ? `<h2 class="lmore__h">פרקים נוספים</h2><div class="lmore">${more.map(p => `<a href="${esc(p.id)}.html"><span class="lmore__a">${window.PodArt ? PodArt.svg(p.category, p.id) : ''}</span><b>${esc(p.title)}</b><small>${esc((CATS[p.category] || {}).label || '')}</small></a>`).join('')}</div>` : ''}
       <a class="lcta" href="${SITE}">כל הפודקאסטים, החדשות והרדיו של טירת כרמל</a>
     </main>

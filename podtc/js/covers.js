@@ -40,14 +40,21 @@
     const c = cat ? cat.color : '#123E7C', c2 = LIGHT[hash((ep && ep.id) || 'x') % LIGHT.length];
     const ic = window.PodIcons ? (ep && ep.id === 'briefing' ? PodIcons.svg('mic', 20, 1.8) : PodIcons.cat(ep && ep.category ? ep : 'city', 20)) : '';
     const sd = ep ? hash(ep.id) % 360 : 0;
-    return `<span class="cover cover--wave cover--art2 ${cls}" style="--c:${c};--c2:${c2};--r:${sd}deg;--fx:1" role="img" aria-label="${esc(ep ? ep.title : '')}">
-      ${window.PodArt ? PodArt.svg(ep && ep.id === 'briefing' ? 'news' : ep && ep.live ? 'live' : (ep && ep.category) || 'city', ep && ep.id) : ''}<span class="cover__glow"></span><span class="cover__bars" aria-hidden="true">${bars(ep ? ep.id : 'x', 15)}</span>
+    const art = ep && ep.id === 'briefing' ? 'news' : ep && ep.live ? 'live' : (ep && ep.category) || 'city';
+    // the drawing and the bars are filled in when the cover first scrolls into view (keeps the page light)
+    const fill = LAZY ? `<span class="cover__lazy" data-art="${esc(art)}" data-ep="${esc(ep ? ep.id : '')}"></span>` : (window.PodArt ? PodArt.svg(art, ep && ep.id) : '') + `<span class="cover__bars" aria-hidden="true">${bars(ep ? ep.id : 'x', 15)}</span>`;
+    return `<span class="cover cover--wave cover--art2 ${cls}" style="--c:${c};--c2:${c2};--r:${sd}deg;--fx:1" role="img" aria-label="${esc(ep ? ep.title : '')}">${fill}
       <span class="cover__ic" aria-hidden="true">${ic}</span>
       ${label ? `<span class="cover__label"><small>podtc</small><b>${esc(ep.title)}</b></span>` : ''}</span>`;
   }
+  const LAZY = 'IntersectionObserver' in window;
+  function fillCover(el) {
+    const ph = el.querySelector(':scope > .cover__lazy'); if (!ph) return;
+    ph.outerHTML = (window.PodArt ? PodArt.svg(ph.dataset.art, ph.dataset.ep) : '') + `<span class="cover__bars" aria-hidden="true">${bars(ph.dataset.ep || 'x', 15)}</span>`;
+  }
   /* only animate the waves that are on screen (battery & smoothness) */
   if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('vis', e.isIntersecting)), { rootMargin: '80px' });
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) fillCover(e.target); e.target.classList.toggle('vis', e.isIntersecting); }), { rootMargin: '300px 300px' });
     const scan = root => (root.querySelectorAll ? root.querySelectorAll('.cover--wave:not([data-io])') : []).forEach(el => { el.dataset.io = 1; io.observe(el); });
     const start = () => { scan(document); new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => n.nodeType === 1 && (n.matches && n.matches('.cover--wave:not([data-io])') ? (n.dataset.io = 1, io.observe(n)) : scan(n))))).observe(document.body, { childList: true, subtree: true }); };
     if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);

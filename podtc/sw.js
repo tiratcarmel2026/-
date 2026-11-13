@@ -1,7 +1,6 @@
 /* PODTC service worker — app shell offline; map tiles & Wikipedia cached as you go. */
-const V = 'podtc-v33';
-const SHELL = ['./', 'index.html', 'css/app.css', 'css/theme.css', 'css/theme-blue.css', 'css/podcast.css', 'css/news.css', 'css/vivid.css', 'css/a11y.css', 'js/a11y.js', 'js/city.js', 'js/muni.js', 'js/radio.js', 'js/pop.js', 'css/pop.css', 'js/content-apply.js', 'css/radio.css', 'css/muni.css', 'assets/muni-logo.png', 'accessibility.html', 'assets/wordmark-navy.png', 'js/art.js', 'js/covers.js', 'js/extras.js', 'js/icons.js', 'assets/wordmark-white.png', 'js/geo.js', 'js/config.js', 'js/places.js', 'js/quiz.js', 'js/narrator.js', 'js/wiki.js', 'js/app.js', 'js/home.js', 'js/live.js', 'vendor/qrcode/qrcode.js', 'manifest.webmanifest', 'assets/wordmark.png', 'assets/logo-full.png', 'assets/icon-192.png', 'assets/icon-512.png',
-  'vendor/leaflet/leaflet.css', 'vendor/leaflet/leaflet.js'];
+const V = 'podtc-v35';
+const SHELL = ['./', 'index.html', 'css/site.css', 'js/content.js', 'manifest.webmanifest', 'accessibility.html', 'assets/wordmark-navy.png', 'assets/wordmark-white.png', 'assets/muni-logo.png', 'assets/icon-192.png', 'assets/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {

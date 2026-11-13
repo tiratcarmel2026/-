@@ -202,6 +202,7 @@
       const S = C.settings, f = (k, l, ph, help) => field({ k, label: l, ph, help, ltr: true }, S[k], 'settings');
       return `<h1>הגדרות</h1><p class="lead">חשבונות הרשתות החברתיות ושידור הרדיו.</p><div class="form" id="settings">
         <h3>רשתות חברתיות</h3>${f('facebook', 'עמוד הפייסבוק', 'TCarmel.muni', 'שם העמוד כפי שמופיע בכתובת')}${f('tiktok', 'טיקטוק', 'tiratcarmel.muni', 'בלי @')}${f('youtubeChannel', 'מזהה ערוץ יוטיוב', 'UC…')}
+        <h3>מדידת כניסות</h3>${f('goatcounter', 'קוד GoatCounter', 'tiratcarmel', 'נרשמים בחינם ב־goatcounter.com ומדביקים כאן את שם האתר שבחרתם. בלי עוגיות ובלי מידע אישי')}
         <h3>רדיו</h3>${f('radioStream', 'כתובת שידור חי', 'https://…/stream.mp3', 'אם ריק, רדיו PODTC מנגן את הפרקים ברצף')}</div>
         <div class="tips"><h3>חשבון</h3><p>מחוברים כ־<b>${esc(user)}</b>. מפתח הגישה נשמר רק בדפדפן הזה.</p><button class="btn" id="discard">ביטול כל השינויים שלא פורסמו</button></div>`;
     }

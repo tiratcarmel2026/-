@@ -1,0 +1,46 @@
+{
+ "css": [
+  "vendor/leaflet/leaflet.css",
+  "css/app.css",
+  "css/theme.css",
+  "css/theme-blue.css",
+  "css/podcast.css",
+  "css/news.css",
+  "css/vivid.css",
+  "css/muni.css",
+  "css/radio.css",
+  "css/pop.css",
+  "css/pages.css",
+  "css/dark.css",
+  "css/a11y.css"
+ ],
+ "jsBefore": [
+  "vendor/leaflet/leaflet.js",
+  "js/geo.js",
+  "js/icons.js",
+  "js/art.js",
+  "js/covers.js",
+  "js/config.js",
+  "js/places.js",
+  "js/quiz.js"
+ ],
+ "jsAfter": [
+  "js/content-apply.js",
+  "js/narrator.js",
+  "js/wiki.js",
+  "js/app.js",
+  "js/home.js",
+  "vendor/qrcode/qrcode.js",
+  "js/live.js",
+  "js/extras.js",
+  "js/city.js",
+  "js/muni.js",
+  "js/radio.js",
+  "js/share-pages.js",
+  "js/onair.js",
+  "js/pop.js",
+  "js/pages.js",
+  "js/welcome.js",
+  "js/a11y.js"
+ ]
+}

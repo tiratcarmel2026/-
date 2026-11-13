@@ -1,0 +1,71 @@
+/* =====================================================================
+   podtc · dark mode (follows the phone; switch in the masthead)
+   Deep navy surfaces, light text, the same cyan and accent colours.
+   ===================================================================== */
+html.dark{color-scheme:dark;
+  --bg:#0A1428; --surf:#111E38; --surf2:#172645; --dline:#24365A; --dtext:#E6EDF7; --dmuted:#A9B7CB;
+  --wash:#111E38; --wash-2:#172645; --soft:#111E38; --soft-bg:#111E38; --line:#24365A; --rule:#24365A; --muted:#A9B7CB; --ink:#E6EDF7}
+html.dark,html.dark body,html.dark .home,html.dark .view-home{background:var(--bg)!important;color:var(--dtext)!important}
+
+/* masthead, strips, navigation */
+html.dark .top{background:#0D1830!important;border-bottom-color:var(--dline)!important}
+html.dark .top__logo,html.dark .foot__logo{filter:brightness(0) invert(1)}
+html.dark .top__muni img,html.dark .foot__muni{background:#fff;border-radius:8px;padding:2px 4px}
+html.dark .mnav button{color:#A9B7CB}
+html.dark .mnav button.on,html.dark .mnav button:hover{color:#fff}
+html.dark .theme-btn,html.dark .top-search{background:var(--surf2)!important;color:#fff!important}
+html.dark .ticker{background:#0D1830!important;border-bottom-color:var(--dline)}
+html.dark .ticker__item{color:#C6D3E6!important}
+html.dark .tabbar,html.dark .view-home .tabbar{background:#0D1830!important;border-top-color:var(--dline)!important}
+html.dark .tab{color:#A9B7CB!important}html.dark .tab.on{color:#fff!important}
+
+/* headings and text */
+html.dark .shelf__h h2,html.dark .kicker,html.dark .rtitle h2,html.dark .qa__h,html.dark .tile__t,html.dark .art__t,html.dark .notice b,html.dark .bnote b,html.dark .daily h2,
+html.dark .bus__r strong,html.dark .info summary b,html.dark .rrad h2,html.dark .rpoints b,html.dark .cblock h2,html.dark .hero h1,html.dark .srow__t b,html.dark .lnk b,html.dark .svc__item b,
+html.dark .tour-tile b,html.dark .st b,html.dark .fnum,html.dark .future h2,html.dark .news h3,html.dark .news__list a,html.dark h1,html.dark h2,html.dark h3{color:var(--dtext)!important}
+html.dark .tile__x,html.dark .tile__m,html.dark .art__more,html.dark .notice p,html.dark .notice__m,html.dark .bnote small,html.dark .bus__r small,html.dark .info p,html.dark .rrad__sub,html.dark .rrad__st,
+html.dark .rpoints,html.dark .shelf__note,html.dark .shelf__h h2 small,html.dark .rtitle p,html.dark .lnk small,html.dark .svc__item small,html.dark .tour-tile small,html.dark .st small,
+html.dark .hero__sub,html.dark .hero__ex,html.dark .daily__t,html.dark .cblock p,html.dark .fnum small,html.dark .future__note,html.dark .srow__t small,html.dark .news__list small,html.dark p{color:var(--dmuted)!important}
+html.dark .rwel p,html.dark .pghead p,html.dark .onair p{color:#C6D3E6!important}
+
+/* surfaces */
+html.dark .art,html.dark .bnote,html.dark .bus,html.dark .info,html.dark .svc__item,html.dark .lnk,html.dark .qa__i,html.dark .rrad,html.dark .rrad__player,html.dark .rrad__tag,html.dark .hsearch,html.dark .bus-find,
+html.dark .bchip,html.dark .pillc,html.dark .news,html.dark .wiki-live,html.dark .lc,html.dark .future,html.dark .fnum,html.dark .photo-card,html.dark .share-app,html.dark .tour-tile,html.dark .cblock--light,
+html.dark .emerg,html.dark .soc-frame,html.dark .galfb__frame,html.dark .tchip,html.dark .notice,html.dark .qp,html.dark .search-sheet,html.dark .share-sheet__card,html.dark .sheet__card,html.dark .drawer,
+html.dark .now,html.dark .mini,html.dark .view-home .mini,html.dark .wlc__card,html.dark .annc,html.dark .srail,html.dark .a11y,html.dark .a11y__opt,html.dark .vstyle,html.dark .vvoice__pick,html.dark .quiz,
+html.dark .progress-card,html.dark .voice-box,html.dark .tcard,html.dark .card,html.dark .fchip,html.dark .fab,html.dark .status,html.dark .tour{background:var(--surf)!important;border-color:var(--dline)!important;color:var(--dtext)!important}
+html.dark .art__ep,html.dark .wlc__b--alt,html.dark .search-sheet__bar,html.dark .schip,html.dark .soc-tab,html.dark .svc__item span,html.dark .np-speed button,html.dark .ss-qr,html.dark .a11y__size button{background:var(--surf2)!important;color:var(--dtext)!important;border-color:var(--dline)!important}
+html.dark .rrad{background:linear-gradient(160deg,#111E38 0,#0F1B33 60%,#1E2A3F 100%)!important}
+html.dark .rrad__core{box-shadow:0 0 0 5px var(--surf),0 0 0 6px #24365A,0 18px 34px -16px #000}
+html.dark .qa__i:nth-child(1),html.dark .qa__i:hover{background:#06B6E8!important;color:#0B1F47!important}
+html.dark .qa__i:nth-child(1) span,html.dark .qa__i:hover span{color:#0B1F47!important}
+html.dark .qa__i b{color:var(--dtext)}
+html.dark .qa__i:nth-child(1) b,html.dark .qa__i:hover b{color:#0B1F47}
+html.dark .tchip{color:var(--dtext)!important;background:color-mix(in srgb,var(--p) 18%,#111E38)!important}
+html.dark .home__inner>section.daily:not(#x):not(#y){background:linear-gradient(120deg,#2A2410,#2E1A1C)!important;border-color:#4A3A18!important}
+html.dark .daily__m,html.dark .daily__side{color:#E9C46A!important}
+html.dark .notice{background:var(--surf)!important}
+html.dark .mini__info b,html.dark .now h2,html.dark .now__sub{color:var(--dtext)!important}
+html.dark .np-cap,html.dark .tr-head,html.dark .transcript span.done{color:var(--dtext)!important}
+html.dark .transcript{color:#6F819C!important}
+html.dark .transcript span.cur{background:#1D4E6E!important;color:#fff!important}
+html.dark .icon-btn,html.dark .ctl,html.dark .act{background:var(--surf2)!important;border-color:var(--dline)!important;color:var(--dtext)!important}
+html.dark .wave i{background:#24365A}
+html.dark .mini__bar{background:#24365A!important}
+html.dark .wlc__card::before{background:radial-gradient(120% 100% at 50% 0,color-mix(in srgb,var(--w) 30%,#111E38),#111E38 70%)}
+html.dark .wlc__next{background:#06B6E8;color:#0B1F47}
+html.dark .wlc__dots i.on{background:#06B6E8}
+html.dark .eyebrow{filter:brightness(1.15)}
+html.dark .foot,html.dark .foot p{color:var(--dmuted)!important}
+html.dark .foot__links a,html.dark .foot__links .link{color:#7FE3FF!important}
+html.dark .car{background:#06B6E8!important;color:#0B1F47!important}
+html.dark .tile__sh{background:var(--surf2)!important;color:#fff!important}
+html.dark .sprog{opacity:.9}
+html.dark input,html.dark select,html.dark textarea{background:var(--surf2)!important;color:var(--dtext)!important;border-color:var(--dline)!important}
+html.dark a{color:#7FE3FF}
+html.dark .rall,html.dark .shelf__all,html.dark .play-all{color:#7FE3FF!important}
+html.dark .leaflet-container{background:#0A1428}
+html.dark .style-city .leaflet-tile-pane,html.dark.style-city .leaflet-tile-pane{filter:invert(.92) hue-rotate(180deg) saturate(.7) brightness(.95)}
+html.dark .pin{background:#111E38!important}
+html.dark .now::before{background:linear-gradient(180deg,rgba(10,20,40,.55) 0,#0A1428 60%)!important}
+html.dark .now__label,html.dark .now__meta{color:var(--dmuted)!important}

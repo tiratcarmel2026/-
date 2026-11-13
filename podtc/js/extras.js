@@ -192,7 +192,8 @@
   // mini player: tap / drag on its progress bar to seek
   const mb = document.querySelector('.mini__bar');
   if (mb) {
-    mb.setAttribute('role', 'slider'); mb.setAttribute('aria-label', 'מיקום בפרק'); mb.tabIndex = 0;
+    mb.setAttribute('role', 'slider'); mb.setAttribute('aria-label', 'מיקום בפרק'); mb.setAttribute('aria-valuemin', '0'); mb.setAttribute('aria-valuemax', '100'); mb.setAttribute('aria-valuenow', '0'); mb.tabIndex = 0;
+    N.on('progress', f => mb.setAttribute('aria-valuenow', Math.round(f * 100)));
     mb.addEventListener('click', e => { e.stopPropagation(); const r = mb.getBoundingClientRect(); seekTo(Math.min(1, Math.max(0, (r.right - e.clientX) / r.width))); });
   }
   function related(ep) {

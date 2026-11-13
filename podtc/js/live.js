@@ -402,7 +402,7 @@
   function social(which) {
     socNow = which || socNow;
     const s = SOCIAL[socNow], box = $('#soc-frame');
-    document.querySelectorAll('.soc-tab').forEach(t => t.classList.toggle('on', t.dataset.soc === socNow));
+    document.querySelectorAll('.soc-tab').forEach(t => { t.classList.toggle('on', t.dataset.soc === socNow); t.setAttribute('aria-pressed', String(t.dataset.soc === socNow)); });
     if (socNow === 'tiktok') tiktok(box);
     else {
       const w = Math.min(500, Math.round(box.clientWidth || 340));

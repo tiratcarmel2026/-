@@ -30,6 +30,7 @@
   window.PODTC_LIVE = C.live || null; window.PODTC_PUSH = C.push || null;
   window.PODTC_DAILY = (C.daily || []).filter(d => d && (d.title || d.text || d.audio));
   if (C.settings) { CFG.social = Object.assign({}, CFG.social, ['tiktok', 'facebook', 'youtubeChannel'].reduce((o, k) => { if (C.settings[k]) o[k] = C.settings[k]; return o; }, {}));
+    if (C.settings.goatcounter) CFG.analytics = C.settings.goatcounter;
     if (C.settings.radioStream) CFG.radio = { stream: C.settings.radioStream, name: C.settings.radioName || 'רדיו PODTC' }; }
 
   /* ---- after the page is built: texts, free blocks, section order and visibility ---- */
