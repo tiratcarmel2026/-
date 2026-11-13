@@ -36,6 +36,10 @@ jobs:
         with:
           path: '.' # index.html lives at the repository root
 
+      # the artifact is sometimes not listed yet right after the upload; a short pause avoids a failed deploy
+      - name: Wait for the artifact to be listed
+        run: sleep 15
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
