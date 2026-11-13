@@ -117,7 +117,6 @@
     const he = N.hebrewVoices ? N.hebrewVoices().length : 0;
     A.toast(he ? 'ההקראה לא התחילה. לחצו שוב על הפעלה, או קראו את התמליל' : 'אין במכשיר קול בעברית, ולכן אי אפשר להקריא. אפשר לקרוא את התמליל');
     A.openNow(); setTimeout(() => { const t = document.getElementById('transcript'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
-    if (!he && window.PodVoice) setTimeout(() => PodVoice.open(), 2600);
   });
   if (window.PodIcons) PodIcons.hydrate();
 })();

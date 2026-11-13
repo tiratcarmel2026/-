@@ -16,8 +16,6 @@ window.PODTC_CONFIG = {
      Facebook does not allow reading a page's posts without the page owner's access token, so posts
      from the municipality's social networks are added here by the spokesperson's office. */
   notices: [
-    { date: '2026-11-01', tag: 'מים וביוב', title: 'מי כרמל: אין לחבר מרזבים ומערכות לאיסוף מי גשם למערכת הביוב',
-      text: 'לקראת החורף מזכיר תאגיד המים: חיבור מרזבים לביוב גורם להצפות. התאגיד מזהיר גם מפני מתחזים לעובדי החברה.', src: 'מי כרמל', url: 'https://www.mei-carmel.co.il/' },
     { date: '2026-10-20', tag: 'התחדשות עירונית', title: 'העירייה נערכת להמשך תנופת ההתחדשות העירונית',
       text: 'דיון בהשתתפות המינהלת להתחדשות עירונית ואגפי העירייה עסק בהיערכות התשתיות והשירותים לעיר שגדלה.', src: 'חי פה', url: 'https://haipo.co.il/item/649792' },
     { date: '2026-10-14', tag: 'תכנון ובנייה', title: 'הופקדה תוכנית ויצמן־ז\'בוטינסקי: 7 מגדלים וכ־1,200 דירות',

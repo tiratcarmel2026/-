@@ -8,7 +8,7 @@
 
   /* ---------- light / dark ---------- */
   const mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
-  function applyTheme() { const m = ls.get('podtc.theme', 'auto'), dark = m === 'dark' || (m === 'auto' && mq && mq.matches);
+  function applyTheme() { const m = ls.get('podtc.theme', 'light'), dark = m === 'dark';
     document.documentElement.classList.toggle('dark', !!dark); const b = $('#theme-btn'); if (b) { b.setAttribute('aria-pressed', String(!!dark)); b.title = b.ariaLabel = dark ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'; }
     const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = dark ? '#0A1428' : '#ffffff'; }
   if (mq && mq.addEventListener) mq.addEventListener('change', applyTheme);

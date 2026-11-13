@@ -13,16 +13,16 @@
 
   const PAGES = {
     home: { t: 'ראשי', icon: 'home' },
-    podcasts: { t: 'פודקאסטים', k: 'PODCASTS', d: 'כל הפרקים על המקומות, האנשים והסיפורים של טירת כרמל', icon: 'headphones' },
-    news: { t: 'חדשות', k: 'NEWS & UPDATES', d: 'כתבות, מודעות העירייה, מה קורה עכשיו ומה חדש ברשתות', icon: 'news' },
-    city: { t: 'העיר', k: 'THE CITY', d: 'טירת כרמל במספרים, תחבורה ציבורית, תוכניות לעתיד וגלריה', icon: 'building' },
-    contact: { t: 'צרו קשר', k: 'CONTACT', d: 'שירותי העירייה, מספרי טלפון וקישורים שימושיים', icon: 'phone' }
+    podcasts: { t: 'פודקאסטים', d: 'כל הפרקים על המקומות, האנשים והסיפורים של טירת כרמל', icon: 'headphones' },
+    news: { t: 'חדשות', d: 'כתבות, מודעות העירייה, מה קורה עכשיו ומה חדש ברשתות', icon: 'news' },
+    city: { t: 'העיר', d: 'טירת כרמל במספרים, תחבורה ציבורית, תוכניות לעתיד וגלריה', icon: 'building' },
+    contact: { t: 'צרו קשר', d: 'שירותי העירייה, מספרי טלפון וקישורים שימושיים', icon: 'phone' }
   };
   // which page(s) each section lives on; the first page listed is its home
   const MAP = {
     onair: ['home', 'news'], 'daily-block': ['home', 'news'], rhero: ['home'], rpoints: ['home'], tmarq: ['home', 'podcasts'], qa: ['home'], hsearch: ['home', 'podcasts'],
     'articles-block': ['news', 'home'], 'board-block': ['news', 'home'], services: ['contact', 'home', 'city'], 'near-block': ['podcasts', 'home'], 'top10-block': ['podcasts', 'home'],
-    radio: ['home'], 'share-band': ['home', 'contact'], 'install-card': ['home'],
+    radio: ['home'], homemap: ['home', 'city'], 'share-band': ['home', 'contact'], 'install-card': ['home'],
     'podcasts-title': ['podcasts'], resume: ['podcasts'], quick: ['podcasts'], hero: ['podcasts'], 'recent-block': ['podcasts'], 'fav-block': ['podcasts'], 'tours-block': ['podcasts'],
     'browse-block': ['podcasts'], sections: ['podcasts'], 'shorts-block': ['podcasts'], wrapped: ['podcasts'], kids: ['podcasts'],
     live: ['news'], social: ['news'], notice: ['news'],
@@ -37,7 +37,7 @@
   const pageOf = id => { const el = document.getElementById(id); return el ? (pagesOf(el)[0] || 'home') : 'home'; };
 
   /* ---------- front page order: live, the two main cards, daily update, search, quick actions ---------- */
-  ['tmarq', 'rpoints', 'qa', 'hsearch', 'daily-block', 'rhero', 'onair'].forEach(k => { const el = document.getElementById(k) || inner.querySelector(':scope > .' + k); if (el) inner.prepend(el); });
+  ['tmarq', 'rpoints', 'homemap', 'qa', 'hsearch', 'daily-block', 'rhero', 'onair'].forEach(k => { const el = document.getElementById(k) || inner.querySelector(':scope > .' + k); if (el) inner.prepend(el); });
 
   /* ---------- page header (every page but home) ---------- */
   inner.insertAdjacentHTML('afterbegin', `<header class="pghead" id="pghead" hidden><span class="eyebrow" id="pg-k"></span><h1 id="pg-t"></h1><p id="pg-d"></p><div class="pghead__x" id="pg-x"></div></header>`);
@@ -73,7 +73,7 @@
     if (page === 'home') { let n = 0; inner.querySelectorAll(':scope > .notice').forEach(el => { el.classList.toggle('pg-off', n++ > 0); }); }
     else if (page === 'news') inner.querySelectorAll(':scope > .notice').forEach(el => el.classList.remove('pg-off'));
     const P = PAGES[page], h = $('#pghead'); h.hidden = page === 'home';
-    if (page !== 'home') { $('#pg-k').textContent = P.k; $('#pg-t').textContent = P.t; $('#pg-d').textContent = P.d; $('#pg-x').innerHTML = EXTRA[page] || ''; }
+    if (page !== 'home') {  $('#pg-t').textContent = P.t; $('#pg-d').textContent = P.d; $('#pg-x').innerHTML = EXTRA[page] || ''; }
     document.querySelectorAll('[data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === page && document.body.classList.contains('view-home')));
     document.title = page === 'home' ? 'podtc — טירת כרמל' : `${P.t} · podtc — טירת כרמל`;
     if (changed && !opts.keepScroll) home.scrollTo({ top: 0 });

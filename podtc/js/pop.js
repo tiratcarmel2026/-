@@ -72,7 +72,7 @@
   const POP = ['#06B6E8', '#F5B301', '#FF6B5E', '#0E9F6E', '#7B61FF', '#0B1F47'];
   const pts = $('.rpoints'), cats = Object.keys(A.CATS).filter(k => k !== 'live' && k !== 'news' && A.PLACES.some(p => p.category === k));
   if (pts && cats.length) { const chips = cats.map((k, i) => `<button class="tchip" style="--p:${POP[i % POP.length]}" data-tc="${k}"><i></i>${esc(A.CATS[k].label)}<small>${A.PLACES.filter(p => p.category === k).length}</small></button>`).join('');
-    pts.insertAdjacentHTML('afterend', `<div class="tmarq" aria-label="נושאי הפודקאסטים"><div class="tmarq__in">${chips}${chips}</div></div>`); }
+    pts.insertAdjacentHTML('afterend', `<div class="tmarq" aria-label="נושאי הפודקאסטים"><div class="tmarq__in">${chips}</div></div>`); }
   document.addEventListener('click', e => { const b = e.target.closest('[data-tc]'); if (!b) return; const s = document.getElementById('shelf-' + b.dataset.tc); if (s) { s.classList.add('in'); s.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
 
   /* ---------- numbers count up when they come into view ---------- */

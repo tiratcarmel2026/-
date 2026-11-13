@@ -67,3 +67,55 @@ html.dark .theme-btn .i-sun{display:block}html.dark .theme-btn .i-moon{display:n
 @media (max-width:1023px){.theme-btn{width:40px;height:40px}}
 @media (max-width:359px){.theme-btn{display:none}}
 .act#ep-page{text-decoration:none}
+
+/* ---------- live city map on the front page ---------- */
+.home__inner>section.hmap{margin:0 0 48px!important}
+.hmap__chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.hchip{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:99px;border:1.5px solid #E3EEF5;background:#fff;color:#0B1F47;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.hchip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.hchip.on{background:#0B1F47;border-color:#0B1F47;color:#fff}
+.hmap__box{position:relative;border-radius:20px;overflow:hidden;border:1px solid #E3EEF5;box-shadow:0 18px 40px -26px rgba(11,31,71,.5)}
+.hmap__map{height:440px;background:#E8F3FC}
+@media (max-width:699px){.hmap__map{height:360px}}
+.hmap__me{position:absolute;z-index:500;left:12px;bottom:28px;width:46px;height:46px;border-radius:50%;border:0;background:#fff;color:#2563EB;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px rgba(11,31,71,.3)}
+.hmap__lock{position:absolute;z-index:500;inset:auto 50% 16px auto;transform:translateX(50%);height:40px;padding:0 18px;border-radius:99px;border:0;background:rgba(11,31,71,.86);color:#fff;font:inherit;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}
+.hmap__near{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;font-size:14.5px;color:#0B1F47}
+.hmap__hint{color:#55657C}
+.hnear{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:99px;border:1px solid #E3EEF5;background:#F3F9FD;color:#0B1F47;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.hnear i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.hnear small{color:#55657C;font-weight:600}
+.hpop-wrap .leaflet-popup-content-wrapper{border-radius:16px;padding:0}
+.hpop-wrap .leaflet-popup-content{margin:14px 16px;direction:rtl;text-align:right;font-family:Heebo,Arial,sans-serif}
+.hpop{display:flex;flex-direction:column;gap:2px;min-width:190px}
+.hpop__k{font-size:12px;font-weight:800;color:var(--c)}
+.hpop b{font-size:16px;color:#0B1F47;line-height:1.3}
+.hpop small{font-size:13px;color:#55657C}
+.hpop__a{display:flex;gap:6px;margin-top:10px}
+.hpop__a button,.hpop__a a{height:36px;padding:0 14px;border-radius:99px;border:0;background:#06B6E8;color:#0B1F47!important;font:inherit;font-weight:800;font-size:13.5px;text-decoration:none;display:inline-flex;align-items:center;cursor:pointer}
+.hpop__a a{background:#F3F9FD;border:1px solid #E3EEF5}
+.hmap .leaflet-control-zoom a{width:36px;height:36px;line-height:36px;font-size:20px}
+
+/* ---------- neighbourhoods ---------- */
+.nbh__h{margin:22px 0 10px;font-size:18px;font-weight:900;color:#0B1F47}
+.nbh{display:flex;flex-wrap:wrap;gap:8px}
+.nbh__i{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:99px;background:#F3F9FD;border:1px solid #E3EEF5;color:#0B1F47;font-weight:700;font-size:14.5px}
+.nbh__i small{font-size:11px;font-weight:800;padding:1px 7px;border-radius:99px;background:#06B6E8;color:#0B1F47}
+.nbh__i--renew small{background:#FFF3CF;color:#8A5A00}.nbh__i--new small{background:#DDF6EC;color:#0A7B55}.nbh__i--plan small{background:#EDE9FF;color:#5B43D6}
+
+/* ---------- friendlier: white, calmer, Hebrew labels, bigger targets ---------- */
+html:not(.dark),html:not(.dark) body,html:not(.dark) .home{background:#fff!important}
+.srail{display:none!important}
+.home__inner>section>.eyebrow,.pghead .eyebrow{display:none!important}
+.tmarq{mask-image:none!important;-webkit-mask-image:none!important;direction:rtl;overflow:visible}
+.tmarq__in{animation:none!important;display:flex!important;flex-wrap:wrap;white-space:normal;gap:8px}
+
+.home{font-size:16.5px}
+.tile__t{font-size:17px!important}
+.tile__x{font-size:14.5px!important;line-height:1.55!important}
+.tile__play{width:44px!important;height:44px!important}
+.shelf__h h2{font-size:clamp(24px,4vw,32px)!important}
+.rpoints{display:none!important}
+/* map layers must keep their own size (a general "max-width:100%" squeezed the markers layer) */
+.leaflet-container img,.leaflet-container svg{max-width:none!important;max-height:none!important}
+.leaflet-overlay-pane svg,.leaflet-marker-pane svg.leaflet-zoom-animated{width:auto!important;height:auto!important}
+@media (max-width:699px){.hmap__chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding:0 16px 4px}.hmap__chips::-webkit-scrollbar{display:none}.hchip{flex:none}}

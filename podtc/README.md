@@ -355,3 +355,10 @@ podtc/
 - Management screen → "אולפן הקלטות": every episode with its text as a scrolling teleprompter, one-click recording, a level meter with a "too loud" warning, playback, and "save and go to the next episode". Progress is tracked separately for a female and a male narrator (`audioF` / `audioM` on each episode). A ready-made file can be uploaded instead.
 - Every take is cleaned up in the browser (`js/recorder.js`): mono, silence trimmed at both ends, volume evened out with a soft limit, short fades, encoded to 80 kbps MP3 with `vendor/lame` (lamejs, LGPL-3.0, unmodified) so it plays on every phone. The daily-update recorder uses the same path.
 - Listeners choose "קריינית", "קריין" or "קול המכשיר" in the voice sheet; the other recording is the fallback, and episodes with no recording still use the device voice. Share pages offer the same choice when both recordings exist.
+
+## v30 — live city map on the front page, neighbourhoods, white by default
+- `js/homemap.js`: a live map on the front page (and the city page) with every episode as a point in its topic's colour, topic filter chips, a popup with "listen" and the episode page, your position, and the three nearest places. On phones the map is tapped once before it can be dragged, so page scrolling never gets stuck. It loads only when it comes into view.
+- Fixed: a general `svg{width:22px}` and `max-width:100%` rule squeezed Leaflet's marker layer, which hid circle markers on every map.
+- The water corporation is מעיינות החוף (joint with Kiryat Bialik since 2016); the earlier notice from another corporation was removed.
+- The city page lists 21 neighbourhoods from the master-plan documents, marking those set for urban renewal, the new ones and the planned one.
+- White by default: dark mode now only when chosen with the switch (it no longer follows the phone). Calmer front page: the floating share rail, English section labels, the moving topic strip and the decorative points line are gone; text and play buttons are larger. A missing device voice no longer opens the voice sheet by itself.

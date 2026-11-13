@@ -25,7 +25,7 @@
     .splash--auto .splash__inner>.splash__logo{display:block;width:min(62vw,300px);height:auto}
     .splash--auto .splash__inner>.splash__dots{display:flex}
   </style>
-  <script>try{var m=localStorage.getItem('podtc.theme')||'auto';if(m==='dark'||(m==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+  <script>try{var m=localStorage.getItem('podtc.theme');if(m==='dark')document.documentElement.classList.add('dark')}catch(e){}</script>
 </head>
 <body>
   <a class="skip-link" href="#home">דלגו לתוכן הראשי</a>
@@ -464,6 +464,7 @@
   <script src="js/share-pages.js"></script>
   <script src="js/onair.js"></script>
   <script src="js/pop.js"></script>
+  <script src="js/homemap.js"></script>
   <script src="js/pages.js"></script>
   <script src="js/welcome.js"></script>
   <script src="js/a11y.js"></script>

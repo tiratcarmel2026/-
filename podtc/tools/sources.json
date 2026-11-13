@@ -39,6 +39,7 @@
   "js/share-pages.js",
   "js/onair.js",
   "js/pop.js",
+  "js/homemap.js",
   "js/pages.js",
   "js/welcome.js",
   "js/a11y.js"
