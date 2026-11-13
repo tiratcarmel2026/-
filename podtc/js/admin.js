@@ -70,7 +70,7 @@
   function ensure() {
     C.episodes = C.episodes || {}; ['added', 'hidden', 'order'].forEach(k => { C.episodes[k] = C.episodes[k] || []; }); C.episodes.edits = C.episodes.edits || {};
     C.layout = C.layout || {}; C.layout.order = C.layout.order && C.layout.order.length ? C.layout.order : SECTIONS.map(s => s[0]); SECTIONS.forEach(s => { if (!C.layout.order.includes(s[0])) C.layout.order.push(s[0]); });
-    C.layout.hidden = C.layout.hidden || []; C.texts = C.texts || {}; C.settings = C.settings || {}; C.blocks = C.blocks || []; C.daily = C.daily || []; C.links = C.links || []; C.ticker = C.ticker || [];
+    C.layout.hidden = C.layout.hidden || []; C.texts = C.texts || {}; C.settings = C.settings || {}; C.blocks = C.blocks || []; C.live = C.live || {}; C.daily = C.daily || []; C.links = C.links || []; C.ticker = C.ticker || [];
     if (!Array.isArray(C.notices)) C.notices = clone(CFG.notices || []); if (!Array.isArray(C.articles)) C.articles = clone(ARTICLES0); if (!Array.isArray(C.gallery)) C.gallery = clone(CFG.gallery || []);
   }
   const toast = (m, bad) => { const t = $('#toast'); t.textContent = m; t.className = 'toast show' + (bad ? ' bad' : ''); clearTimeout(toast.t); toast.t = setTimeout(() => { t.className = 'toast'; }, 4200); };
@@ -146,6 +146,7 @@
     { k: 'title', label: 'כותרת' }, { k: 'subtitle', label: 'כותרת משנה' },
     { k: 'category', label: 'נושא', type: 'select', options: catOpts },
     { k: 'audio', label: 'הקלטה (mp3)', help: 'קריין אמיתי במקום ההקראה האוטומטית', ltr: true, upload: 'audio', ph: 'קישור לקובץ או העלאה' },
+    { k: 'youtube', label: 'קישור יוטיוב', help: 'אם קיים, השיתוף בוואטסאפ ישלח אותו והפרק יתנגן בתוך וואטסאפ', ltr: true, wide: true, ph: 'https://youtu.be/…' },
     { k: 'script', label: 'הטקסט של הפרק', type: 'area', rows: 9, wide: true, help: 'זה הטקסט שמוקרא ומוצג כתמליל' },
     { k: 'lat', label: 'קו רוחב', type: 'number', ltr: true }, { k: 'lng', label: 'קו אורך', type: 'number', ltr: true }];
   const SCREENS = {
@@ -156,6 +157,23 @@
           .map(([t, v, l]) => `<button class="card" data-tab="${t}"><b>${v}</b><span>${l}</span></button>`).join('')}</div>
         <div class="tips"><h3>איך זה עובד</h3><ol><li><b>עורכים</b> באחת הלשוניות שבצד.</li><li><b>תצוגה מקדימה</b> פותחת את האתר עם השינויים, רק אצלכם.</li><li><b>פרסום</b> שולח את השינויים לאתר. העדכון מופיע לכולם בתוך דקה או שתיים.</li></ol>
           <p>${C.updated ? `פורסם לאחרונה: ${new Date(C.updated).toLocaleString('he-IL')}${C.by ? ' · ' + esc(C.by) : ''}` : 'עדיין לא פורסם תוכן מהמערכת.'}</p></div>`;
+    },
+    live() {
+      const L = C.live, f = (k, l, ph, help, o) => field(Object.assign({ k, label: l, ph, help }, o || {}), L[k], 'live');
+      return `<h1>שידור חי</h1><p class="lead">כשהשידור פעיל, מופיע בראש האתר נגן "שידור חי" אדום, וכפתור LIVE בכותרת מוביל אליו. משדרים מהטלפון דרך יוטיוב או פייסבוק (חינם), או דרך שירות רדיו אינטרנטי, ומדביקים כאן את הקישור.</p>
+        <div class="form" id="live"><label class="sw sw--big wide"><input type="checkbox" data-k="on" ${L.on ? 'checked' : ''}><i></i><span>${L.on ? 'השידור פעיל באתר' : 'השידור כבוי'}</span></label>
+          ${f('type', 'סוג השידור', '', '', { type: 'select', options: () => [['youtube', 'יוטיוב (וידאו או אודיו)'], ['facebook', 'פייסבוק לייב'], ['audio', 'רדיו אינטרנטי (קישור סטרים)']] })}
+          ${f('url', 'קישור לשידור', 'https://youtube.com/live/…', 'ביוטיוב אפשר להשאיר ריק: יוצג השידור החי של ערוץ העירייה', { ltr: true })}
+          ${f('title', 'כותרת', 'ישיבת מועצת העיר בשידור חי', '', { wide: true })}${f('text', 'תיאור קצר', '', '', { type: 'area', rows: 3, wide: true })}</div>
+        <div class="tips"><h3>איך משדרים</h3><ol><li><b>יוטיוב:</b> באפליקציית יוטיוב בטלפון לוחצים על + ← "שידור חי". מעתיקים את הקישור ומדביקים כאן.</li><li><b>פייסבוק:</b> בעמוד העירייה לוחצים "שידור חי", ומדביקים כאן את הקישור לסרטון.</li><li><b>רדיו (קול בלבד):</b> פותחים תחנה חינמית בשירות כמו Zeno.fm, משדרים מהאפליקציה שלהם, ומדביקים כאן את קישור הסטרים.</li><li>מפעילים את המתג ולוחצים "פרסום". בסוף השידור מכבים ומפרסמים שוב.</li></ol></div>`;
+    },
+    push() {
+      const P = C.push || {};
+      return `<h1>התראות</h1><p class="lead">הודעה קצרה שקופצת לכל מי שהאתר פתוח אצלו, ולמי שאישר התראות היא מופיעה גם כהתראה במכשיר. מי שייכנס לאתר אחר כך יראה אותה בראש העמוד.</p>
+        <div class="form" id="pushf">${field({ k: 'title', label: 'כותרת', ph: 'עדכון חשוב מעיריית טירת כרמל', wide: true }, '', 'p')}${field({ k: 'text', label: 'תוכן ההודעה', type: 'area', rows: 3, wide: true }, '', 'p')}${field({ k: 'url', label: 'קישור (לא חובה)', ltr: true, wide: true, ph: 'https://…' }, '', 'p')}
+          <button class="btn btn--pri" id="push-send" type="button">הכנת ההתראה לשליחה</button><button class="btn" id="push-clear" type="button">הסרת ההתראה הנוכחית</button></div>
+        <div class="tips"><h3>ההתראה הנוכחית</h3><p>${P.id ? `<b>${esc(P.title || '')}</b><br>${esc(P.text || '')}<br><small>${new Date(P.date).toLocaleString('he-IL')}</small>` : 'אין התראה פעילה.'}</p>
+          <h3>חשוב לדעת</h3><p>ההתראה נשלחת כשלוחצים "פרסום". היא מגיעה למכשירים שבהם האתר פתוח או מותקן ופועל ברקע. התראות למכשירים שהאתר סגור בהם לגמרי דורשות שירות דחיפה חיצוני (למשל OneSignal, שיש לו מסלול חינמי).</p></div>`;
     },
     daily() { return `<h1>העדכון היומי</h1><p class="lead">עדכון קולי קצר שמופיע בראש האתר. מקליטים כאן בקול שלכם או מעלים הקלטה מוכנה, מוסיפים כותרת וטקסט, ולוחצים "פרסום". העדכון העליון ברשימה הוא זה שמוצג; הקודמים נשמרים בארכיון.</p><div id="host"></div>
         <div class="tips"><h3>טיפים להקלטה</h3><ol><li>הקליטו בחדר שקט, כשהטלפון או המיקרופון קרובים לפה.</li><li>דקה עד שתיים זה האורך הנכון.</li><li>האזינו להקלטה לפני השמירה. אפשר למחוק ולהקליט שוב.</li></ol><p>אם אין הקלטה, העדכון יוקרא בקול האוטומטי לפי הטקסט שכתבתם.</p></div>`; },
@@ -210,6 +228,10 @@
       const sync = () => { C.ticker = rows.map(r => r.t).filter(Boolean); saveDraft(); }; host.addEventListener('input', sync); host.addEventListener('click', () => setTimeout(sync, 0)); }
     if (t === 'eps') paintEpisodes(host);
     if (t === 'layout') wireLayout();
+    if (t === 'live') { const fm = $('#live'); fm.oninput = fm.onchange = e => { const el = e.target; if (!el.dataset.k) return; if (el.type === 'checkbox') { C.live.on = el.checked; el.parentElement.querySelector('span').textContent = el.checked ? 'השידור פעיל באתר' : 'השידור כבוי'; } else C.live[el.dataset.k] = el.value; if (!C.live.type) C.live.type = 'youtube'; touch(); }; }
+    if (t === 'push') { $('#push-send').onclick = () => { const g = k => $(`#pushf [data-k="${k}"]`).value.trim(); if (!g('title') && !g('text')) { toast('כתבו כותרת או תוכן', true); return; }
+        C.push = { id: Date.now().toString(36), title: g('title'), text: g('text'), url: g('url'), date: new Date().toISOString() }; touch(); show('push'); toast('ההתראה מוכנה. לחצו "פרסום" כדי לשלוח אותה'); };
+      $('#push-clear').onclick = () => { delete C.push; touch(); show('push'); }; }
     if (t === 'texts' || t === 'settings') $('#' + t).oninput = e => { const el = e.target; if (!el.dataset.k) return; if (el.value) C[t][el.dataset.k] = el.value; else delete C[t][el.dataset.k]; touch(); };
     const dc = $('#discard'); if (dc) dc.onclick = async () => { if (!confirm('לבטל את כל השינויים שלא פורסמו?')) return; C = await loadPublished(); ensure(); dirty = false; saveDraft(); paintBar(); show('dash'); toast('השינויים בוטלו'); };
   }

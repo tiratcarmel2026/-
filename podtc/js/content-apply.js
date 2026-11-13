@@ -12,12 +12,12 @@
 
   /* ---- episodes: edits, additions, hiding, order ---- */
   Object.keys(E.edits || {}).forEach(id => { const p = P.find(x => x.id === id), e = E.edits[id]; if (!p || !e) return;
-    ['title', 'subtitle', 'script', 'category', 'audio'].forEach(k => { if (e[k] != null && e[k] !== '') p[k] = e[k]; });
+    ['title', 'subtitle', 'script', 'category', 'audio', 'youtube'].forEach(k => { if (e[k] != null && e[k] !== '') p[k] = e[k]; });
     if (isFinite(e.lat) && e.lat !== '' && e.lat != null) p.lat = +e.lat; if (isFinite(e.lng) && e.lng !== '' && e.lng != null) p.lng = +e.lng;
     if (e.audio === '') delete p.audio; });
   (E.added || []).forEach(a => { if (!a || !a.id || !a.title || P.some(x => x.id === a.id)) return;
     P.push({ id: a.id, category: a.category || 'city', title: a.title, subtitle: a.subtitle || '', lat: +a.lat || 32.761, lng: +a.lng || 34.9705, radius: +a.radius || 200, approx: true,
-      script: a.script || a.subtitle || a.title, audio: a.audio || undefined, sources: a.source ? [a.source] : [] }); });
+      script: a.script || a.subtitle || a.title, audio: a.audio || undefined, youtube: a.youtube || undefined, sources: a.source ? [a.source] : [] }); });
   (E.hidden || []).forEach(id => { const i = P.findIndex(x => x.id === id); if (i > -1) P.splice(i, 1); });
   if ((E.order || []).length) P.sort((a, b) => { const i = E.order.indexOf(a.id), j = E.order.indexOf(b.id); return (i < 0 ? 1e6 : i) - (j < 0 ? 1e6 : j); });
   (window.PODTC_TOURS || []).forEach(t => { t.order = (t.order || []).filter(id => P.some(p => p.id === id)); });
@@ -27,6 +27,7 @@
   if (Array.isArray(C.gallery)) CFG.gallery = C.gallery;
   if (Array.isArray(C.articles)) window.PODTC_ARTICLES = C.articles;
   if (Array.isArray(C.links)) window.PODTC_LINKS = C.links;
+  window.PODTC_LIVE = C.live || null; window.PODTC_PUSH = C.push || null;
   window.PODTC_DAILY = (C.daily || []).filter(d => d && (d.title || d.text || d.audio));
   if (C.settings) { CFG.social = Object.assign({}, CFG.social, ['tiktok', 'facebook', 'youtubeChannel'].reduce((o, k) => { if (C.settings[k]) o[k] = C.settings[k]; return o; }, {}));
     if (C.settings.radioStream) CFG.radio = { stream: C.settings.radioStream, name: C.settings.radioName || 'רדיו PODTC' }; }

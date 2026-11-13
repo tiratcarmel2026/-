@@ -116,6 +116,7 @@
     .sw i::after{content:'';position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
     .sw input:checked+i{background:var(--ok)}.sw input:checked+i::after{transform:translateX(-18px)}
     .sw input:focus-visible+i{outline:3px solid var(--cy);outline-offset:2px}
+    .sw--big{font-size:15px;color:var(--ink);min-width:0;margin:10px 0 4px}
     .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,30px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:92vw}
     .toast.show{opacity:1;transform:translate(-50%,0)}.toast.bad{background:var(--bad)}
 
@@ -145,7 +146,7 @@
       <details><summary>איך מקבלים שם משתמש וסיסמה?</summary>
         <ol>
           <li>שם המשתמש הוא שם החשבון ב־GitHub שבו שמור האתר: <code>tiratcarmel2026</code>.</li>
-          <li>נכנסים ל־GitHub ← Settings ← Developer settings ← Personal access tokens ← Fine-grained tokens ← Generate new token.</li>
+          <li>מתחברים ל־GitHub בחשבון הזה ולוחצים כאן: <a href="https://github.com/settings/personal-access-tokens/new?name=podtc-admin&amp;description=podtc+content+management&amp;expires_in=365&amp;contents=write" target="_blank" rel="noopener"><b>יצירת מפתח גישה</b></a>. הטופס נפתח כשהשם וההרשאה כבר מסומנים.</li>
           <li>ב־Repository access בוחרים "Only select repositories" ואת המאגר של האתר.</li>
           <li>ב־Permissions ← Repository permissions ← Contents בוחרים <b>Read and write</b>.</li>
           <li>לוחצים Generate token ומעתיקים את המפתח. זו הסיסמה. שומרים אותה במקום בטוח.</li>
@@ -166,6 +167,8 @@
     <nav class="side" aria-label="תפריט ניהול">
       <button data-tab="dash" class="on"><i style="--c:#06B6E8"></i>לוח בקרה</button>
       <small>תוכן</small>
+      <button data-tab="live"><i style="--c:#E11D48"></i>שידור חי</button>
+      <button data-tab="push"><i style="--c:#F5B301"></i>התראות</button>
       <button data-tab="daily"><i style="--c:#FF6B5E"></i>העדכון היומי</button>
       <button data-tab="eps"><i style="--c:#06B6E8"></i>פרקים</button>
       <button data-tab="notices"><i style="--c:#F5B301"></i>לוח המודעות</button>

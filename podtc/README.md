@@ -336,3 +336,9 @@ podtc/
 
 ## v26 — the daily update
 - Management screen, "העדכון היומי": title, date, speaker, text, and a recording made in the browser (microphone, listen, keep or discard) or an uploaded audio file. The newest entry is shown under the two main cards with a play button, share buttons and an archive of the previous seven. Without a recording the text is read by the device voice.
+
+## v27 — live broadcast, share pages for WhatsApp, announcements
+- **Live** (management screen → "שידור חי"): a switch plus a YouTube / Facebook Live link or an audio stream URL. While on, a red "on air" player opens the page and the LIVE button in the masthead leads to it. With YouTube and an empty link, the channel's current live stream is embedded. A permanent radio stream URL in Settings takes over the PODTC radio buttons (`js/onair.js`).
+- **Share pages**: `node tools/build-share.js` generates `e/<id>.html` for every episode (Open Graph title, description and a 1200×630 picture in `assets/og/`, plus a light one-episode player, `js/listen.js`, `css/listen.css`) and `js/share-pages.js`. Share buttons now send these links, so WhatsApp shows a rich preview and the link opens straight on a player. Re-run the tool after adding built-in episodes. An episode with a `youtube` link is shared as that link, which WhatsApp plays in its own floating player.
+- **Announcements** (management screen → "התראות"): a banner for everyone who opens the site, and a device notification for people who allowed notifications while the site is open or running in the background (the page checks for a new announcement every five minutes). Push to closed devices needs an external push service.
+- The sign-in help now links to GitHub's token form with the name and the Contents permission pre-filled.

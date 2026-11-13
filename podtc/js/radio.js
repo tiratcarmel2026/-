@@ -108,7 +108,7 @@
     slider.addEventListener('input', () => { vol = +slider.value; try { localStorage.setItem('podtc.vol', String(vol)); } catch (e) {} applyVol(); });
     try { const ss = window.speechSynthesis, sp = ss && ss.speak; if (sp) ss.speak = function (u) { try { u.volume = vol; } catch (e) {} return sp.call(ss, u); }; } catch (e) {}
     $('#mlink').addEventListener('click', async () => {
-      const c = A.current, url = location.origin + location.pathname + (c && !c.live && c.id !== 'briefing' ? '#' + c.id : '');
+      const c = A.current, url = window.PodShareUrl ? PodShareUrl(c) : location.origin + location.pathname + (c && !c.live && c.id !== 'briefing' ? '#' + c.id : '');
       try { await navigator.clipboard.writeText(url); A.toast('הקישור הועתק'); } catch (e) { prompt('העתיקו את הקישור:', url); }
     });
   }

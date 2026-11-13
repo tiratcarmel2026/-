@@ -258,7 +258,7 @@
   function shareData(bar) {
     const ctx = bar.dataset.ctx;
     const ep = ctx === 'ep' ? byId(bar.dataset.id) : ctx === 'current' ? A.current : null;
-    if (ep && !ep.live) return { url: BASE + '#' + ep.id, text: `"${ep.title}": ${ep.subtitle}. פרק קצר על טירת כרמל ב־podtc` };
+    if (ep && !ep.live) return { url: window.PodShareUrl ? PodShareUrl(ep) : BASE + '#' + ep.id, text: `"${ep.title}": ${ep.subtitle}. פרק קצר על טירת כרמל ב־podtc` };
     return { url: BASE, text: 'podtc: טירת כרמל מספרת את עצמה. פודקאסטים קצרים בעברית על כל מקום בעיר, לפי המיקום שלכם' };
   }
   async function doShare(kind, bar) {

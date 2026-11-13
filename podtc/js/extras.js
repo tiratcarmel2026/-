@@ -272,7 +272,7 @@
       bar.dataset.ctx = 'ep'; bar.dataset.id = ep.id;
       $('#ss-art').innerHTML = PodCovers.html(ep); $('#ss-k').textContent = 'שיתוף פרק · ' + A.catOf(ep).label;
       $('#ss-title').textContent = ep.title; $('#ss-sub').textContent = ep.subtitle;
-      $('#ss-qr').innerHTML = qrSvg(BASE + '#' + ep.id);
+      $('#ss-qr').innerHTML = qrSvg(window.PodShareUrl ? PodShareUrl(ep) : BASE + '#' + ep.id);
     } else {
       bar.dataset.ctx = 'app'; delete bar.dataset.id;
       $('#ss-art').innerHTML = `<img src="assets/icon-192.png" alt="">`; $('#ss-k').textContent = 'שיתוף האפליקציה';

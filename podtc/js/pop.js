@@ -6,7 +6,7 @@
   const ic = (n, s) => window.PodIcons ? PodIcons.svg(n, s || 18) : '';
   const home = $('#home'), BASE = location.origin + location.pathname;
   const APP_TEXT = 'podtc: טירת כרמל מספרת את עצמה. פודקאסטים קצרים, חדשות ורדיו של העיר';
-  const cur = () => { const c = A.current; return c && !c.live && c.id !== 'briefing' && A.isActive && A.isActive() ? { url: BASE + '#' + c.id, text: `"${c.title}": ${c.subtitle}. האזינו ב־podtc` } : { url: BASE, text: APP_TEXT }; };
+  const cur = () => { const c = A.current; return c && !c.live && c.id !== 'briefing' && A.isActive && A.isActive() ? { url: window.PodShareUrl ? PodShareUrl(c) : BASE + '#' + c.id, text: `"${c.title}": ${c.subtitle}. האזינו ב־podtc` } : { url: BASE, text: APP_TEXT }; };
   const open = (kind, d) => { const u = encodeURIComponent(d.url), t = encodeURIComponent(d.text), w = h => window.open(h, '_blank', 'noopener');
     if (kind === 'wa') w(`https://wa.me/?text=${t}%20${u}`); else if (kind === 'fb') w(`https://www.facebook.com/sharer/sharer.php?u=${u}`); else if (kind === 'tg') w(`https://t.me/share/url?url=${u}&text=${t}`);
     else if (kind === 'x') w(`https://twitter.com/intent/tweet?text=${t}&url=${u}`); else if (kind === 'mail') location.href = `mailto:?subject=${encodeURIComponent('podtc')}&body=${t}%0A${u}`;

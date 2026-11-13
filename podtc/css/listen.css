@@ -1,0 +1,47 @@
+/* podtc — light listening page (share links) */
+:root{--navy:#0B1F47;--cy:#06B6E8;--wash:#F3F9FD;--line:#E3EEF5;--muted:#6B7C93;--coral:#FF6B5E;--sun:#F5B301}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:16px/1.6 Heebo,Arial,sans-serif;color:var(--navy);background:linear-gradient(180deg,var(--wash),#fff 420px);min-height:100vh}
+a{color:inherit}
+.lh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;max-width:560px;margin:0 auto}
+.lh img{height:30px;display:block}
+.lh__site{font-weight:800;font-size:14px;text-decoration:none;color:var(--navy)}
+.lc{max-width:560px;margin:0 auto;padding:6px 18px 30px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.lart{position:relative;width:min(100%,330px);aspect-ratio:1;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,#5FD3F3,#12306B);box-shadow:0 30px 60px -28px rgba(11,31,71,.7)}
+.lart svg{position:absolute;inset:0;width:100%;height:100%}
+.lart svg *{animation-play-state:paused}
+.playing .lart svg *{animation-play-state:running}
+.leq{position:absolute;inset:auto 8% 6% 8%;height:13%;display:flex;align-items:flex-end;gap:3%}
+.leq i{flex:1;max-width:6px;height:30%;border-radius:3px;background:#fff;opacity:.9}
+.playing .leq i{animation:eq .9s ease-in-out infinite}
+.leq i:nth-child(2n){animation-delay:-.3s}.leq i:nth-child(3n){animation-delay:-.55s}.leq i:nth-child(5n){animation-delay:-.15s}
+@keyframes eq{0%,100%{height:25%}50%{height:100%}}
+.lk{margin-top:20px;font-size:13px;font-weight:800;color:var(--cy)}
+h1{margin:4px 0 2px;font-size:clamp(26px,7vw,36px);font-weight:900;line-height:1.15}
+.lsub{margin:0;color:var(--muted);font-weight:600}
+.lplay{margin:20px 0 14px;width:84px;height:84px;border-radius:50%;border:0;background:var(--cy);color:var(--navy);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 0 10px rgba(6,182,232,.16),0 18px 34px -14px rgba(6,182,232,.95);transition:transform .15s}
+.lplay:active{transform:scale(.94)}
+.lplay svg{fill:currentColor}
+.lplay .i-pause{display:none}.playing .lplay .i-play{display:none}.playing .lplay .i-pause{display:block}
+.lbar{width:100%;height:8px;border-radius:8px;background:#DDE6EF;cursor:pointer;direction:rtl;overflow:hidden}
+.lbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--navy),var(--cy));border-radius:8px;transition:width .3s}
+.lcap{min-height:3.2em;margin:12px 0 0;font-weight:700;line-height:1.55}
+.lshare{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:8px 0 18px;font-size:13px;font-weight:800;color:var(--muted)}
+.ls{height:40px;padding:0 16px;border-radius:99px;border:0;display:inline-flex;align-items:center;color:#fff;font:inherit;font-weight:800;font-size:14px;text-decoration:none;cursor:pointer}
+.ls--wa{background:#0E7A5F}.ls--fb{background:#1465D8}.ls--tg{background:#17719E}.ls--copy{background:var(--sun);color:var(--navy)}
+.ltr{width:100%;text-align:right;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 16px}
+.ltr summary{cursor:pointer;font-weight:800}
+#ltext{margin-top:10px;line-height:1.9;color:#8D9BB0}
+#ltext span{cursor:pointer}
+#ltext span.done{color:#3B4B63}#ltext span.cur{background:#CFEFFA;color:var(--navy);border-radius:4px}
+.lmore__h{align-self:flex-start;margin:26px 0 10px;font-size:20px;font-weight:900}
+.lmore{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lmore a{display:flex;flex-direction:column;gap:2px;text-align:right;text-decoration:none;padding:8px;border-radius:16px;background:#fff;border:1px solid var(--line)}
+.lmore__a{position:relative;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#5FD3F3,#12306B);margin-bottom:6px}
+.lmore__a svg{position:absolute;inset:0;width:100%;height:100%}.lmore__a svg *{animation:none!important}
+.lmore b{font-size:14.5px;line-height:1.3}.lmore small{color:var(--muted);font-size:12px}
+.lcta{margin-top:22px;width:100%;padding:16px;border-radius:14px;background:var(--navy);color:#fff;font-weight:800;text-decoration:none}
+.lf{background:var(--navy);color:#C6D3E6;text-align:center;font-size:12.5px;padding:16px;line-height:1.6}
+:focus-visible{outline:3px solid var(--cy);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.leq i,.lart svg *{animation:none!important}}
