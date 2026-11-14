@@ -99,3 +99,18 @@ html.a11y-still #home .flow>*::after{animation:none!important}
 .brand-svg,.brand-svg path{stroke:none!important}
 .brand-dot .brand-svg,.brand-dot .brand-svg path,.brand-ic .brand-svg,.brand-ic .brand-svg path{fill:#fff!important}
 #home .flow>.qa::after,#home .flow>.hub::after,#home .flow>#homemap::after{background-repeat:no-repeat}
+
+/* v31.1 · one even white background: no colour bands, waves or blobs; sections are separated by space and a hairline */
+:root,html.dark{--band-sky:transparent;--band-warm:transparent;--band-mint:transparent;--band-lilac:transparent}
+#home .flow>.qa::before,#home .flow>.hub::before,#home .flow>#homemap::before,#home .flow>.qa::after,#home .flow>.hub::after,#home .flow>#homemap::after{content:none!important;display:none!important}
+#home .flow>.qa,#home .flow>.hub,#home .flow>#homemap{margin-top:0!important}
+#home .flow>.hub,#home .flow>#homemap{padding-top:40px!important}
+#home .flow>.hub>.hub__head,#home .flow>#homemap>.shelf__h{border-top:1px solid #E6EEF5;padding-top:32px}
+#home .flow>#homemap{padding-top:8px!important}
+#home .flow>.qa{padding-top:24px!important;padding-bottom:32px!important}
+#home .flow>.hub-panel{padding-bottom:32px!important}
+#home .flow>.hub-panel .art,#home .flow>.hub-panel .bnote,#home .flow>.hub-panel .svc__item,#home .flow>.hub-panel .tile{border:1px solid #E6EEF5}
+#home .hub__tab:not([aria-selected="true"]){border-color:#E6EEF5;box-shadow:none}
+#home .flow>.qa .qa__i{border:1px solid #E6EEF5!important;box-shadow:none}
+html.dark #home .flow>.hub>.hub__head,html.dark #home .flow>#homemap>.shelf__h{border-top-color:#24365A}
+#home .flow .hub__more{top:82px}@media (max-width:599px){#home .flow .hub__more{top:auto}}
