@@ -11,6 +11,7 @@
   "css/radio.css",
   "css/pop.css",
   "css/pages.css",
+  "css/flow.css",
   "css/dark.css",
   "css/a11y.css"
  ],
@@ -40,8 +41,10 @@
   "js/onair.js",
   "js/pop.js",
   "js/homemap.js",
+  "js/hub.js",
   "js/pages.js",
   "js/welcome.js",
+  "js/brand.js",
   "js/a11y.js"
  ]
 }

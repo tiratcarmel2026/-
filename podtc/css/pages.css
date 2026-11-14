@@ -1,7 +1,7 @@
 /* =====================================================================
    podtc v28 · pages, lighter rendering, accessibility fixes
    ===================================================================== */
-.pg-off{display:none!important}
+.pg-off,#sections.pg-off,.home__inner>.pg-off{display:none!important}
 .dateline,.jump{display:none!important}
 
 /* page header */

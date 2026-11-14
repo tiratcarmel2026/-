@@ -20,9 +20,9 @@
   };
   // which page(s) each section lives on; the first page listed is its home
   const MAP = {
-    onair: ['home', 'news'], 'daily-block': ['home', 'news'], rhero: ['home'], rpoints: ['home'], tmarq: ['home', 'podcasts'], qa: ['home'], hsearch: ['home', 'podcasts'],
+    onair: ['home', 'news'], 'daily-block': ['home', 'news'], rhero: ['home'], rpoints: ['home'], tmarq: ['home', 'podcasts'], qa: ['home'], hsearch: ['podcasts'],
     'articles-block': ['news', 'home'], 'board-block': ['news', 'home'], services: ['contact', 'home', 'city'], 'near-block': ['podcasts', 'home'], 'top10-block': ['podcasts', 'home'],
-    radio: ['home'], homemap: ['home', 'city'], 'share-band': ['home', 'contact'], 'install-card': ['home'],
+    radio: ['home'], homemap: ['home', 'city'], 'hub-now': ['home'], 'hub-listen': ['home'], 'share-band': ['contact'], 'install-card': ['contact'],
     'podcasts-title': ['podcasts'], resume: ['podcasts'], quick: ['podcasts'], hero: ['podcasts'], 'recent-block': ['podcasts'], 'fav-block': ['podcasts'], 'tours-block': ['podcasts'],
     'browse-block': ['podcasts'], sections: ['podcasts'], 'shorts-block': ['podcasts'], wrapped: ['podcasts'], kids: ['podcasts'],
     live: ['news'], social: ['news'], notice: ['news'],
@@ -69,9 +69,8 @@
     const changed = page !== cur; cur = page;
     document.body.dataset.page = page;
     [...inner.children].forEach(el => { if (el.id === 'pghead') return; const ps = pagesOf(el); el.classList.toggle('pg-off', !(ps.includes(page) || ps.includes('*'))); });
-    // on the front page only the first notice is shown between the sections
-    if (page === 'home') { let n = 0; inner.querySelectorAll(':scope > .notice').forEach(el => { el.classList.toggle('pg-off', n++ > 0); }); }
-    else if (page === 'news') inner.querySelectorAll(':scope > .notice').forEach(el => el.classList.remove('pg-off'));
+    // notices live on the news page
+    if (page === 'news') inner.querySelectorAll(':scope > .notice').forEach(el => el.classList.remove('pg-off'));
     const P = PAGES[page], h = $('#pghead'); h.hidden = page === 'home';
     if (page !== 'home') {  $('#pg-t').textContent = P.t; $('#pg-d').textContent = P.d; $('#pg-x').innerHTML = EXTRA[page] || ''; }
     document.querySelectorAll('[data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === page && document.body.classList.contains('view-home')));
