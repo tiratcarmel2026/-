@@ -114,3 +114,13 @@ html.a11y-still #home .flow>*::after{animation:none!important}
 #home .flow>.qa .qa__i{border:1px solid #E6EEF5!important;box-shadow:none}
 html.dark #home .flow>.hub>.hub__head,html.dark #home .flow>#homemap>.shelf__h{border-top-color:#24365A}
 #home .flow .hub__more{top:82px}@media (max-width:599px){#home .flow .hub__more{top:auto}}
+
+/* v31.2 · quick actions: every button has its own colour (icon at rest, the whole tile on hover / focus) */
+#home .flow>.qa .qa__i:nth-child(1){--q:#E11D48}#home .flow>.qa .qa__i:nth-child(2){--q:#0E9F6E}#home .flow>.qa .qa__i:nth-child(3){--q:#D97706}#home .flow>.qa .qa__i:nth-child(4){--q:#0891B2}#home .flow>.qa .qa__i:nth-child(5){--q:#7B61FF}#home .flow>.qa .qa__i:nth-child(6){--q:#4D7C0F}#home .flow>.qa .qa__i:nth-child(7){--q:#0B1F47}#home .flow>.qa .qa__i:nth-child(8){--q:#E5484D}#home .flow>.qa .qa__i:nth-child(9){--q:#C026D3}#home .flow>.qa .qa__i:nth-child(10){--q:#2563EB}#home .flow>.qa .qa__i:nth-child(11){--q:#9333EA}#home .flow>.qa .qa__i:nth-child(12){--q:#0E7490}
+#home .flow>.qa .qa__i,#home .flow>.qa .qa__i:nth-child(1){background:#fff!important;color:#0B1F47!important;border:1px solid color-mix(in srgb,var(--q) 22%,#E6EEF5)!important;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s,color .2s,box-shadow .2s,border-color .2s}
+#home .flow>.qa .qa__i span,#home .flow>.qa .qa__i:nth-child(1) span{color:var(--q)!important}
+#home .flow>.qa .qa__i:hover,#home .flow>.qa .qa__i:focus-visible,#home .flow>.qa .qa__i:nth-child(1):hover,#home .flow>.qa .qa__i:nth-child(1):focus-visible{background:var(--q)!important;border-color:var(--q)!important;color:#fff!important;transform:translateY(-4px);box-shadow:0 16px 26px -14px var(--q)!important}
+#home .flow>.qa .qa__i:hover span,#home .flow>.qa .qa__i:focus-visible span,#home .flow>.qa .qa__i:hover b,#home .flow>.qa .qa__i:focus-visible b{color:#fff!important}
+html.dark #home .flow>.qa .qa__i,html.dark #home .flow>.qa .qa__i:nth-child(1){background:#111E38!important;color:#E6EDF7!important;border-color:color-mix(in srgb,var(--q) 40%,#24365A)!important}
+html.dark #home .flow>.qa .qa__i span{color:color-mix(in srgb,var(--q) 70%,#fff)!important}
+html.dark #home .flow>.qa .qa__i:hover,html.dark #home .flow>.qa .qa__i:focus-visible{background:var(--q)!important;color:#fff!important}
