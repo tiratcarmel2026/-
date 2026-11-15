@@ -4,7 +4,10 @@ in the map's own style: a maroon shield next to each address and a matching row 
 The map itself is the publisher's property; this script only adds markers on top of it and changes nothing else.
 Run it on the file the publisher supplies (for print: the clean, licensed file):
 
-    python3 -I tools/city_map_overlay.py IN.pdf OUT.pdf [--check DIR]
+    python3 -I tools/city_map_overlay.py IN.pdf OUT.pdf [--check DIR] [--remove-sample-mark] [--unlocked]
+
+--remove-sample-mark removes the publisher's "דוגמא" (sample) watermark: for the licensed owner of the map only.
+--unlocked saves without the source file's permission restrictions (for the owner; opens/edits anywhere).
 
 --check DIR also writes a close-up PNG of every marker, for a visual review before printing.
 
@@ -180,12 +183,30 @@ def legend_row(doc, page):
     doc.xref_set_key(page.xref, "Contents", f"[{refs} {nx} 0 R]")
 
 
+def remove_sample_mark(doc, page):
+    """Blank the 5 form objects that draw only the large "דוגמא" watermark (FbReforma-Medium, size ~103)."""
+    import re
+    removed = 0
+    for xref, ext, typ, name, ref, enc, form in page.get_fonts(full=True):
+        if "FbReforma" not in name or not form:
+            continue
+        st = doc.xref_stream(form).decode("latin1")
+        if len(re.findall(r"\bTj\b", st)) == 1 and "<010C011A010E0111010F>" in st:   # the single word "דוגמא"
+            doc.update_stream(form, b"")
+            removed += 1
+    if removed != 5:
+        raise SystemExit(f"expected 5 watermark objects, found {removed}: is this the same map edition?")
+    return removed
+
+
 def main():
     src, dst = sys.argv[1], sys.argv[2]
     check = sys.argv[sys.argv.index("--check") + 1] if "--check" in sys.argv else None
     doc = fitz.open(src); page = doc[0]
     if abs(page.rect.width - 1360.63) > 1 or abs(page.rect.height - 1927.56) > 1:
         raise SystemExit("unexpected page size: this script is calibrated for the 2024 Tirat Carmel city map")
+    if "--remove-sample-mark" in sys.argv:
+        print("sample watermark removed:", remove_sample_mark(doc, page), "objects")
     obst = obstacles(page); placed = []; spots = {}
     for sid, spec in ANCHORS.items():
         addr, anchor = spec[0], spec[1]
@@ -195,7 +216,7 @@ def main():
     for sid, (addr, q, _) in spots.items():
         shield(page, q.x, q.y)
     legend_row(doc, page)
-    if doc.metadata.get("encryption"):
+    if doc.metadata.get("encryption") and "--unlocked" not in sys.argv:
         # keep the publisher's restrictions exactly as in the source file (same permission flags, 128-bit RC4)
         import secrets
         doc.save(dst, garbage=0, deflate=True, encryption=fitz.PDF_ENCRYPT_RC4_128,
