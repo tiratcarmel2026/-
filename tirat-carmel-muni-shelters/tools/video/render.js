@@ -1,5 +1,6 @@
 // Render the 60-second shelters video, frame by frame, then encode with ffmpeg.
 //   node tools/video/render.js WORK_DIR OUT.mp4 [fps=30] [--preview]
+//   --resume keeps the frames already rendered (after an interruption) and renders only the missing ones.
 // WORK_DIR must contain tiles/{z}/{x}/{y}.png (OpenStreetMap, see tiles.py) — everything else is assembled here.
 const { chromium } = require('playwright');
 const http = require('http'), fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
@@ -30,17 +31,25 @@ for (const [src, dst] of [[path.join(HERE, 'video.html'), 'index.html'], [path.j
 fs.mkdirSync(path.join(WORK, 'fonts'), { recursive: true });
 for (const f of fs.readdirSync(path.join(SITE, 'signs/fonts'))) fs.copyFileSync(path.join(SITE, 'signs/fonts', f), path.join(WORK, 'fonts', f));
 
+const BLANK = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN89+r1fwAJBwOdQ6SSCwAAAABJRU5ErkJggg==', 'base64');
+const RESUME = process.argv.includes('--resume');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.woff2': 'font/woff2' };
 const srv = http.createServer((q, r) => {
   let p = decodeURIComponent(q.url.split('?')[0]); if (p.endsWith('/')) p += 'index.html';
   const f = path.join(WORK, p);
-  if (!f.startsWith(WORK) || !fs.existsSync(f)) { r.writeHead(404); return r.end(); }
+  if (!f.startsWith(WORK) || !fs.existsSync(f)) {
+    // a map tile outside the downloaded area: answer at once with an empty tile instead of making the frame wait
+    if (/^\/tiles\//.test(p)) { r.writeHead(200, { 'Content-Type': 'image/png' }); return r.end(BLANK); }
+    r.writeHead(404); return r.end();
+  }
   r.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream', 'Cache-Control': 'max-age=3600' }); fs.createReadStream(f).pipe(r);
 });
 
 (async () => {
   await new Promise(r => srv.listen(0, r));
-  const frames = path.join(WORK, 'frames'); fs.rmSync(frames, { recursive: true, force: true }); fs.mkdirSync(frames);
+  const frames = path.join(WORK, 'frames');
+  if (!RESUME) fs.rmSync(frames, { recursive: true, force: true });
+  fs.mkdirSync(frames, { recursive: true });
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   p.on('pageerror', e => { console.error('page error:', e.message); process.exit(1); });
@@ -49,8 +58,10 @@ const srv = http.createServer((q, r) => {
   const times = PREVIEW ? [1.5, 5.5, 9, 20, 35, 52, 55, 58.5] : Array.from({ length: Math.round(dur * FPS) }, (_, i) => i / FPS);
   const t0 = Date.now();
   for (let i = 0; i < times.length; i++) {
+    const file = path.join(frames, `f${String(i).padStart(5, '0')}.jpg`);
+    if (RESUME && fs.existsSync(file) && fs.statSync(file).size > 0) continue;
     await p.evaluate(t => window.frame(t), times[i]);
-    await p.screenshot({ path: path.join(frames, `f${String(i).padStart(5, '0')}.jpg`), type: 'jpeg', quality: 92 });
+    await p.screenshot({ path: file, type: 'jpeg', quality: 92 });
     if (i % 150 === 0) console.log(`frame ${i}/${times.length}  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
   }
   await b.close(); srv.close();
