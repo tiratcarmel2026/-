@@ -40,10 +40,10 @@ window.SHELTERS = [
   "address": "בן צבי 7",
   "navAddress": "בן צבי 7, טירת כרמל",
   "note": "מקלט",
-  "lat": 32.752315,
-  "lng": 34.971502,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.752122,
+  "lng": 34.970638,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 5,
@@ -106,10 +106,10 @@ window.SHELTERS = [
   "address": "הורדים 11",
   "navAddress": "הורדים 11, טירת כרמל",
   "note": "מקלט",
-  "lat": 32.765344,
-  "lng": 34.972254,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.764923,
+  "lng": 34.972009,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 11,
@@ -117,10 +117,10 @@ window.SHELTERS = [
   "address": "הכלניות 20",
   "navAddress": "הכלניות 20, טירת כרמל",
   "note": "בי\"ס אפרים צמח, מקלט אולם הספורט",
-  "lat": 32.758775,
-  "lng": 34.965801,
-  "precision": "probable",
-  "anchor": "בית ספר ברח' נרקיסים, סמוך לרח' הכלניות"
+  "lat": 32.758526,
+  "lng": 34.965771,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 12,
@@ -183,10 +183,10 @@ window.SHELTERS = [
   "address": "הרב קוק 31",
   "navAddress": "הרב קוק 31, טירת כרמל",
   "note": "מקלט",
-  "lat": 32.765536,
-  "lng": 34.972725,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.766566,
+  "lng": 34.972885,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 18,
@@ -359,10 +359,10 @@ window.SHELTERS = [
   "address": "ששת הימים 56",
   "navAddress": "ששת הימים 56, טירת כרמל",
   "note": "מקלט, מקווה גברים",
-  "lat": 32.75806,
-  "lng": 34.972913,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.755408,
+  "lng": 34.97288,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 34,

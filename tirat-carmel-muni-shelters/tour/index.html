@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head><body>
+<title>סיור במרחבים המוגנים</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="סיור וירטואלי על מפת טירת כרמל בכל המקלטים, המחסות והמיגוניות בעיר.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+/* Layout: the printed city map fills the screen; one card floats over it (right side on desktop, bottom sheet on phones). */
+:root {
+  --navy: #123E73;
+  --maroon: #743237;      /* the map's own "public shelter" colour */
+  --sun: #F5A623;
+  --leaf: #5C9A1E;
+  --surface: #FFFFFF;
+  --ink: #14243A;
+  --muted: #5B6B7F;
+  --line: #DCE3EC;
+  --veil: rgba(18, 62, 115, .55);
+  --f-display: "Secular One", "Assistant", "Arial Hebrew", Arial, sans-serif;
+  --f-body: "Assistant", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --surface: #152338; --ink: #E7EEF7; --muted: #9DB0C5; --line: #273B54; --veil: rgba(5, 14, 28, .62); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --surface: #152338; --ink: #E7EEF7; --muted: #9DB0C5; --line: #273B54; --veil: rgba(5, 14, 28, .62); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--navy); color: var(--ink); font: 400 16px/1.45 var(--f-body); overflow: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 1100; background: var(--navy); }
+h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.app { height: 100%; display: flex; flex-direction: column; }
+.bar { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; background: var(--navy); color: #fff;
+  padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar h1 { font-size: clamp(1.05rem, 3.6vw, 1.35rem); flex: 1; min-width: 0; }
+.bar small { display: block; font: 600 .78rem var(--f-body); opacity: .8; }
+.bar__btn { border: 1.5px solid rgba(255,255,255,.35); background: transparent; color: #fff; border-radius: 10px; padding: 6px 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.bar__btn:hover { background: rgba(255,255,255,.12); }
+.stage { position: relative; flex: 1; min-height: 0; }
+#map { position: absolute; inset: 0; background: #C9D8A2; }
+.leaflet-container { font-family: var(--f-body); }
+
+/* markers */
+.mk { position: relative; width: 28px; height: 28px; transition: transform .25s, opacity .25s; }
+.mk svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
+.mk b { position: absolute; top: -7px; inset-inline-start: -7px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--navy); color: #fff;
+  font: 800 10px/17px var(--f-body); text-align: center; box-shadow: 0 0 0 1.5px #fff; }
+.mk.is-dim { opacity: .35; }
+.mk.is-done b { background: var(--leaf); }
+.mk.is-now { transform: scale(1.35); z-index: 5; }
+.mk.is-now::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 3px solid var(--sun); animation: ring 1.4s ease-out infinite; }
+@keyframes ring { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+
+/* the card */
+.card { position: absolute; z-index: 1000; background: var(--surface); color: var(--ink); border-radius: 20px; box-shadow: 0 12px 40px rgba(0,0,0,.28);
+  display: grid; gap: 10px; padding: 16px 18px 14px; }
+@media (min-width: 900px) { .card { top: 16px; right: max(16px, env(safe-area-inset-right, 0px)); width: 380px; max-height: calc(100% - 32px); overflow: auto; } }
+@media (max-width: 899px) {
+  .card { left: 0; right: 0; bottom: 0; border-radius: 20px 20px 0 0; max-height: 52%; overflow: auto;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+}
+.eyebrow { font-size: .8rem; font-weight: 800; letter-spacing: .03em; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+.eyebrow span + span::before { content: "·"; margin-inline-end: 8px; }
+.addr { font-family: var(--f-display); font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.1; }
+.note { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: .78rem; font-weight: 800; border-radius: 7px; padding: 2px 9px; background: color-mix(in srgb, var(--maroon) 14%, transparent); color: var(--maroon); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip { color: #F0B8BD; } }
+:root[data-theme="dark"] .chip { color: #F0B8BD; }
+.chip--sun { background: color-mix(in srgb, var(--sun) 25%, transparent); color: var(--ink); }
+.prog { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.prog i { display: block; height: 100%; width: 0; background: var(--sun); transition: width .5s; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; padding: 6px 14px; border-radius: 12px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; text-decoration: none; cursor: pointer; }
+.btn:hover { border-color: var(--navy); }
+.btn--main { background: var(--navy); border-color: var(--navy); color: #fff; }
+.btn--waze { background: #33CCFF; border-color: #33CCFF; color: #062430; }
+.btn--icon { width: 46px; padding: 0; font-size: 1.15rem; }
+.btn[aria-pressed="true"] { background: color-mix(in srgb, var(--sun) 25%, var(--surface)); border-color: var(--sun); }
+.ctrls { display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 8px; align-items: center; border-top: 1px solid var(--line); padding-top: 10px; }
+.ctrls select { min-height: 42px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: 700 .9rem var(--f-body); padding: 0 8px; }
+.muted { color: var(--muted); font-size: .88rem; margin: 0; }
+
+/* start / end */
+.veil { position: absolute; inset: 0; z-index: 1050; background: var(--veil); display: grid; place-items: center; overflow: auto;
+  padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.panel { background: var(--surface); color: var(--ink); border-radius: 22px; padding: 22px; width: min(520px, 100%); display: grid; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.panel h2 { font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.1; }
+.choices { display: grid; gap: 10px; }
+.choice { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-align: right; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); border-radius: 16px; padding: 12px 14px; }
+.choice:hover { border-color: var(--navy); }
+.choice svg { width: 34px; height: 34px; }
+.choice b { display: block; font-size: 1.08rem; }
+.choice span { color: var(--muted); font-size: .88rem; }
+.choice em { font-style: normal; font-family: var(--f-display); font-size: 1.6rem; color: var(--maroon); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .choice em { color: #F0B8BD; } }
+:root[data-theme="dark"] .choice em { color: #F0B8BD; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.check input { width: 20px; height: 20px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+.stats b { display: block; font-family: var(--f-display); font-size: 2rem; line-height: 1; color: var(--navy); font-variant-numeric: tabular-nums; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stats b { color: #8DB8F0; } }
+:root[data-theme="dark"] .stats b { color: #8DB8F0; }
+.stats span { font-size: .82rem; color: var(--muted); }
+.legend { position: absolute; z-index: 900; left: max(10px, env(safe-area-inset-left, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--surface); color: var(--ink); border-radius: 12px;
+  padding: 6px 10px; font-size: .82rem; font-weight: 700; display: flex; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend svg { width: 16px; height: 16px; }
+@media (max-width: 899px) { .legend { font-size: .76rem; } }
+@media (prefers-reduced-motion: reduce) { .mk.is-now::after { animation: none; } .prog i { transition: none; } }
+</style>
+
+<div class="app">
+  <header class="bar">
+    <h1>סיור במרחבים המוגנים<small>מפת טירת כרמל 2026 · אגף ביטחון וחירום</small></h1>
+    <button class="bar__btn" id="b-menu" type="button">בחירת סיור</button>
+  </header>
+  <div class="stage">
+    <div id="map" aria-label="מפת טירת כרמל"></div>
+    <div class="legend" aria-hidden="true">
+      <span><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg>מקלט / מחסה</span>
+      <span><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg>מיגונית</span>
+    </div>
+
+    <section class="card" id="card" hidden aria-live="polite">
+      <div class="eyebrow" id="c-eyebrow"></div>
+      <div class="addr" id="c-addr"></div>
+      <div class="chips" id="c-chips"></div>
+      <div class="note" id="c-note"></div>
+      <div class="row" id="c-nav"></div>
+      <div class="prog" id="c-prog"><i></i></div>
+      <div class="ctrls" id="c-ctrls">
+        <button class="btn btn--icon" id="b-prev" type="button" aria-label="התחנה הקודמת">→</button>
+        <button class="btn btn--icon btn--main" id="b-play" type="button" aria-label="השהיה">❚❚</button>
+        <button class="btn btn--icon" id="b-next" type="button" aria-label="התחנה הבאה">←</button>
+        <span></span>
+        <div class="row">
+          <button class="btn btn--icon" id="b-voice" type="button" aria-pressed="false" aria-label="הקראה קולית">🔊</button>
+          <select id="speed" aria-label="מהירות הסיור"><option value="0.7">איטי</option><option value="1" selected>רגיל</option><option value="1.6">מהיר</option></select>
+        </div>
+      </div>
+      <button class="btn" id="b-close" type="button" hidden>סגירה</button>
+    </section>
+
+    <div class="veil" id="start">
+      <div class="panel">
+        <div>
+          <h2>סיור וירטואלי במרחבים המוגנים של טירת כרמל</h2>
+          <p class="muted">המפה „טסה" מתחנה לתחנה ומציגה את הכתובת, סוג המקום וההערות. בכל תחנה אפשר לפתוח ניווט בוויז או בגוגל.</p>
+        </div>
+        <div class="choices">
+          <button class="choice" type="button" data-mode="protected"><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg><div><b>סיור המיגוניות</b><span id="d-protected"></span></div><em id="n-protected"></em></button>
+          <button class="choice" type="button" data-mode="shelter"><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg><div><b>סיור המקלטים והמחסות</b><span id="d-shelter"></span></div><em id="n-shelter"></em></button>
+          <button class="choice" type="button" data-mode="all"><svg viewBox="0 0 28 28"><use href="#i-both"/></svg><div><b>הסיור המלא</b><span id="d-all"></span></div><em id="n-all"></em></button>
+        </div>
+        <label class="check"><input type="checkbox" id="voice-on" checked> הקראה קולית בכל תחנה</label>
+        <div class="row"><button class="btn" id="b-explore" type="button">סיור חופשי במפה</button></div>
+        <p class="muted">המסלול מחבר את התחנות לפי הסדר הקרוב ביותר, מבניין העירייה. זה סיור היכרות, ולא מסלול הליכה בזמן אזעקה.</p>
+      </div>
+    </div>
+
+    <div class="veil" id="end" hidden>
+      <div class="panel">
+        <h2>סיימתם את הסיור</h2>
+        <div class="stats">
+          <div><b id="s-stops"></b><span>תחנות</span></div>
+          <div><b id="s-hoods"></b><span>אזורים</span></div>
+          <div><b id="s-km"></b><span>ק״מ מסלול</span></div>
+        </div>
+        <p class="muted" id="s-text"></p>
+        <div class="row">
+          <button class="btn btn--main" id="b-again" type="button">סיור נוסף</button>
+          <button class="btn" id="b-explore2" type="button">סיור חופשי</button>
+          <a class="btn" id="b-site" target="_blank" rel="noopener">לאתר המקלטים</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-shelter" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#743237" stroke="#fff" stroke-width="2"/><text x="14" y="19.5" text-anchor="middle" font-family="Arial Hebrew, Arial, sans-serif" font-weight="800" font-size="15" fill="#fff">מ</text></symbol>
+  <symbol id="i-protected" viewBox="0 0 28 28"><path d="M14 2 24 5.5V13c0 6.3-4.2 11-10 13C8.2 24 4 19.3 4 13V5.5Z" fill="#743237" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="m9.3 13.8 3.3 3.3 6.3-6.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-both" viewBox="0 0 28 28"><circle cx="10" cy="15" r="8" fill="#743237" stroke="#fff" stroke-width="1.6"/><path d="M19 4l7 2.5V12c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6.5Z" fill="#743237" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+</svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+window.TOUR = {"w": 3780, "h": 5355, "start": [2325.0, 2683.333333333333], "stops": [{"id": 1, "type": "shelter", "address": "ביאליק 4", "note": "מועדונית פרחים, בפתיחה מרחוק", "nav": "ביאליק 4, טירת כרמל", "lat": 32.766457, "lng": 34.970775, "x": 1875.7, "y": 1695.4, "hood": "ביאליק"}, {"id": 2, "type": "shelter", "address": "ביאליק 13", "note": "בית כנסת שאגת אריה", "nav": "ביאליק 13, טירת כרמל", "lat": 32.766967, "lng": 34.97066, "x": 1852.6, "y": 1552.8, "hood": "ביאליק"}, {"id": 3, "type": "shelter", "address": "ביאליק 29", "note": "מקלט, שיטור עירוני", "nav": "ביאליק 29, טירת כרמל", "lat": 32.767771, "lng": 34.972001, "x": 2110.3, "y": 1390.7, "hood": "ביאליק"}, {"id": 4, "type": "shelter", "address": "בן צבי 7", "note": "מקלט", "nav": "בן צבי 7, טירת כרמל", "lat": 32.752122, "lng": 34.970638, "x": 1922.2, "y": 4475.0, "hood": "בן צבי"}, {"id": 5, "type": "shelter", "address": "בן צבי 10", "note": "מחסה", "nav": "בן צבי 10, טירת כרמל", "lat": 32.752297, "lng": 34.971371, "x": 2047.1, "y": 4477.2, "hood": "בן צבי"}, {"id": 6, "type": "shelter", "address": "בן צבי 24", "note": "מחסה", "nav": "בן צבי 24, טירת כרמל", "lat": 32.752104, "lng": 34.972281, "x": 2206.6, "y": 4436.3, "hood": "בן צבי"}, {"id": 7, "type": "shelter", "address": "בן צבי 38", "note": "מחסה", "nav": "בן צבי 38, טירת כרמל", "lat": 32.751979, "lng": 34.972583, "x": 2244.8, "y": 4433.1, "hood": "בן צבי"}, {"id": 8, "type": "shelter", "address": "גיורא 55", "note": "מקלט", "nav": "גיורא 55, טירת כרמל", "lat": 32.753677, "lng": 34.970544, "x": 1873.1, "y": 4121.3, "hood": "נווה גלים"}, {"id": 9, "type": "shelter", "address": "האלה 14", "note": "בית כנסת יד אליהו ומרדכי", "nav": "האלה 14, טירת כרמל", "lat": 32.756675, "lng": 34.974767, "x": 2585.1, "y": 3505.4, "hood": "כהן"}, {"id": 10, "type": "shelter", "address": "הורדים 11", "note": "מקלט", "nav": "הורדים 11, טירת כרמל", "lat": 32.764923, "lng": 34.972009, "x": 2108.3, "y": 1941.7, "hood": "אלי כהן"}, {"id": 11, "type": "shelter", "address": "הכלניות 20", "note": "בי\"ס אפרים צמח, מקלט אולם הספורט", "nav": "הכלניות 20, טירת כרמל", "lat": 32.758526, "lng": 34.965771, "x": 1075.0, "y": 3255.6, "hood": "הפרחים"}, {"id": 12, "type": "shelter", "address": "הרב וינרוב 9", "note": "מועדונית בן צבי, בפתיחה מרחוק", "nav": "הרב וינרוב 9, טירת כרמל", "lat": 32.762287, "lng": 34.972172, "x": 2101.2, "y": 2443.8, "hood": "עמידר"}, {"id": 13, "type": "shelter", "address": "הרב וינרוב 28", "note": "מקלט, מרכז הפעלה", "nav": "הרב וינרוב 28, טירת כרמל", "lat": 32.762049, "lng": 34.971838, "x": 2068.3, "y": 2492.9, "hood": "עמידר"}, {"id": 14, "type": "shelter", "address": "הרב וינרוב 39", "note": "מקלט", "nav": "הרב וינרוב 39, טירת כרמל", "lat": 32.760529, "lng": 34.971537, "x": 2090.7, "y": 2763.4, "hood": "עמידר"}, {"id": 15, "type": "shelter", "address": "הרב זרביב 23", "note": "בית כנסת שיר למעלות", "nav": "הרב זרביב 23, טירת כרמל", "lat": 32.768011, "lng": 34.974544, "x": 2536.0, "y": 1310.2, "hood": "מעלה נוף"}, {"id": 16, "type": "shelter", "address": "הרב קוק 6", "note": "מקלט, בי\"ס זבולון", "nav": "הרב קוק 6, טירת כרמל", "lat": 32.765093, "lng": 34.973493, "x": 2361.9, "y": 1888.6, "hood": "רמב\"ם"}, {"id": 17, "type": "shelter", "address": "הרב קוק 31", "note": "מקלט", "nav": "הרב קוק 31, טירת כרמל", "lat": 32.766566, "lng": 34.972885, "x": 2266.7, "y": 1611.1, "hood": "ביאליק"}, {"id": 18, "type": "shelter", "address": "הרצל 39", "note": "מקלט, קניון לב העיר, קומת קרקע", "nav": "הרצל 39, טירת כרמל", "lat": 32.764468, "lng": 34.971036, "x": 1946.1, "y": 2038.8, "hood": "אלי כהן"}, {"id": 19, "type": "shelter", "address": "ויצמן 19", "note": "מקלט, בי\"ס יגאל אלון", "nav": "ויצמן 19, טירת כרמל", "lat": 32.75788, "lng": 34.969958, "x": 1785.1, "y": 3334.3, "hood": "גיורא"}, {"id": 20, "type": "shelter", "address": "ויצמן 71", "note": "מקלט אגף הרווחה והשירותים החברתיים", "nav": "ויצמן 71, טירת כרמל", "lat": 32.756551, "lng": 34.972337, "x": 2168.8, "y": 3497.6, "hood": "כהן"}, {"id": 21, "type": "shelter", "address": "ז'בוטינסקי 7", "note": "בית כנסת מעיין חיים", "nav": "ז'בוטינסקי 7, טירת כרמל", "lat": 32.760022, "lng": 34.971771, "x": 2082.2, "y": 2904.5, "hood": "כהן"}, {"id": 22, "type": "shelter", "address": "ז'בוטינסקי 43", "note": "מקלט, מתנ\"ס", "nav": "ז'בוטינסקי 43, טירת כרמל", "lat": 32.75965, "lng": 34.969501, "x": 1704.3, "y": 2991.0, "hood": "הפרחים"}, {"id": 23, "type": "shelter", "address": "ירושלים 3", "note": "מועדונית פרפרים, בפתיחה מרחוק", "nav": "ירושלים 3, טירת כרמל", "lat": 32.755425, "lng": 34.970569, "x": 1848.7, "y": 3827.8, "hood": "נווה גלים"}, {"id": 24, "type": "shelter", "address": "ירושלים 18", "note": "בית כנסת משכן אליף", "nav": "ירושלים 18, טירת כרמל", "lat": 32.755022, "lng": 34.970239, "x": 1835.6, "y": 3901.6, "hood": "נווה גלים"}, {"id": 25, "type": "shelter", "address": "כרמל אליאס 18", "note": "בית כנסת בית חב\"ד, בחניה האחורית של המרכז המסחרי", "nav": "כרמל אליאס 18, טירת כרמל", "lat": 32.760483, "lng": 34.973635, "x": 2391.0, "y": 2835.7, "hood": "נווה אליאס"}, {"id": 26, "type": "shelter", "address": "לוי אשכול 6", "note": "מקלט, מוקד עירוני", "nav": "לוי אשכול 6, טירת כרמל", "lat": 32.758118, "lng": 34.974333, "x": 2516.0, "y": 3242.3, "hood": "כהן"}, {"id": 27, "type": "shelter", "address": "רזיאל 8", "note": "מחסה", "nav": "רזיאל 8, טירת כרמל", "lat": 32.751601, "lng": 34.972182, "x": 2236.3, "y": 4542.0, "hood": "בן צבי"}, {"id": 28, "type": "shelter", "address": "רזיאל 28", "note": "מחסה", "nav": "רזיאל 28, טירת כרמל", "lat": 32.75158, "lng": 34.971486, "x": 2070.5, "y": 4555.7, "hood": "בן צבי"}, {"id": 29, "type": "shelter", "address": "רזיאל 40", "note": "מקלט", "nav": "רזיאל 40, טירת כרמל", "lat": 32.751418, "lng": 34.970326, "x": 1859.9, "y": 4598.8, "hood": "בן צבי"}, {"id": 30, "type": "shelter", "address": "רמב\"ם 15", "note": "מועדונית רמב\"ם, בפתיחה מרחוק", "nav": "רמב\"ם 15, טירת כרמל", "lat": 32.765444, "lng": 34.973886, "x": 2419.4, "y": 1821.2, "hood": "רמב\"ם"}, {"id": 31, "type": "shelter", "address": "רמב\"ם 22", "note": "בית כנסת חלב חיטים", "nav": "רמב\"ם 22, טירת כרמל", "lat": 32.766096, "lng": 34.97418, "x": 2543.5, "y": 1654.2, "hood": "רמב\"ם"}, {"id": 32, "type": "shelter", "address": "ש\"י עגנון (מתחם מורשה) 12", "note": "מועדונית מורשה, בפתיחה מרחוק", "nav": "ש\"י עגנון 12, טירת כרמל", "lat": 32.754619, "lng": 34.971695, "x": 2145.6, "y": 3986.3, "hood": "גיורא"}, {"id": 33, "type": "shelter", "address": "ששת הימים 56", "note": "מקלט, מקווה גברים", "nav": "ששת הימים 56, טירת כרמל", "lat": 32.755408, "lng": 34.97288, "x": 2294.4, "y": 3800.0, "hood": "גיורא"}, {"id": 34, "type": "protected", "address": "ביאליק 36", "note": "בסמוך למרכזי יזמות וחדשנות בטכנולוגיה", "nav": "ביאליק 36, טירת כרמל", "lat": 32.767681, "lng": 34.972595, "x": 2226.5, "y": 1412.0, "hood": "ביאליק"}, {"id": 35, "type": "protected", "address": "גיורא 5", "note": "מיגונית רווחה, הבית החם לנערה, בפתיחה מרחוק", "nav": "גיורא 5, טירת כרמל", "lat": 32.755915, "lng": 34.970195, "x": 1825.4, "y": 3729.7, "hood": "נווה גלים"}, {"id": 36, "type": "protected", "address": "האלה 17", "note": "מול בית העלמין הישן", "nav": "האלה 17, טירת כרמל", "lat": 32.752054, "lng": 34.974112, "x": 2519.5, "y": 4434.2, "hood": "איילת הכרמל"}, {"id": 37, "type": "protected", "address": "הגל 2", "note": "גני ילדים נוגה, שמש ויהל", "nav": "הגל 2, טירת כרמל", "lat": 32.755563, "lng": 34.968582, "x": 1563.8, "y": 3781.6, "hood": "נווה גלים"}, {"id": 38, "type": "protected", "address": "העצמאות 4", "note": "מרכז מסחרי, ליד האנדרטה", "nav": "העצמאות 4, טירת כרמל", "lat": 32.761012, "lng": 34.973624, "x": 2386.5, "y": 2665.3, "hood": "נווה אליאס"}, {"id": 39, "type": "protected", "address": "הרב קוק 12", "note": "בחניה הגדולה, לפני הכניסה לבי\"ס דגניה", "nav": "הרב קוק 12, טירת כרמל", "lat": 32.764388, "lng": 34.972792, "x": 2243.2, "y": 2031.9, "hood": "אלי כהן"}, {"id": 40, "type": "protected", "address": "הרב וינרוב 17", "note": "מיגונית", "nav": "הרב וינרוב 17, טירת כרמל", "lat": 32.762039, "lng": 34.97184, "x": 2066.8, "y": 2494.6, "hood": "עמידר"}, {"id": 41, "type": "protected", "address": "הרב משה מרדכי 7", "note": "בסמוך לאצטדיון הכדורגל העירוני", "nav": "הרב משה מרדכי 7, טירת כרמל", "lat": 32.762341, "lng": 34.970401, "x": 1865.7, "y": 2446.8, "hood": "עמידר"}, {"id": 42, "type": "protected", "address": "השריון 14", "note": "גן נועם", "nav": "השריון 14, טירת כרמל", "lat": 32.761469, "lng": 34.969983, "x": 1848.6, "y": 2609.4, "hood": "עמידר"}, {"id": 43, "type": "protected", "address": "ויצמן 13", "note": "בסמוך למגרשי המתנ\"ס", "nav": "ויצמן 13, טירת כרמל", "lat": 32.758465, "lng": 34.968801, "x": 1587.1, "y": 3231.6, "hood": "נווה גלים"}, {"id": 44, "type": "protected", "address": "ויצמן 19", "note": "בי\"ס יגאל אלון, חצר מגרש ספורט 2X", "nav": "ויצמן 19, טירת כרמל", "lat": 32.758299, "lng": 34.9705, "x": 1765.3, "y": 3388.6, "hood": "נווה גלים"}, {"id": 45, "type": "protected", "address": "ויצמן 28", "note": "ליד המתחם עסקים בחניה", "nav": "ויצמן 28, טירת כרמל", "lat": 32.755944, "lng": 34.970663, "x": 1929.9, "y": 3728.9, "hood": "גיורא"}, {"id": 46, "type": "protected", "address": "ז'בוטינסקי מול 39", "note": "רחבת הסקייטפארק", "nav": "ז'בוטינסקי 39, טירת כרמל", "lat": 32.758971, "lng": 34.970255, "x": 1825.0, "y": 3113.9, "hood": "כהן"}, {"id": 47, "type": "protected", "address": "ירושלים 6", "note": "בתוך החניה", "nav": "ירושלים 6, טירת כרמל", "lat": 32.754703, "lng": 34.970746, "x": 1985.8, "y": 3943.2, "hood": "גיורא"}, {"id": 48, "type": "protected", "address": "כ\"ג יורדי הסירה 2", "note": "מיגונית", "nav": "כ\"ג יורדי הסירה 2, טירת כרמל", "lat": 32.757895, "lng": 34.972616, "x": 2226.3, "y": 3292.6, "hood": "כהן"}, {"id": 49, "type": "protected", "address": "מוצקין 6", "note": "בתוך החניה", "nav": "מוצקין 6, טירת כרמל", "lat": 32.76735, "lng": 34.970081, "x": 1759.4, "y": 1491.6, "hood": "ביאליק"}, {"id": 50, "type": "protected", "address": "מוצקין 13", "note": "מיגונית", "nav": "מוצקין 13, טירת כרמל", "lat": 32.768904, "lng": 34.972428, "x": 2179.2, "y": 1162.1, "hood": "ביאליק"}, {"id": 51, "type": "protected", "address": "נתן אלבז 22", "note": "צומת נתן אלבז-הארז, ברחבת החניה", "nav": "נתן אלבז 22, טירת כרמל", "lat": 32.754496, "lng": 34.972788, "x": 2218.7, "y": 4009.3, "hood": "גיורא"}, {"id": 52, "type": "protected", "address": "נתן אלבז 23", "note": "בצמוד לגן ילדים", "nav": "נתן אלבז 23, טירת כרמל", "lat": 32.753168, "lng": 34.972578, "x": 2252.6, "y": 4240.6, "hood": "בן צבי"}, {"id": 53, "type": "protected", "address": "נתן אלבז 36", "note": "בצומת נתן אלבז-גורדון, סמוך לתיבות הדואר", "nav": "נתן אלבז 36, טירת כרמל", "lat": 32.752782, "lng": 34.972281, "x": 2133.0, "y": 4279.7, "hood": "בן צבי"}, {"id": 54, "type": "protected", "address": "הצנחנים 2", "note": "בסמוך לגן התותח", "nav": "הצנחנים 2, טירת כרמל", "lat": 32.758384, "lng": 34.973483, "x": 2369.8, "y": 3199.2, "hood": "כהן"}, {"id": 55, "type": "protected", "address": "רמב\"ם 4", "note": "צמוד לבית הכנסת רבי חי טייב", "nav": "רמב\"ם 4, טירת כרמל", "lat": 32.763924, "lng": 34.975031, "x": 2609.7, "y": 2081.1, "hood": "רמב\"ם"}, {"id": 56, "type": "protected", "address": "רמב\"ם 8", "note": "מיגונית", "nav": "רמב\"ם 8, טירת כרמל", "lat": 32.765216, "lng": 34.9747, "x": 2577.9, "y": 1842.9, "hood": "רמב\"ם"}, {"id": 57, "type": "protected", "address": "ש\"י עגנון 2", "note": "מיגונית", "nav": "ש\"י עגנון 2, טירת כרמל", "lat": 32.753518, "lng": 34.971117, "x": 2001.9, "y": 4183.0, "hood": "בן צבי"}, {"id": 58, "type": "protected", "address": "ש\"י עגנון 11", "note": "מיגונית", "nav": "ש\"י עגנון 11, טירת כרמל", "lat": 32.753858, "lng": 34.970809, "x": 1941.0, "y": 4106.8, "hood": "נווה גלים"}, {"id": 59, "type": "protected", "address": "ש\"י עגנון 12", "note": "מיגונית רווחה, מתחם מורשה, פתיחה מרחוק – מרכז נוצ\"ץ", "nav": "ש\"י עגנון 12, טירת כרמל", "lat": 32.754619, "lng": 34.971695, "x": 2144.4, "y": 4001.7, "hood": "גיורא"}, {"id": 60, "type": "protected", "address": "ש\"י עגנון 14", "note": "מיגונית רווחה, מתחם מורשה, פתיחה מרחוק – מרכז תפנית", "nav": "ש\"י עגנון 14, טירת כרמל", "lat": 32.754858, "lng": 34.97138, "x": 2067.5, "y": 3929.4, "hood": "גיורא"}, {"id": 61, "type": "protected", "address": "ששת הימים 3", "note": "קופת חולים כללית", "nav": "ששת הימים 3, טירת כרמל", "lat": 32.759384, "lng": 34.973119, "x": 2277.8, "y": 3020.4, "hood": "כהן"}], "siteUrl": "https://tiratcarmel2026.github.io/-/tirat-carmel-muni-shelters/"};
+</script>
+<script>
+(function () {
+  'use strict';
+  var T = window.TOUR, W = T.w, H = T.h;
+  var LABEL = { shelter: 'מקלט / מחסה', protected: 'מיגונית' };
+  var SPOKEN = { shelter: 'מקלט', protected: 'מיגונית' };
+  var $ = function (s) { return document.querySelector(s); };
+  var ll = function (x, y) { return [H - y, x]; };
+  var isDesk = function () { return window.innerWidth >= 900; };
+
+  /* ---------- map ---------- */
+  var bounds = [[0, 0], [H, W]];
+  var map = L.map('map', { crs: L.CRS.Simple, zoomSnap: 0.25, zoomDelta: 0.5, attributionControl: false, zoomControl: !('ontouchstart' in window) });
+  L.imageOverlay('map.jpg', bounds).addTo(map);
+  map.fitBounds(bounds);
+  var FIT = map.getZoom();
+  map.setMinZoom(FIT - 0.25); map.setMaxZoom(0.75);
+  function refit() {   // after layout settles: show the whole city behind the start screen
+    map.invalidateSize(); map.setMinZoom(-10); map.fitBounds(bounds, { animate: false });
+    FIT = map.getZoom(); map.setMinZoom(FIT - 0.25);
+  }
+  requestAnimationFrame(function () { requestAnimationFrame(refit); });
+  window.addEventListener('load', function () { if (mode === null) refit(); });
+  map.setMaxBounds([[-H * 0.15, -W * 0.15], [H * 1.15, W * 1.15]]);
+  var STOP_ZOOM = -0.6;
+
+  /* ---------- markers ---------- */
+  var markers = {};
+  T.stops.forEach(function (s) {
+    var icon = L.divIcon({ className: '', iconSize: [28, 28], iconAnchor: [14, 14],
+      html: '<div class="mk" id="mk-' + s.id + '"><svg viewBox="0 0 28 28"><use href="#i-' + s.type + '"/></svg><b hidden></b></div>' });
+    markers[s.id] = L.marker(ll(s.x, s.y), { icon: icon, title: s.address, keyboard: true }).addTo(map)
+      .on('click', function () { if (mode === 'explore') showCard(s, null); else jumpTo(s.id); });
+  });
+  function mk(id) { return document.getElementById('mk-' + id); }
+
+  /* ---------- route: nearest neighbour from city hall, then 2-opt ---------- */
+  function d(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+  function plan(list) {
+    var left = list.slice(), cur = { x: T.start[0], y: T.start[1] }, path = [];
+    while (left.length) { left.sort(function (a, b) { return d(cur, a) - d(cur, b); }); cur = left.shift(); path.push(cur); }
+    for (var improved = true, n = 0; improved && n < 60; n++) {
+      improved = false;
+      for (var i = 0; i < path.length - 2; i++) for (var j = i + 2; j < path.length; j++) {
+        var a = i ? path[i - 1] : { x: T.start[0], y: T.start[1] }, b = path[i], c = path[j], e = path[j + 1];
+        var before = d(a, b) + (e ? d(c, e) : 0), after = d(a, c) + (e ? d(b, e) : 0);
+        if (after < before - 0.5) { path = path.slice(0, i).concat(path.slice(i, j + 1).reverse(), path.slice(j + 1)); improved = true; }
+      }
+    }
+    return path;
+  }
+  function km(path) {
+    var R = 6371, t = 0;
+    for (var i = 1; i < path.length; i++) {
+      var a = path[i - 1], b = path[i], p = Math.PI / 180;
+      var h = Math.pow(Math.sin((b.lat - a.lat) * p / 2), 2) + Math.cos(a.lat * p) * Math.cos(b.lat * p) * Math.pow(Math.sin((b.lng - a.lng) * p / 2), 2);
+      t += 2 * R * Math.asin(Math.sqrt(h));
+    }
+    return t;
+  }
+
+  /* ---------- state ---------- */
+  var mode = null, route = [], idx = -1, playing = false, timer = null, line = null, drawn = [], voice = false;
+  var speed = function () { return +$('#speed').value; };
+
+  function counts() {
+    ['protected', 'shelter', 'all'].forEach(function (m) {
+      var list = T.stops.filter(function (s) { return m === 'all' || s.type === m; });
+      $('#n-' + m).textContent = list.length;
+      var mins = Math.max(1, Math.round(list.length * 9 / 60));
+      var hoods = new Set(list.map(function (s) { return s.hood; })).size;
+      $('#d-' + m).textContent = hoods + ' אזורים · כ-' + mins + ' דקות';
+    });
+  }
+
+  /* ---------- camera: keep the stop clear of the card ---------- */
+  function target(s, zoom) {
+    var p = map.project(ll(s.x, s.y), zoom), card = $('#card');
+    if (isDesk()) p = p.add([(card.offsetWidth || 380) / 2 + 8, 0]);      // card on the right: show the stop left of centre
+    else p = p.add([0, (card.offsetHeight || window.innerHeight * 0.45) / 2]); // bottom sheet: show the stop above it
+    return map.unproject(p, zoom);
+  }
+
+  /* ---------- card ---------- */
+  function nav(s) {
+    return '<a class="btn btn--waze" target="_blank" rel="noopener" href="https://waze.com/ul?q=' + encodeURIComponent(s.nav) + '&navigate=yes">ניווט בוויז</a>' +
+      '<a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=' + encodeURIComponent(s.nav) + '">גוגל מפות</a>' +
+      '<a class="btn" target="_blank" rel="noopener" href="' + T.siteUrl + '?s=' + s.id + '">באתר</a>';
+  }
+  function showCard(s, n) {
+    var card = $('#card'); card.hidden = false;
+    $('#c-eyebrow').innerHTML = (n ? '<span>תחנה ' + n + ' מתוך ' + route.length + '</span>' : '') + '<span>אזור ' + esc(s.hood) + '</span>';
+    $('#c-addr').textContent = s.address;
+    $('#c-chips').innerHTML = '<span class="chip">' + LABEL[s.type] + '</span>' + (/פתיחה מרחוק/.test(s.note) ? '<span class="chip chip--sun">נפתח מרחוק בחירום</span>' : '');
+    $('#c-note').textContent = s.note;
+    $('#c-nav').innerHTML = nav(s);
+    var tour = mode !== 'explore';
+    $('#c-prog').hidden = !tour; $('#c-ctrls').hidden = !tour; $('#b-close').hidden = tour;
+    if (tour) $('#c-prog i').style.width = (100 * n / route.length) + '%';
+    Object.keys(markers).forEach(function (id) { var e = mk(id); if (e) e.classList.toggle('is-now', +id === s.id); });
+    if (!tour) map.flyTo(target(s, Math.max(map.getZoom(), STOP_ZOOM)), Math.max(map.getZoom(), STOP_ZOOM), { duration: 0.8 });
+  }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ---------- narration ---------- */
+  var heVoice = null;
+  function pickVoice() {
+    try { heVoice = (speechSynthesis.getVoices() || []).find(function (v) { return /^he|^iw/i.test(v.lang); }) || null; } catch (e) { heVoice = null; }
+  }
+  try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) { }
+  function say(text, done) {
+    if (!voice || !('speechSynthesis' in window)) return done && done(false);
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text); u.lang = 'he-IL'; if (heVoice) u.voice = heVoice; u.rate = Math.min(1.3, 0.95 * speed());
+      var fired = false, fin = function () { if (!fired) { fired = true; done && done(true); } };
+      u.onend = fin; u.onerror = fin; speechSynthesis.speak(u);
+      setTimeout(fin, 15000);
+    } catch (e) { done && done(false); }
+  }
+  function setVoice(on) {
+    voice = on; $('#b-voice').setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (!on) try { speechSynthesis.cancel(); } catch (e) { }
+  }
+
+  /* ---------- tour ---------- */
+  function start(m) {
+    stop(); mode = m;
+    route = plan(T.stops.filter(function (s) { return m === 'all' || s.type === m; }));
+    T.stops.forEach(function (s) {
+      var e = mk(s.id); if (!e) return; var i = route.indexOf(s);
+      e.classList.remove('is-done', 'is-now'); e.classList.toggle('is-dim', i < 0);
+      var b = e.querySelector('b'); b.hidden = i < 0; b.textContent = i + 1;
+    });
+    if (line) map.removeLayer(line);
+    line = L.polyline([], { color: '#743237', weight: 4, opacity: .85, dashArray: '2 9', lineCap: 'round' }).addTo(map);
+    drawn = [ll(T.start[0], T.start[1])];
+    $('#start').hidden = true; $('#end').hidden = true;
+    idx = -1; playing = true; updatePlay(); go(0);
+  }
+  function go(i) {
+    clearTimeout(timer);
+    if (i >= route.length) return finish();
+    if (i < 0) i = 0;
+    var back = i < idx; idx = i;
+    var s = route[i];
+    // route line: everything up to this stop
+    drawn = [ll(T.start[0], T.start[1])].concat(route.slice(0, i + 1).map(function (r) { return ll(r.x, r.y); }));
+    animateLine(drawn, back);
+    showCard(s, i + 1);
+    route.forEach(function (r, k) { var e = mk(r.id); if (e) e.classList.toggle('is-done', k < i); });
+    var z = STOP_ZOOM, dur = Math.max(0.6, 1.7 / speed());
+    if (map.getZoom() < FIT + 0.5 && i === 0) dur = 2.4 / speed();
+    map.flyTo(target(s, z), z, { duration: dur });
+    map.once('moveend', function () { arrive(s, i); });
+  }
+  function animateLine(pts, instant) {
+    if (instant || pts.length < 2) { line.setLatLngs(pts); return; }
+    var a = pts[pts.length - 2], b = pts[pts.length - 1], t0 = performance.now(), ms = 1500 / speed(), base = pts.slice(0, -1);
+    (function step(t) {
+      var k = Math.min(1, (t - t0) / ms);
+      line.setLatLngs(base.concat([[a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]]));
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  function arrive(s, i) {
+    if (i !== idx || mode === 'explore') return;
+    var text = 'תחנה ' + (i + 1) + '. ' + SPOKEN[s.type] + ', ' + s.address.replace(/"/g, '') + ', באזור ' + s.hood + '. ' + s.note.replace(/"/g, '') + '.';
+    var t0 = Date.now();
+    say(text, function () {
+      if (!playing || i !== idx) return;
+      var wait = Math.max(1200, 5200 / speed() - (Date.now() - t0));
+      timer = setTimeout(function () { if (playing && i === idx) go(i + 1); }, wait);
+    });
+  }
+  function stop() { clearTimeout(timer); playing = false; try { speechSynthesis.cancel(); } catch (e) { } }
+  function updatePlay() { $('#b-play').textContent = playing ? '❚❚' : '▶'; $('#b-play').setAttribute('aria-label', playing ? 'השהיה' : 'המשך'); }
+  function jumpTo(id) { var i = route.findIndex(function (r) { return r.id === id; }); if (i >= 0) { playing = false; updatePlay(); stop(); go(i); } }
+  function finish() {
+    stop(); updatePlay();
+    var hoods = new Set(route.map(function (s) { return s.hood; }));
+    $('#s-stops').textContent = route.length; $('#s-hoods').textContent = hoods.size; $('#s-km').textContent = km(route).toFixed(1);
+    $('#s-text').textContent = 'עברתם על ' + route.length + ' ' + (mode === 'protected' ? 'מיגוניות' : mode === 'shelter' ? 'מקלטים ומחסות' : 'מרחבים מוגנים') +
+      ' ב-' + hoods.size + ' אזורים. אורך המסלול הוא בקו אווירי בין התחנות. כדאי להכיר מראש את המרחב המוגן הקרוב לבית, לעבודה ולמוסדות החינוך.';
+    $('#card').hidden = true; $('#end').hidden = false;
+    map.flyToBounds(line.getBounds().pad(0.15), { duration: 1.6 });
+  }
+  function explore() {
+    stop(); mode = 'explore'; $('#start').hidden = true; $('#end').hidden = true; $('#card').hidden = true;
+    if (line) { map.removeLayer(line); line = null; }
+    T.stops.forEach(function (s) { var e = mk(s.id); if (e) { e.classList.remove('is-dim', 'is-done', 'is-now'); e.querySelector('b').hidden = true; } });
+    map.flyToBounds(bounds, { duration: 1 });
+  }
+  function menu() { stop(); updatePlay(); $('#card').hidden = true; $('#end').hidden = true; $('#start').hidden = false; }
+
+  /* ---------- wiring ---------- */
+  counts();
+  $('#b-site').href = T.siteUrl;
+  document.querySelectorAll('.choice').forEach(function (b) {
+    b.onclick = function () { setVoice($('#voice-on').checked); start(b.dataset.mode); };
+  });
+  $('#b-explore').onclick = explore; $('#b-explore2').onclick = explore;
+  $('#b-again').onclick = menu; $('#b-menu').onclick = menu;
+  $('#b-close').onclick = function () { $('#card').hidden = true; Object.keys(markers).forEach(function (id) { var e = mk(id); if (e) e.classList.remove('is-now'); }); };
+  $('#b-play').onclick = function () {
+    playing = !playing; updatePlay();
+    if (playing) go(idx + 1 >= route.length ? route.length : idx + 1); else stop();
+  };
+  $('#b-next').onclick = function () { playing = false; updatePlay(); stop(); go(idx + 1); };
+  $('#b-prev').onclick = function () { playing = false; updatePlay(); stop(); go(Math.max(0, idx - 1)); };
+  $('#b-voice').onclick = function () { setVoice(!voice); if (voice && idx >= 0) arrive(route[idx], idx); };
+  document.addEventListener('keydown', function (e) {
+    if (mode === null || mode === 'explore' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowLeft') $('#b-next').click();
+    else if (e.key === 'ArrowRight') $('#b-prev').click();
+    else if (e.key === ' ') { e.preventDefault(); $('#b-play').click(); }
+  });
+  window.addEventListener('resize', function () { map.invalidateSize(); });
+})();
+</script>
+
+</body></html>

@@ -127,6 +127,11 @@ def citymap_to_geo(out):
     if not pos_p.exists(): return
     pos = {int(k): v for k, v in json.loads(pos_p.read_text()).items()}
     # extra reference points: public shelters located on the map by house number AND the map's own shelter icon
+    # shelters located on the map (house number or the map's own shelter icon): used both as reference points
+    # (when their lat/lng is exact) and to place the ones whose lat/lng is only approximate
+    sh_p = ROOT/"tools/citymap_shelters.json"
+    if sh_p.exists():
+        pos.update({int(k): v for k, v in json.loads(sh_p.read_text()).items()})
     ref_p = ROOT/"tools/citymap_refpoints.json"
     if ref_p.exists():
         pos.update({int(k): v for k, v in json.loads(ref_p.read_text()).items()})

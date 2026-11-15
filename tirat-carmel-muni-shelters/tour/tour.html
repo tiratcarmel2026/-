@@ -1,0 +1,418 @@
+<title>סיור במרחבים המוגנים</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="סיור וירטואלי על מפת טירת כרמל בכל המקלטים, המחסות והמיגוניות בעיר.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+/*LEAFLET_CSS*/
+/* Layout: the printed city map fills the screen; one card floats over it (right side on desktop, bottom sheet on phones). */
+:root {
+  --navy: #123E73;
+  --maroon: #743237;      /* the map's own "public shelter" colour */
+  --sun: #F5A623;
+  --leaf: #5C9A1E;
+  --surface: #FFFFFF;
+  --ink: #14243A;
+  --muted: #5B6B7F;
+  --line: #DCE3EC;
+  --veil: rgba(18, 62, 115, .55);
+  --f-display: "Secular One", "Assistant", "Arial Hebrew", Arial, sans-serif;
+  --f-body: "Assistant", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --surface: #152338; --ink: #E7EEF7; --muted: #9DB0C5; --line: #273B54; --veil: rgba(5, 14, 28, .62); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --surface: #152338; --ink: #E7EEF7; --muted: #9DB0C5; --line: #273B54; --veil: rgba(5, 14, 28, .62); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--navy); color: var(--ink); font: 400 16px/1.45 var(--f-body); overflow: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 1100; background: var(--navy); }
+h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.app { height: 100%; display: flex; flex-direction: column; }
+.bar { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; background: var(--navy); color: #fff;
+  padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar h1 { font-size: clamp(1.05rem, 3.6vw, 1.35rem); flex: 1; min-width: 0; }
+.bar small { display: block; font: 600 .78rem var(--f-body); opacity: .8; }
+.bar__btn { border: 1.5px solid rgba(255,255,255,.35); background: transparent; color: #fff; border-radius: 10px; padding: 6px 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.bar__btn:hover { background: rgba(255,255,255,.12); }
+.stage { position: relative; flex: 1; min-height: 0; }
+#map { position: absolute; inset: 0; background: #C9D8A2; }
+.leaflet-container { font-family: var(--f-body); }
+
+/* markers */
+.mk { position: relative; width: 28px; height: 28px; transition: transform .25s, opacity .25s; }
+.mk svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
+.mk b { position: absolute; top: -7px; inset-inline-start: -7px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--navy); color: #fff;
+  font: 800 10px/17px var(--f-body); text-align: center; box-shadow: 0 0 0 1.5px #fff; }
+.mk.is-dim { opacity: .35; }
+.mk.is-done b { background: var(--leaf); }
+.mk.is-now { transform: scale(1.35); z-index: 5; }
+.mk.is-now::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 3px solid var(--sun); animation: ring 1.4s ease-out infinite; }
+@keyframes ring { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+
+/* the card */
+.card { position: absolute; z-index: 1000; background: var(--surface); color: var(--ink); border-radius: 20px; box-shadow: 0 12px 40px rgba(0,0,0,.28);
+  display: grid; gap: 10px; padding: 16px 18px 14px; }
+@media (min-width: 900px) { .card { top: 16px; right: max(16px, env(safe-area-inset-right, 0px)); width: 380px; max-height: calc(100% - 32px); overflow: auto; } }
+@media (max-width: 899px) {
+  .card { left: 0; right: 0; bottom: 0; border-radius: 20px 20px 0 0; max-height: 52%; overflow: auto;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+}
+.eyebrow { font-size: .8rem; font-weight: 800; letter-spacing: .03em; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+.eyebrow span + span::before { content: "·"; margin-inline-end: 8px; }
+.addr { font-family: var(--f-display); font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.1; }
+.note { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: .78rem; font-weight: 800; border-radius: 7px; padding: 2px 9px; background: color-mix(in srgb, var(--maroon) 14%, transparent); color: var(--maroon); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip { color: #F0B8BD; } }
+:root[data-theme="dark"] .chip { color: #F0B8BD; }
+.chip--sun { background: color-mix(in srgb, var(--sun) 25%, transparent); color: var(--ink); }
+.prog { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.prog i { display: block; height: 100%; width: 0; background: var(--sun); transition: width .5s; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; padding: 6px 14px; border-radius: 12px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; text-decoration: none; cursor: pointer; }
+.btn:hover { border-color: var(--navy); }
+.btn--main { background: var(--navy); border-color: var(--navy); color: #fff; }
+.btn--waze { background: #33CCFF; border-color: #33CCFF; color: #062430; }
+.btn--icon { width: 46px; padding: 0; font-size: 1.15rem; }
+.btn[aria-pressed="true"] { background: color-mix(in srgb, var(--sun) 25%, var(--surface)); border-color: var(--sun); }
+.ctrls { display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 8px; align-items: center; border-top: 1px solid var(--line); padding-top: 10px; }
+.ctrls select { min-height: 42px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: 700 .9rem var(--f-body); padding: 0 8px; }
+.muted { color: var(--muted); font-size: .88rem; margin: 0; }
+
+/* start / end */
+.veil { position: absolute; inset: 0; z-index: 1050; background: var(--veil); display: grid; place-items: center; overflow: auto;
+  padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.panel { background: var(--surface); color: var(--ink); border-radius: 22px; padding: 22px; width: min(520px, 100%); display: grid; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.panel h2 { font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.1; }
+.choices { display: grid; gap: 10px; }
+.choice { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-align: right; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); border-radius: 16px; padding: 12px 14px; }
+.choice:hover { border-color: var(--navy); }
+.choice svg { width: 34px; height: 34px; }
+.choice b { display: block; font-size: 1.08rem; }
+.choice span { color: var(--muted); font-size: .88rem; }
+.choice em { font-style: normal; font-family: var(--f-display); font-size: 1.6rem; color: var(--maroon); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .choice em { color: #F0B8BD; } }
+:root[data-theme="dark"] .choice em { color: #F0B8BD; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.check input { width: 20px; height: 20px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+.stats b { display: block; font-family: var(--f-display); font-size: 2rem; line-height: 1; color: var(--navy); font-variant-numeric: tabular-nums; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stats b { color: #8DB8F0; } }
+:root[data-theme="dark"] .stats b { color: #8DB8F0; }
+.stats span { font-size: .82rem; color: var(--muted); }
+.legend { position: absolute; z-index: 900; left: max(10px, env(safe-area-inset-left, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--surface); color: var(--ink); border-radius: 12px;
+  padding: 6px 10px; font-size: .82rem; font-weight: 700; display: flex; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend svg { width: 16px; height: 16px; }
+@media (max-width: 899px) { .legend { font-size: .76rem; } }
+@media (prefers-reduced-motion: reduce) { .mk.is-now::after { animation: none; } .prog i { transition: none; } }
+</style>
+
+<div class="app">
+  <header class="bar">
+    <h1>סיור במרחבים המוגנים<small>מפת טירת כרמל 2026 · אגף ביטחון וחירום</small></h1>
+    <button class="bar__btn" id="b-menu" type="button">בחירת סיור</button>
+  </header>
+  <div class="stage">
+    <div id="map" aria-label="מפת טירת כרמל"></div>
+    <div class="legend" aria-hidden="true">
+      <span><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg>מקלט / מחסה</span>
+      <span><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg>מיגונית</span>
+    </div>
+
+    <section class="card" id="card" hidden aria-live="polite">
+      <div class="eyebrow" id="c-eyebrow"></div>
+      <div class="addr" id="c-addr"></div>
+      <div class="chips" id="c-chips"></div>
+      <div class="note" id="c-note"></div>
+      <div class="row" id="c-nav"></div>
+      <div class="prog" id="c-prog"><i></i></div>
+      <div class="ctrls" id="c-ctrls">
+        <button class="btn btn--icon" id="b-prev" type="button" aria-label="התחנה הקודמת">→</button>
+        <button class="btn btn--icon btn--main" id="b-play" type="button" aria-label="השהיה">❚❚</button>
+        <button class="btn btn--icon" id="b-next" type="button" aria-label="התחנה הבאה">←</button>
+        <span></span>
+        <div class="row">
+          <button class="btn btn--icon" id="b-voice" type="button" aria-pressed="false" aria-label="הקראה קולית">🔊</button>
+          <select id="speed" aria-label="מהירות הסיור"><option value="0.7">איטי</option><option value="1" selected>רגיל</option><option value="1.6">מהיר</option></select>
+        </div>
+      </div>
+      <button class="btn" id="b-close" type="button" hidden>סגירה</button>
+    </section>
+
+    <div class="veil" id="start">
+      <div class="panel">
+        <div>
+          <h2>סיור וירטואלי במרחבים המוגנים של טירת כרמל</h2>
+          <p class="muted">המפה „טסה" מתחנה לתחנה ומציגה את הכתובת, סוג המקום וההערות. בכל תחנה אפשר לפתוח ניווט בוויז או בגוגל.</p>
+        </div>
+        <div class="choices">
+          <button class="choice" type="button" data-mode="protected"><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg><div><b>סיור המיגוניות</b><span id="d-protected"></span></div><em id="n-protected"></em></button>
+          <button class="choice" type="button" data-mode="shelter"><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg><div><b>סיור המקלטים והמחסות</b><span id="d-shelter"></span></div><em id="n-shelter"></em></button>
+          <button class="choice" type="button" data-mode="all"><svg viewBox="0 0 28 28"><use href="#i-both"/></svg><div><b>הסיור המלא</b><span id="d-all"></span></div><em id="n-all"></em></button>
+        </div>
+        <label class="check"><input type="checkbox" id="voice-on" checked> הקראה קולית בכל תחנה</label>
+        <div class="row"><button class="btn" id="b-explore" type="button">סיור חופשי במפה</button></div>
+        <p class="muted">המסלול מחבר את התחנות לפי הסדר הקרוב ביותר, מבניין העירייה. זה סיור היכרות, ולא מסלול הליכה בזמן אזעקה.</p>
+      </div>
+    </div>
+
+    <div class="veil" id="end" hidden>
+      <div class="panel">
+        <h2>סיימתם את הסיור</h2>
+        <div class="stats">
+          <div><b id="s-stops"></b><span>תחנות</span></div>
+          <div><b id="s-hoods"></b><span>אזורים</span></div>
+          <div><b id="s-km"></b><span>ק״מ מסלול</span></div>
+        </div>
+        <p class="muted" id="s-text"></p>
+        <div class="row">
+          <button class="btn btn--main" id="b-again" type="button">סיור נוסף</button>
+          <button class="btn" id="b-explore2" type="button">סיור חופשי</button>
+          <a class="btn" id="b-site" target="_blank" rel="noopener">לאתר המקלטים</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-shelter" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#743237" stroke="#fff" stroke-width="2"/><text x="14" y="19.5" text-anchor="middle" font-family="Arial Hebrew, Arial, sans-serif" font-weight="800" font-size="15" fill="#fff">מ</text></symbol>
+  <symbol id="i-protected" viewBox="0 0 28 28"><path d="M14 2 24 5.5V13c0 6.3-4.2 11-10 13C8.2 24 4 19.3 4 13V5.5Z" fill="#743237" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="m9.3 13.8 3.3 3.3 6.3-6.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-both" viewBox="0 0 28 28"><circle cx="10" cy="15" r="8" fill="#743237" stroke="#fff" stroke-width="1.6"/><path d="M19 4l7 2.5V12c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6.5Z" fill="#743237" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+</svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/*TOUR_DATA*/
+</script>
+<script>
+(function () {
+  'use strict';
+  var T = window.TOUR, W = T.w, H = T.h;
+  var LABEL = { shelter: 'מקלט / מחסה', protected: 'מיגונית' };
+  var SPOKEN = { shelter: 'מקלט', protected: 'מיגונית' };
+  var $ = function (s) { return document.querySelector(s); };
+  var ll = function (x, y) { return [H - y, x]; };
+  var isDesk = function () { return window.innerWidth >= 900; };
+
+  /* ---------- map ---------- */
+  var bounds = [[0, 0], [H, W]];
+  var map = L.map('map', { crs: L.CRS.Simple, zoomSnap: 0.25, zoomDelta: 0.5, attributionControl: false, zoomControl: !('ontouchstart' in window) });
+  L.imageOverlay('map.jpg', bounds).addTo(map);
+  map.fitBounds(bounds);
+  var FIT = map.getZoom();
+  map.setMinZoom(FIT - 0.25); map.setMaxZoom(0.75);
+  function refit() {   // after layout settles: show the whole city behind the start screen
+    map.invalidateSize(); map.setMinZoom(-10); map.fitBounds(bounds, { animate: false });
+    FIT = map.getZoom(); map.setMinZoom(FIT - 0.25);
+  }
+  requestAnimationFrame(function () { requestAnimationFrame(refit); });
+  window.addEventListener('load', function () { if (mode === null) refit(); });
+  map.setMaxBounds([[-H * 0.15, -W * 0.15], [H * 1.15, W * 1.15]]);
+  var STOP_ZOOM = -0.6;
+
+  /* ---------- markers ---------- */
+  var markers = {};
+  T.stops.forEach(function (s) {
+    var icon = L.divIcon({ className: '', iconSize: [28, 28], iconAnchor: [14, 14],
+      html: '<div class="mk" id="mk-' + s.id + '"><svg viewBox="0 0 28 28"><use href="#i-' + s.type + '"/></svg><b hidden></b></div>' });
+    markers[s.id] = L.marker(ll(s.x, s.y), { icon: icon, title: s.address, keyboard: true }).addTo(map)
+      .on('click', function () { if (mode === 'explore') showCard(s, null); else jumpTo(s.id); });
+  });
+  function mk(id) { return document.getElementById('mk-' + id); }
+
+  /* ---------- route: nearest neighbour from city hall, then 2-opt ---------- */
+  function d(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+  function plan(list) {
+    var left = list.slice(), cur = { x: T.start[0], y: T.start[1] }, path = [];
+    while (left.length) { left.sort(function (a, b) { return d(cur, a) - d(cur, b); }); cur = left.shift(); path.push(cur); }
+    for (var improved = true, n = 0; improved && n < 60; n++) {
+      improved = false;
+      for (var i = 0; i < path.length - 2; i++) for (var j = i + 2; j < path.length; j++) {
+        var a = i ? path[i - 1] : { x: T.start[0], y: T.start[1] }, b = path[i], c = path[j], e = path[j + 1];
+        var before = d(a, b) + (e ? d(c, e) : 0), after = d(a, c) + (e ? d(b, e) : 0);
+        if (after < before - 0.5) { path = path.slice(0, i).concat(path.slice(i, j + 1).reverse(), path.slice(j + 1)); improved = true; }
+      }
+    }
+    return path;
+  }
+  function km(path) {
+    var R = 6371, t = 0;
+    for (var i = 1; i < path.length; i++) {
+      var a = path[i - 1], b = path[i], p = Math.PI / 180;
+      var h = Math.pow(Math.sin((b.lat - a.lat) * p / 2), 2) + Math.cos(a.lat * p) * Math.cos(b.lat * p) * Math.pow(Math.sin((b.lng - a.lng) * p / 2), 2);
+      t += 2 * R * Math.asin(Math.sqrt(h));
+    }
+    return t;
+  }
+
+  /* ---------- state ---------- */
+  var mode = null, route = [], idx = -1, playing = false, timer = null, line = null, drawn = [], voice = false;
+  var speed = function () { return +$('#speed').value; };
+
+  function counts() {
+    ['protected', 'shelter', 'all'].forEach(function (m) {
+      var list = T.stops.filter(function (s) { return m === 'all' || s.type === m; });
+      $('#n-' + m).textContent = list.length;
+      var mins = Math.max(1, Math.round(list.length * 9 / 60));
+      var hoods = new Set(list.map(function (s) { return s.hood; })).size;
+      $('#d-' + m).textContent = hoods + ' אזורים · כ-' + mins + ' דקות';
+    });
+  }
+
+  /* ---------- camera: keep the stop clear of the card ---------- */
+  function target(s, zoom) {
+    var p = map.project(ll(s.x, s.y), zoom), card = $('#card');
+    if (isDesk()) p = p.add([(card.offsetWidth || 380) / 2 + 8, 0]);      // card on the right: show the stop left of centre
+    else p = p.add([0, (card.offsetHeight || window.innerHeight * 0.45) / 2]); // bottom sheet: show the stop above it
+    return map.unproject(p, zoom);
+  }
+
+  /* ---------- card ---------- */
+  function nav(s) {
+    return '<a class="btn btn--waze" target="_blank" rel="noopener" href="https://waze.com/ul?q=' + encodeURIComponent(s.nav) + '&navigate=yes">ניווט בוויז</a>' +
+      '<a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=' + encodeURIComponent(s.nav) + '">גוגל מפות</a>' +
+      '<a class="btn" target="_blank" rel="noopener" href="' + T.siteUrl + '?s=' + s.id + '">באתר</a>';
+  }
+  function showCard(s, n) {
+    var card = $('#card'); card.hidden = false;
+    $('#c-eyebrow').innerHTML = (n ? '<span>תחנה ' + n + ' מתוך ' + route.length + '</span>' : '') + '<span>אזור ' + esc(s.hood) + '</span>';
+    $('#c-addr').textContent = s.address;
+    $('#c-chips').innerHTML = '<span class="chip">' + LABEL[s.type] + '</span>' + (/פתיחה מרחוק/.test(s.note) ? '<span class="chip chip--sun">נפתח מרחוק בחירום</span>' : '');
+    $('#c-note').textContent = s.note;
+    $('#c-nav').innerHTML = nav(s);
+    var tour = mode !== 'explore';
+    $('#c-prog').hidden = !tour; $('#c-ctrls').hidden = !tour; $('#b-close').hidden = tour;
+    if (tour) $('#c-prog i').style.width = (100 * n / route.length) + '%';
+    Object.keys(markers).forEach(function (id) { var e = mk(id); if (e) e.classList.toggle('is-now', +id === s.id); });
+    if (!tour) map.flyTo(target(s, Math.max(map.getZoom(), STOP_ZOOM)), Math.max(map.getZoom(), STOP_ZOOM), { duration: 0.8 });
+  }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ---------- narration ---------- */
+  var heVoice = null;
+  function pickVoice() {
+    try { heVoice = (speechSynthesis.getVoices() || []).find(function (v) { return /^he|^iw/i.test(v.lang); }) || null; } catch (e) { heVoice = null; }
+  }
+  try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) { }
+  function say(text, done) {
+    if (!voice || !('speechSynthesis' in window)) return done && done(false);
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text); u.lang = 'he-IL'; if (heVoice) u.voice = heVoice; u.rate = Math.min(1.3, 0.95 * speed());
+      var fired = false, fin = function () { if (!fired) { fired = true; done && done(true); } };
+      u.onend = fin; u.onerror = fin; speechSynthesis.speak(u);
+      setTimeout(fin, 15000);
+    } catch (e) { done && done(false); }
+  }
+  function setVoice(on) {
+    voice = on; $('#b-voice').setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (!on) try { speechSynthesis.cancel(); } catch (e) { }
+  }
+
+  /* ---------- tour ---------- */
+  function start(m) {
+    stop(); mode = m;
+    route = plan(T.stops.filter(function (s) { return m === 'all' || s.type === m; }));
+    T.stops.forEach(function (s) {
+      var e = mk(s.id); if (!e) return; var i = route.indexOf(s);
+      e.classList.remove('is-done', 'is-now'); e.classList.toggle('is-dim', i < 0);
+      var b = e.querySelector('b'); b.hidden = i < 0; b.textContent = i + 1;
+    });
+    if (line) map.removeLayer(line);
+    line = L.polyline([], { color: '#743237', weight: 4, opacity: .85, dashArray: '2 9', lineCap: 'round' }).addTo(map);
+    drawn = [ll(T.start[0], T.start[1])];
+    $('#start').hidden = true; $('#end').hidden = true;
+    idx = -1; playing = true; updatePlay(); go(0);
+  }
+  function go(i) {
+    clearTimeout(timer);
+    if (i >= route.length) return finish();
+    if (i < 0) i = 0;
+    var back = i < idx; idx = i;
+    var s = route[i];
+    // route line: everything up to this stop
+    drawn = [ll(T.start[0], T.start[1])].concat(route.slice(0, i + 1).map(function (r) { return ll(r.x, r.y); }));
+    animateLine(drawn, back);
+    showCard(s, i + 1);
+    route.forEach(function (r, k) { var e = mk(r.id); if (e) e.classList.toggle('is-done', k < i); });
+    var z = STOP_ZOOM, dur = Math.max(0.6, 1.7 / speed());
+    if (map.getZoom() < FIT + 0.5 && i === 0) dur = 2.4 / speed();
+    map.flyTo(target(s, z), z, { duration: dur });
+    map.once('moveend', function () { arrive(s, i); });
+  }
+  function animateLine(pts, instant) {
+    if (instant || pts.length < 2) { line.setLatLngs(pts); return; }
+    var a = pts[pts.length - 2], b = pts[pts.length - 1], t0 = performance.now(), ms = 1500 / speed(), base = pts.slice(0, -1);
+    (function step(t) {
+      var k = Math.min(1, (t - t0) / ms);
+      line.setLatLngs(base.concat([[a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]]));
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  function arrive(s, i) {
+    if (i !== idx || mode === 'explore') return;
+    var text = 'תחנה ' + (i + 1) + '. ' + SPOKEN[s.type] + ', ' + s.address.replace(/"/g, '') + ', באזור ' + s.hood + '. ' + s.note.replace(/"/g, '') + '.';
+    var t0 = Date.now();
+    say(text, function () {
+      if (!playing || i !== idx) return;
+      var wait = Math.max(1200, 5200 / speed() - (Date.now() - t0));
+      timer = setTimeout(function () { if (playing && i === idx) go(i + 1); }, wait);
+    });
+  }
+  function stop() { clearTimeout(timer); playing = false; try { speechSynthesis.cancel(); } catch (e) { } }
+  function updatePlay() { $('#b-play').textContent = playing ? '❚❚' : '▶'; $('#b-play').setAttribute('aria-label', playing ? 'השהיה' : 'המשך'); }
+  function jumpTo(id) { var i = route.findIndex(function (r) { return r.id === id; }); if (i >= 0) { playing = false; updatePlay(); stop(); go(i); } }
+  function finish() {
+    stop(); updatePlay();
+    var hoods = new Set(route.map(function (s) { return s.hood; }));
+    $('#s-stops').textContent = route.length; $('#s-hoods').textContent = hoods.size; $('#s-km').textContent = km(route).toFixed(1);
+    $('#s-text').textContent = 'עברתם על ' + route.length + ' ' + (mode === 'protected' ? 'מיגוניות' : mode === 'shelter' ? 'מקלטים ומחסות' : 'מרחבים מוגנים') +
+      ' ב-' + hoods.size + ' אזורים. אורך המסלול הוא בקו אווירי בין התחנות. כדאי להכיר מראש את המרחב המוגן הקרוב לבית, לעבודה ולמוסדות החינוך.';
+    $('#card').hidden = true; $('#end').hidden = false;
+    map.flyToBounds(line.getBounds().pad(0.15), { duration: 1.6 });
+  }
+  function explore() {
+    stop(); mode = 'explore'; $('#start').hidden = true; $('#end').hidden = true; $('#card').hidden = true;
+    if (line) { map.removeLayer(line); line = null; }
+    T.stops.forEach(function (s) { var e = mk(s.id); if (e) { e.classList.remove('is-dim', 'is-done', 'is-now'); e.querySelector('b').hidden = true; } });
+    map.flyToBounds(bounds, { duration: 1 });
+  }
+  function menu() { stop(); updatePlay(); $('#card').hidden = true; $('#end').hidden = true; $('#start').hidden = false; }
+
+  /* ---------- wiring ---------- */
+  counts();
+  $('#b-site').href = T.siteUrl;
+  document.querySelectorAll('.choice').forEach(function (b) {
+    b.onclick = function () { setVoice($('#voice-on').checked); start(b.dataset.mode); };
+  });
+  $('#b-explore').onclick = explore; $('#b-explore2').onclick = explore;
+  $('#b-again').onclick = menu; $('#b-menu').onclick = menu;
+  $('#b-close').onclick = function () { $('#card').hidden = true; Object.keys(markers).forEach(function (id) { var e = mk(id); if (e) e.classList.remove('is-now'); }); };
+  $('#b-play').onclick = function () {
+    playing = !playing; updatePlay();
+    if (playing) go(idx + 1 >= route.length ? route.length : idx + 1); else stop();
+  };
+  $('#b-next').onclick = function () { playing = false; updatePlay(); stop(); go(idx + 1); };
+  $('#b-prev').onclick = function () { playing = false; updatePlay(); stop(); go(Math.max(0, idx - 1)); };
+  $('#b-voice').onclick = function () { setVoice(!voice); if (voice && idx >= 0) arrive(route[idx], idx); };
+  document.addEventListener('keydown', function (e) {
+    if (mode === null || mode === 'explore' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowLeft') $('#b-next').click();
+    else if (e.key === 'ArrowRight') $('#b-prev').click();
+    else if (e.key === ' ') { e.preventDefault(); $('#b-play').click(); }
+  });
+  window.addEventListener('resize', function () { map.invalidateSize(); });
+})();
+</script>
