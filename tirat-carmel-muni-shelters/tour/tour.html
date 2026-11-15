@@ -97,6 +97,16 @@ button { font: inherit; color: inherit; }
 .choice { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-align: right; cursor: pointer;
   border: 1.5px solid var(--line); background: var(--surface); border-radius: 16px; padding: 12px 14px; }
 .choice:hover { border-color: var(--navy); }
+.choice--main { background: var(--navy); border-color: var(--navy); color: #fff; padding: 16px; }
+.choice--main:hover { filter: brightness(1.12); }
+.choice--main span { color: rgba(255,255,255,.82); }
+.choice--main em, :root .choice--main em { color: var(--sun) !important; }
+.choice--main svg { width: 40px; height: 40px; }
+.choices--sub { grid-template-columns: 1fr 1fr; }
+.choices--sub .choice { grid-template-columns: auto 1fr; }
+.choices--sub .choice em { display: none; }
+.choices--sub .choice b { font-size: .95rem; }
+@media (max-width: 480px) { .choices--sub { grid-template-columns: 1fr; } }
 .choice svg { width: 34px; height: 34px; }
 .choice b { display: block; font-size: 1.08rem; }
 .choice span { color: var(--muted); font-size: .88rem; }
@@ -154,12 +164,15 @@ button { font: inherit; color: inherit; }
       <div class="panel">
         <div>
           <h2>סיור וירטואלי במרחבים המוגנים של טירת כרמל</h2>
-          <p class="muted">המפה „טסה" מתחנה לתחנה ומציגה את הכתובת, סוג המקום וההערות. בכל תחנה אפשר לפתוח ניווט בוויז או בגוגל.</p>
+          <p class="muted">המפה „טסה" בין כל המקלטים והמיגוניות בעיר, תחנה אחרי תחנה, ומציגה בכל אחת את הכתובת, סוג המקום וההערות. בכל תחנה אפשר לפתוח ניווט בוויז או בגוגל.</p>
         </div>
-        <div class="choices">
-          <button class="choice" type="button" data-mode="protected"><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg><div><b>סיור המיגוניות</b><span id="d-protected"></span></div><em id="n-protected"></em></button>
-          <button class="choice" type="button" data-mode="shelter"><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg><div><b>סיור המקלטים והמחסות</b><span id="d-shelter"></span></div><em id="n-shelter"></em></button>
-          <button class="choice" type="button" data-mode="all"><svg viewBox="0 0 28 28"><use href="#i-both"/></svg><div><b>הסיור המלא</b><span id="d-all"></span></div><em id="n-all"></em></button>
+        <button class="choice choice--main" type="button" data-mode="all" id="b-start-all">
+          <svg viewBox="0 0 28 28"><use href="#i-both"/></svg>
+          <div><b>הסיור המלא: כל המקלטים והמיגוניות</b><span id="d-all"></span></div><em id="n-all"></em>
+        </button>
+        <div class="choices choices--sub">
+          <button class="choice" type="button" data-mode="protected"><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg><div><b>רק מיגוניות</b><span id="d-protected"></span></div><em id="n-protected"></em></button>
+          <button class="choice" type="button" data-mode="shelter"><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg><div><b>רק מקלטים ומחסות</b><span id="d-shelter"></span></div><em id="n-shelter"></em></button>
         </div>
         <label class="check"><input type="checkbox" id="voice-on" checked> הקראה קולית בכל תחנה</label>
         <div class="row"><button class="btn" id="b-explore" type="button">סיור חופשי במפה</button></div>
@@ -265,9 +278,10 @@ button { font: inherit; color: inherit; }
     ['protected', 'shelter', 'all'].forEach(function (m) {
       var list = T.stops.filter(function (s) { return m === 'all' || s.type === m; });
       $('#n-' + m).textContent = list.length;
+      if (m === 'all') { var sh = list.filter(function (s) { return s.type === 'shelter'; }).length; T.mix = [sh, list.length - sh]; }
       var mins = Math.max(1, Math.round(list.length * 9 / 60));
       var hoods = new Set(list.map(function (s) { return s.hood; })).size;
-      $('#d-' + m).textContent = hoods + ' אזורים · כ-' + mins + ' דקות';
+      $('#d-' + m).textContent = (m === 'all' ? T.mix[0] + ' מקלטים ו-' + T.mix[1] + ' מיגוניות ברצף אחד · ' : '') + hoods + ' אזורים · כ-' + mins + ' דקות';
     });
   }
 
@@ -287,7 +301,8 @@ button { font: inherit; color: inherit; }
   }
   function showCard(s, n) {
     var card = $('#card'); card.hidden = false;
-    $('#c-eyebrow').innerHTML = (n ? '<span>תחנה ' + n + ' מתוך ' + route.length + '</span>' : '') + '<span>אזור ' + esc(s.hood) + '</span>';
+    $('#c-eyebrow').innerHTML = (n ? '<span>תחנה ' + n + ' מתוך ' + route.length + '</span>' : '') + '<span>אזור ' + esc(s.hood) + '</span>' +
+      (n && mode === 'all' ? '<span>' + done('shelter', n) + ' מקלטים · ' + done('protected', n) + ' מיגוניות</span>' : '');
     $('#c-addr').textContent = s.address;
     $('#c-chips').innerHTML = '<span class="chip">' + LABEL[s.type] + '</span>' + (/פתיחה מרחוק/.test(s.note) ? '<span class="chip chip--sun">נפתח מרחוק בחירום</span>' : '');
     $('#c-note').textContent = s.note;
@@ -298,6 +313,7 @@ button { font: inherit; color: inherit; }
     Object.keys(markers).forEach(function (id) { var e = mk(id); if (e) e.classList.toggle('is-now', +id === s.id); });
     if (!tour) map.flyTo(target(s, Math.max(map.getZoom(), STOP_ZOOM)), Math.max(map.getZoom(), STOP_ZOOM), { duration: 0.8 });
   }
+  function done(type, n) { return route.slice(0, n).filter(function (r) { return r.type === type; }).length; }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   /* ---------- narration ---------- */
