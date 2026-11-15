@@ -11,6 +11,8 @@ Run it on the file the publisher supplies (for print: the clean, licensed file):
 
 --check DIR also writes a close-up PNG of every marker, for a visual review before printing.
 
+--export-positions FILE writes each address's position on the map (used by build_data.py to place shelters on the website).
+
 Positions are tied to this map edition's page geometry (1360.6 x 1927.6 pt). Most are anchored to the house-number
 label printed on the map; the rest to a point read off the map (see ANCHORS). Verified visually on 2026-11-15.
 """
@@ -24,22 +26,24 @@ LEGEND_FONT_NAME = "FbSpoiler-Regular"                                          
 # ("pt", (x, y)) = a point read off the map.  check=True: placed with less certainty, confirm before printing.
 ANCHORS = {
     34: ("ביאליק 36", ("num", "36", (802, 508))),
-    36: ("האלה 17", ("pt", (923, 1277)), True),                  # municipal map: האלה 18; official list: האלה 17
+    35: ("גיורא 5", ("num", "5", (657, 1342))),                    # Giora Yoseftal, odd side, north end
+    36: ("האלה 17", ("num", "17", (905, 1598))),                  # east side, directly opposite the old cemetery
     37: ("הגל 2", ("num", "2", (563, 1361))),
     38: ("העצמאות 4", ("num", "4", (859, 960))),
     39: ("הרב קוק 12", ("num", "12", (808, 732))),
     40: ("הרב וינרוב 17", ("num", "17", (744, 898))),
     41: ("הרב משה מרדכי 7", ("num", "7", (683, 883))),          # next to the municipal stadium
     42: ("השריון 14", ("num", "14", (665, 939))),
+    43: ("ויצמן 13", ("num", "13", (572, 1167))),                 # beside the community-centre sports courts
     44: ("ויצמן 19", ("pt", (635.5, 1219.9))),                   # Yigal Alon school sports yard
     45: ("ויצמן 28", ("num", "28", (695, 1342))),
     46: ("ז'בוטינסקי מול 39", ("pt", (657, 1121))),             # skatepark plaza
     47: ("ירושלים 6", ("num", "6", (715, 1420))),
     48: ("כ\"ג יורדי הסירה 2", ("num", "2", (801.6, 1186))),
     49: ("מוצקין 6", ("num", "6", (633.7, 535.6))),
-    50: ("מוצקין 13", ("num", "13", (785.1, 418.5)), True),
+    50: ("מוצקין 13", ("num", "13", (785.1, 418.5))),             # municipal departments building
     51: ("נתן אלבז 22", ("num", "22", (799, 1443))),
-    52: ("נתן אלבז 23", ("num", "23", (811.7, 1522.9)), True),
+    52: ("נתן אלבז 23", ("num", "23", (811.7, 1522.9))),
     53: ("נתן אלבז 36", ("num", "36", (767.7, 1541))),           # Natan Elbaz–Gordon junction
     54: ("הצנחנים 2", ("num", "2", (853, 1152))),
     55: ("רמב\"ם 4", ("num", "4", (940, 749))),                   # by the Rabbi Chai Taieb synagogue
@@ -50,7 +54,7 @@ ANCHORS = {
     60: ("ש\"י עגנון 14", ("pt", (744.3, 1414.6))),              # Moreshet compound
     61: ("ששת הימים 3", ("num", "3", (820, 1087))),
 }
-NOT_PLACED = {35: "גיורא 5", 43: "ויצמן 13"}   # address not identifiable on the map; add once the location is confirmed
+NOT_PLACED = {}   # every protected space on the official list is placed
 
 
 def shield(page, cx, cy, s=1.0):
@@ -224,8 +228,13 @@ def main():
     else:
         doc.save(dst, garbage=0, deflate=True)
     print(f"{len(spots)} protected spaces added -> {dst}")
-    print("check before printing:", ", ".join(ANCHORS[i][0] for i in ANCHORS if len(ANCHORS[i]) > 2))
-    print("not placed (location unclear on the map):", ", ".join(NOT_PLACED.values()))
+    flagged = [ANCHORS[i][0] for i in ANCHORS if len(ANCHORS[i]) > 2]
+    print("check before printing:", ", ".join(flagged) or "none")
+    print("not placed:", ", ".join(NOT_PLACED.values()) or "none")
+    if "--export-positions" in sys.argv:
+        import json
+        pos = {sid: [round((r.x0 + r.x1) / 2, 2), round((r.y0 + r.y1) / 2, 2)] for sid, (_, _, r) in spots.items()}
+        pathlib.Path(sys.argv[sys.argv.index("--export-positions") + 1]).write_text(json.dumps(pos, ensure_ascii=False, indent=0))
     if check:
         out = fitz.open(dst)[0]; pathlib.Path(check).mkdir(parents=True, exist_ok=True)
         for sid, (addr, q, _) in spots.items():

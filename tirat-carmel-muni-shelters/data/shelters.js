@@ -381,10 +381,10 @@ window.SHELTERS = [
   "address": "גיורא 5",
   "navAddress": "גיורא 5, טירת כרמל",
   "note": "מיגונית רווחה, הבית החם לנערה, בפתיחה מרחוק",
-  "lat": 32.75375,
-  "lng": 34.96984,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.755915,
+  "lng": 34.970195,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 36,
@@ -392,10 +392,10 @@ window.SHELTERS = [
   "address": "האלה 17",
   "navAddress": "האלה 17, טירת כרמל",
   "note": "מול בית העלמין הישן",
-  "lat": 32.756452,
-  "lng": 34.974726,
-  "precision": "probable",
-  "anchor": "כתובת סמוכה במפת העירייה (האלה 18)"
+  "lat": 32.752054,
+  "lng": 34.974112,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 37,
@@ -425,10 +425,10 @@ window.SHELTERS = [
   "address": "הרב קוק 12",
   "navAddress": "הרב קוק 12, טירת כרמל",
   "note": "בחניה הגדולה, לפני הכניסה לבי\"ס דגניה",
-  "lat": 32.764281,
-  "lng": 34.972706,
-  "precision": "probable",
-  "anchor": "כתובת סמוכה במפת העירייה (הרב קוק 10)"
+  "lat": 32.764388,
+  "lng": 34.972792,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 40,
@@ -436,10 +436,10 @@ window.SHELTERS = [
   "address": "הרב וינרוב 17",
   "navAddress": "הרב וינרוב 17, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.762104,
-  "lng": 34.971415,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.762039,
+  "lng": 34.97184,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 41,
@@ -447,10 +447,10 @@ window.SHELTERS = [
   "address": "הרב משה מרדכי 7",
   "navAddress": "הרב משה מרדכי 7, טירת כרמל",
   "note": "בסמוך לאצטדיון הכדורגל העירוני",
-  "lat": null,
-  "lng": null,
-  "precision": "none",
-  "anchor": ""
+  "lat": 32.762341,
+  "lng": 34.970401,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 42,
@@ -469,10 +469,10 @@ window.SHELTERS = [
   "address": "ויצמן 13",
   "navAddress": "ויצמן 13, טירת כרמל",
   "note": "בסמוך למגרשי המתנ\"ס",
-  "lat": 32.75685,
-  "lng": 34.969308,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.758465,
+  "lng": 34.968801,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 44,
@@ -524,10 +524,10 @@ window.SHELTERS = [
   "address": "כ\"ג יורדי הסירה 2",
   "navAddress": "כ\"ג יורדי הסירה 2, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.75773,
-  "lng": 34.971615,
-  "precision": "probable",
-  "anchor": "כתובת סמוכה במפת העירייה (כ״ג יורדי הסירה 4)"
+  "lat": 32.757895,
+  "lng": 34.972616,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 49,
@@ -535,10 +535,10 @@ window.SHELTERS = [
   "address": "מוצקין 6",
   "navAddress": "מוצקין 6, טירת כרמל",
   "note": "בתוך החניה",
-  "lat": 32.767401,
-  "lng": 34.969341,
-  "precision": "probable",
-  "anchor": "כתובת סמוכה במפת העירייה (מוצקין 4)"
+  "lat": 32.76735,
+  "lng": 34.970081,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 50,
@@ -546,10 +546,10 @@ window.SHELTERS = [
   "address": "מוצקין 13",
   "navAddress": "מוצקין 13, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.768974,
-  "lng": 34.974426,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.768904,
+  "lng": 34.972428,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 51,
@@ -568,10 +568,10 @@ window.SHELTERS = [
   "address": "נתן אלבז 23",
   "navAddress": "נתן אלבז 23, טירת כרמל",
   "note": "בצמוד לגן ילדים",
-  "lat": 32.753934,
-  "lng": 34.972583,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.753168,
+  "lng": 34.972578,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 53,
@@ -590,10 +590,10 @@ window.SHELTERS = [
   "address": "הצנחנים 2",
   "navAddress": "הצנחנים 2, טירת כרמל",
   "note": "בסמוך לגן התותח",
-  "lat": 32.757837,
-  "lng": 34.973657,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.758384,
+  "lng": 34.973483,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 55,
@@ -612,10 +612,10 @@ window.SHELTERS = [
   "address": "רמב\"ם 8",
   "navAddress": "רמב\"ם 8, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.766787,
-  "lng": 34.973938,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.765216,
+  "lng": 34.9747,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 57,
@@ -623,10 +623,10 @@ window.SHELTERS = [
   "address": "ש\"י עגנון 2",
   "navAddress": "ש\"י עגנון 2, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.753952,
-  "lng": 34.971101,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.753518,
+  "lng": 34.971117,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 58,
@@ -634,10 +634,10 @@ window.SHELTERS = [
   "address": "ש\"י עגנון 11",
   "navAddress": "ש\"י עגנון 11, טירת כרמל",
   "note": "מיגונית",
-  "lat": 32.753952,
-  "lng": 34.971101,
-  "precision": "street",
-  "anchor": ""
+  "lat": 32.753858,
+  "lng": 34.970809,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 59,
@@ -656,10 +656,10 @@ window.SHELTERS = [
   "address": "ש\"י עגנון 14",
   "navAddress": "ש\"י עגנון 14, טירת כרמל",
   "note": "מיגונית רווחה, מתחם מורשה, פתיחה מרחוק – מרכז תפנית",
-  "lat": 32.754619,
-  "lng": 34.971695,
-  "precision": "probable",
-  "anchor": "כתובת סמוכה במפת העירייה (ש\"י עגנון 12)"
+  "lat": 32.754858,
+  "lng": 34.97138,
+  "precision": "citymap",
+  "anchor": "מפת העיר, לפי מספר הבית"
  },
  {
   "id": 61,

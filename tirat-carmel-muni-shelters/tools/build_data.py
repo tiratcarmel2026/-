@@ -3,10 +3,11 @@ No network needed. Re-run after editing source.tsv:  python3 -I tools/build_data
 precision: verified = confirmed on site with the survey mode (tools/fixes.json)
            municipal= the municipality's own Google map (exact)
            landmark = pinned to a known building/POI (accurate)
+           citymap  = read off the printed city map at its house number (about ±15 m)
            probable = inferred from a nearby map feature (approximate)
            street   = middle of the street on the map (approximate; navigation still uses the exact address)
            none     = street not in OpenStreetMap; not used for "nearest" until coordinates are added"""
-import json, math, pathlib
+import json, math, pathlib, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 streets = json.loads((ROOT/"tools/streets.json").read_text())
 streets["גיורא"] = streets.get("גיורא") or [[[34.96984, 32.75375]]]  # רח' גיורא יוספטל (OSM: "יוספטל")
@@ -117,6 +118,42 @@ for n, line in enumerate((ROOT/"tools/source.tsv").read_text().splitlines(), 1):
                 "precision": prec, "anchor": src})
     print(f"{n:2} {prec:9} {street} {num}")
     if n in MUNICIPAL and MUNICIPAL[n][:2] not in KML: print("   !! not found in KML:", MUNICIPAL[n])
+# ---- printed city map: positions read off the map by house number (tools/citymap_positions.json, written by
+# city_map_overlay.py --export-positions; tools/citymap_refpoints.json = shelters used only as reference points). Converted to lat/lng with an affine fit on the places whose position is
+# already exact (municipal map / known building), plus an inverse-distance correction of the local residuals.
+def citymap_to_geo(out):
+    import numpy as np
+    pos_p = ROOT/"tools/citymap_positions.json"
+    if not pos_p.exists(): return
+    pos = {int(k): v for k, v in json.loads(pos_p.read_text()).items()}
+    # extra reference points: public shelters located on the map by house number AND the map's own shelter icon
+    ref_p = ROOT/"tools/citymap_refpoints.json"
+    if ref_p.exists():
+        pos.update({int(k): v for k, v in json.loads(ref_p.read_text()).items()})
+    ref = [o for o in out if o["id"] in pos and o["precision"] in ("municipal", "verified")]   # OSM landmarks disagree with the map
+    X = np.array([pos[o["id"]] + [1] for o in ref]); Y = np.array([[o["lat"], o["lng"]] for o in ref])
+    def model(Xf, Yf):
+        A = np.linalg.lstsq(Xf, Yf, rcond=None)[0]; R = Yf - Xf @ A
+        def f(x):
+            w = 1 / (np.hypot(*(Xf[:, :2] - x[:2]).T) ** 2 + 400)
+            return x @ A + (w[:, None] * R).sum(0) / w.sum()
+        return f
+    # leave-one-out accuracy, in metres
+    err = []
+    for i in range(len(ref)):
+        m = np.ones(len(ref), bool); m[i] = False
+        g = model(X[m], Y[m])(X[i]); err.append(np.hypot((g[0]-Y[i][0])*110540, (g[1]-Y[i][1])*111320*np.cos(np.radians(32.76))))
+    print(f"city map -> lat/lng: {len(ref)} reference points, leave-one-out error median {np.median(err):.0f} m, max {max(err):.0f} m")
+    if "-v" in sys.argv: print("   ", sorted(((round(e), o["id"], o["address"]) for e, o in zip(err, ref)), reverse=True)[:8])
+    f = model(X, Y)
+    for o in out:
+        if o["id"] in pos and o["precision"] in ("street", "probable", "none"):
+            g = f(np.array(pos[o["id"]] + [1]))
+            o["lat"], o["lng"] = round(float(g[0]), 6), round(float(g[1]), 6)
+            o["precision"], o["anchor"] = "citymap", "מפת העיר, לפי מספר הבית"
+            print(f"   {o['id']:2} citymap  {o['address']}")
+citymap_to_geo(out)
+
 (ROOT/"data/shelters.js").write_text(
     "// נוצר אוטומטית ע\"י tools/build_data.py — אין לערוך ידנית. מקור הרשימה: אגף ביטחון וחירום, עיריית טירת כרמל\n"
     "// מיקומים: © OpenStreetMap contributors (ODbL)\n"

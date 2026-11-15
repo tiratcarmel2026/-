@@ -36,7 +36,7 @@
   function runSeconds(m) { return m / (RUN_M_PER_MIN / 60); }
   function fmtSec(sec) { sec = Math.round(sec / 5) * 5; return sec <= 90 ? sec + ' שנ׳' : Math.floor(sec / 60) + ' דק׳' + (sec % 60 ? ' ו-' + sec % 60 + ' שנ׳' : ''); }
   var PROT_LABEL = PROTECTION_SEC + ' שניות';
-  function approx(s) { return s.precision === 'street' || s.precision === 'probable'; }
+  function approx(s) { return s.precision === 'street' || s.precision === 'probable' || s.precision === 'citymap'; }
   function byId(id) { return SHELTERS.find(function (x) { return x.id === id; }); }
   function streetPoint(name) {
     var lines = STREETS[name] || [], pts = [];
@@ -430,7 +430,7 @@
     var s = byId(id); $('#sv-pick').value = String(id);
     var ll = s.lat != null ? s.lat + ',' + s.lng : s.navAddress;
     $('#sv-info').innerHTML = '<b>' + esc(s.address) + '</b> · ' + TYPE_LABEL[s.type] + '<br><span class="muted">' + esc(s.note) + '</span><br>' +
-      '<span class="muted">מצב: ' + ({ verified: 'אומת', municipal: 'לפי מפת המקלטים של העירייה', landmark: 'לפי מבנה מוכר במפה', probable: 'משוער לפי מבנה סמוך', street: 'משוער: אמצע הרחוב', none: 'לא מסומן' }[s.precision]) +
+      '<span class="muted">מצב: ' + ({ verified: 'אומת', municipal: 'לפי מפת המקלטים של העירייה', landmark: 'לפי מבנה מוכר במפה', citymap: 'לפי מספר הבית במפת העיר (±20 מ׳)', probable: 'משוער לפי מבנה סמוך', street: 'משוער: אמצע הרחוב', none: 'לא מסומן' }[s.precision]) +
       (s.anchor ? ' (' + esc(s.anchor) + ')' : '') + '</span>';
     $('#sv-sv').href = s.lat != null ? 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + s.lat + ',' + s.lng : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(ll);
     if (map && markers[id]) { map.setView(markers[id].getLatLng(), 18); markers[id].openPopup(); }
