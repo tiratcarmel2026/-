@@ -11,12 +11,14 @@
 @font-face { font-family: "Assistant"; src: url(fonts/assistant-hebrew-700-normal.woff2) format("woff2"); font-weight: 700; font-display: block; }
 @font-face { font-family: "Assistant"; src: url(fonts/assistant-hebrew-800-normal.woff2) format("woff2"); font-weight: 800; font-display: block; }
 @font-face { font-family: "Assistant"; src: url(fonts/assistant-latin-700-normal.woff2) format("woff2"); font-weight: 700; unicode-range: U+0000-00FF; font-display: block; }
-:root { --navy: #123E73; --maroon: #743237; --sun: #F5A623; --leaf: #4E9A1A; --ink: #14243A; }
+:root { --navy: #123E73; --sun: #F5A623; --ink: #14243A;
+  --shelter: #1A5FD6;      /* shelters: strong blue */
+  --protected: #F07A00;    /* protected spaces: strong orange (blue/orange stays distinct for colour-blind viewers too) */ }
 * { box-sizing: border-box; }
 html, body { margin: 0; width: 1080px; height: 1920px; overflow: clip; background: #E9E5DC; font-family: Assistant, Arial, sans-serif; color: var(--ink); }
 body { position: fixed; top: 0; left: 0; }
 #map { position: absolute; inset: 0; overflow: hidden; }
-.leaflet-tile-pane { filter: saturate(.78) contrast(1.02); }
+.leaflet-tile-pane { filter: saturate(.35) brightness(1.04) contrast(.96); }   /* quiet base map: the pins carry the colour */
 .leaflet-container { background: #E9E5DC; }
 
 .top { position: absolute; top: 0; left: 0; right: 0; height: 190px; z-index: 1000;
@@ -33,7 +35,8 @@ body { position: fixed; top: 0; left: 0; }
 .cap { position: absolute; left: 40px; right: 40px; bottom: 70px; z-index: 1000; background: #fff; border-radius: 34px; padding: 34px 40px 36px;
   box-shadow: 0 18px 50px rgba(0,0,0,.28); display: grid; gap: 10px; transform-origin: 50% 100%; }
 .cap .eyebrow { display: flex; align-items: center; gap: 16px; font: 800 30px Assistant; color: #5B6B7F; }
-.cap .chip { background: color-mix(in srgb, var(--maroon) 14%, white); color: var(--maroon); border-radius: 12px; padding: 4px 16px; }
+.cap { border-top: 16px solid var(--type, var(--navy)); }
+.cap .chip { background: var(--type, var(--navy)); color: #fff; border-radius: 14px; padding: 6px 20px; font-size: 34px; }
 .cap .addr { font: 400 84px/1.05 "Secular One"; }
 .cap .note { font: 700 36px/1.3 Assistant; color: #4A5A6E; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .cap .bar { height: 10px; border-radius: 5px; background: #E3E8EF; overflow: hidden; margin-top: 8px; }
@@ -47,16 +50,21 @@ body { position: fixed; top: 0; left: 0; }
 .title .small { font: 700 34px Assistant; opacity: .85; margin-top: 8px; }
 .end .row { display: flex; justify-content: center; gap: 46px; margin-top: 30px; }
 .end .row div { font: 700 32px Assistant; }
-.end .row b { display: block; font: 400 92px/1 "Secular One"; color: var(--sun); }
+.end .row b { display: block; font: 400 92px/1 "Secular One"; }
+.end .row svg { width: 74px; height: 74px; display: block; margin: 0 auto 8px; }
+.end .row .s b { color: #8DB6FF; } .end .row .p b { color: #FFB25C; }
+.legend2 { display: flex; justify-content: center; gap: 40px; margin-top: 28px; font: 800 40px Assistant; }
+.legend2 span { display: inline-flex; align-items: center; gap: 12px; }
+.legend2 svg { width: 66px; height: 66px; }
 .end .call { margin-top: 36px; background: var(--sun); color: #2A1A00; border-radius: 26px; padding: 18px 26px; font: 800 44px Assistant; }
 .end .call b { font: 400 76px "Secular One"; vertical-align: -6px; }
 .end .site { margin-top: 26px; font: 700 34px/1.3 Assistant; }
 .end .site span { direction: ltr; unicode-bidi: isolate; display: block; font-size: 28px; opacity: .85; }
 .end .foot { margin-top: 26px; font: 700 30px Assistant; opacity: .8; }
 
-.pin { width: 64px; height: 64px; transform-origin: 50% 50%; }
-.pin svg { width: 100%; height: 100%; filter: drop-shadow(0 3px 4px rgba(0,0,0,.45)); }
-.pin.now::after { content: ""; position: absolute; inset: -18px; border-radius: 50%; border: 7px solid var(--sun); opacity: var(--ring, 0); transform: scale(var(--ringS, 1)); }
+.pin { width: 76px; height: 76px; transform-origin: 50% 50%; }
+.pin svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 5px rgba(0,0,0,.5)); }
+.pin.now::after { content: ""; position: absolute; inset: -20px; border-radius: 50%; border: 7px solid var(--navy); opacity: var(--ring, 0); transform: scale(var(--ringS, 1)); }
 .attr { position: absolute; left: 14px; bottom: 14px; z-index: 1000; font: 700 20px Assistant; color: #333; background: rgba(255,255,255,.8); padding: 2px 10px; border-radius: 8px; direction: ltr; }
 </style>
 </head>
@@ -76,10 +84,11 @@ body { position: fixed; top: 0; left: 0; }
 <div class="title" id="intro"><div>
   <h2>מקלטים ומיגוניות</h2><div class="sub">בטירת כרמל</div>
   <div class="big">61</div><div class="small">מרחבים מוגנים ציבוריים בעיר · סיור של דקה</div>
+  <div class="legend2"><span><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg>מקלט</span><span><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg>מיגונית</span></div>
 </div></div>
 <div class="title end" id="outro"><div>
   <h2>הכירו את המרחב המוגן הקרוב אליכם</h2>
-  <div class="row"><div><b>33</b>מקלטים ומחסות</div><div><b>28</b>מיגוניות</div></div>
+  <div class="row"><div class="s"><svg viewBox="0 0 28 28"><use href="#i-shelter"/></svg><b>33</b>מקלטים ומחסות</div><div class="p"><svg viewBox="0 0 28 28"><use href="#i-protected"/></svg><b>28</b>מיגוניות</div></div>
   <div class="call">בחירום: מוקד עירוני <b>106</b></div>
   <div class="site">המקלט הקרוב, זמן הגעה וניווט:<span id="site"></span></div>
   <div class="foot">אגף ביטחון וחירום | עיריית טירת כרמל</div>
@@ -87,8 +96,8 @@ body { position: fixed; top: 0; left: 0; }
 <div class="attr">© OpenStreetMap contributors</div>
 
 <svg width="0" height="0" style="position:absolute">
-  <symbol id="i-shelter" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#743237" stroke="#fff" stroke-width="2"/><text x="14" y="19.5" text-anchor="middle" font-family="Assistant, Arial" font-weight="800" font-size="15" fill="#fff">מ</text></symbol>
-  <symbol id="i-protected" viewBox="0 0 28 28"><path d="M14 2 24 5.5V13c0 6.3-4.2 11-10 13C8.2 24 4 19.3 4 13V5.5Z" fill="#743237" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="m9.3 13.8 3.3 3.3 6.3-6.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shelter" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#1A5FD6" stroke="#fff" stroke-width="2.6"/><text x="14" y="19.6" text-anchor="middle" font-family="Assistant, Arial" font-weight="800" font-size="15" fill="#fff">מ</text></symbol>
+  <symbol id="i-protected" viewBox="0 0 28 28"><path d="M14 1.8 24.4 5.4V13c0 6.4-4.3 11.2-10.4 13.2C7.9 24.2 3.6 19.4 3.6 13V5.4Z" fill="#F07A00" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="m9.3 13.8 3.3 3.3 6.3-6.6" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
 <script src="leaflet.js"></script>
@@ -137,7 +146,7 @@ body { position: fixed; top: 0; left: 0; }
       html: '<div class="pin" id="pin-' + s.id + '"><svg viewBox="0 0 28 28"><use href="#i-' + s.type + '"/></svg></div>' });
     return L.marker([s.lat, s.lng], { icon: icon, interactive: false }).addTo(map);
   });
-  var line = L.polyline([], { color: '#743237', weight: 9, opacity: .85, lineCap: 'round', lineJoin: 'round', dashArray: '1 18' }).addTo(map);
+  var line = L.polyline([], { color: '#123E73', weight: 9, opacity: .8, lineCap: 'round', lineJoin: 'round', dashArray: '1 18' }).addTo(map);
 
   window.frame = function (t) {
     window.scrollTo(0, 0); document.documentElement.scrollLeft = 0; document.body.scrollLeft = 0;
@@ -181,6 +190,7 @@ body { position: fixed; top: 0; left: 0; }
     if (cur >= 0) {
       var s = STOPS[cur], since = t - s.t;
       $('cap-type').textContent = s.type === 'shelter' ? 'מקלט / מחסה' : 'מיגונית';
+      cap.style.setProperty('--type', s.type === 'shelter' ? 'var(--shelter)' : 'var(--protected)');
       $('cap-n').textContent = 'תחנה ' + (cur + 1) + ' מתוך ' + STOPS.length;
       $('cap-addr').textContent = s.address; $('cap-note').textContent = s.note;
       $('cap-addr').style.opacity = $('cap-note').style.opacity = String(smooth(since / 0.18));

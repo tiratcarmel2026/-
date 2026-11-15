@@ -66,7 +66,14 @@ const srv = http.createServer((q, r) => {
   }
   await b.close(); srv.close();
   if (PREVIEW) { console.log('preview frames in', frames); return; }
-  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(frames, 'f%05d.jpg'),
-    '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT]);
+  // the soundtrack (tools/video/music.py), synced to the same timeline
+  execFileSync('python3', ['-I', path.join(HERE, 'music.py'), WORK], { stdio: 'inherit' });
+  const enc = (out, scale, crf) => execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(frames, 'f%05d.jpg'),
+    '-i', path.join(WORK, 'music.wav'), ...(scale ? ['-vf', `scale=${scale}:flags=lanczos`] : []),
+    '-c:v', 'libx264', '-preset', 'slow', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out]);
+  enc(OUT, null, 20);
+  const light = OUT.replace(/\.mp4$/, ' - לוואטסאפ.mp4');
+  enc(light, '720:1280', 26);
+  console.log('light version ->', light);
   console.log('video ->', OUT);
 })();
