@@ -1,0 +1,83 @@
+name: Short links
+
+# The shortener page (link/) opens a pre-filled issue: "link: <code>" or "delete: <code>".
+# This workflow updates links.json, replies with the short link and closes the issue.
+# Only issues opened by the repository owner are handled.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: short-links
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.event.issue.user.login == github.repository_owner && (startsWith(github.event.issue.title, 'link:') || startsWith(github.event.issue.title, 'delete:'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Update links.json
+        id: edit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const issue = context.payload.issue;
+            const title = issue.title.trim();
+            const body = issue.body || '';
+            const reserved = ['podtc','link','js','css','assets','index.html','404.html','links.json','readme.md','favicon.ico'];
+            const file = 'links.json';
+            let links = {};
+            try { links = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) {}
+            const code = title.replace(/^(link|delete):/, '').trim().toLowerCase();
+            const base = `https://${context.repo.owner}.github.io/${context.repo.repo}/`;
+            let reply, changed = false;
+            if (!/^[a-z0-9_-]{1,40}$/.test(code) || reserved.includes(code)) {
+              reply = `❌ הסיומת "${code}" לא תקינה.`;
+            } else if (title.startsWith('delete:')) {
+              if (links[code]) { delete links[code]; changed = true; reply = `🗑️ הקישור ${base}${code} נמחק.`; }
+              else reply = `הקישור ${code} לא קיים.`;
+            } else {
+              const m = body.match(/https?:\/\/\S+/);
+              const url = m && m[0];
+              let ok = false;
+              try { ok = !!url && ['http:','https:'].includes(new URL(url).protocol); } catch (e) {}
+              if (!ok) reply = '❌ לא נמצא קישור תקין בבקשה.';
+              else if (links[code] && links[code].url !== url) reply = `❌ הסיומת "${code}" כבר תפוסה לקישור אחר.`;
+              else {
+                if (!links[code]) { links[code] = { url, created: new Date().toISOString() }; changed = true; }
+                reply = `✅ הקישור הקצר מוכן:\n\n${base}${code}\n\n↳ ${url}`;
+              }
+            }
+            if (changed) fs.writeFileSync(file, JSON.stringify(links, null, 2) + '\n');
+            core.setOutput('changed', changed ? 'yes' : 'no');
+            core.setOutput('reply', reply);
+
+      - name: Commit
+        if: steps.edit.outputs.changed == 'yes'
+        env:
+          TITLE: ${{ github.event.issue.title }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898732+github-actions[bot]@users.noreply.github.com"
+          git add links.json
+          git commit -m "Short links: $TITLE"
+          for i in 1 2 3; do git push && break; git pull --rebase; done
+
+      - name: Reply and close
+        uses: actions/github-script@v7
+        env:
+          REPLY: ${{ steps.edit.outputs.reply }}
+        with:
+          script: |
+            const n = context.payload.issue.number;
+            await github.rest.issues.createComment({ ...context.repo, issue_number: n, body: process.env.REPLY });
+            await github.rest.issues.update({ ...context.repo, issue_number: n, state: 'closed' });
