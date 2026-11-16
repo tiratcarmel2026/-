@@ -3,6 +3,10 @@
   var links = {};
   var lastShort = '';
   var pollTimer = null;
+  var TOKEN_KEY = 'tc-links-token';
+  function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
+  function setToken(t) { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  function showConnect() { var has = !!getToken(); $('connect').hidden = has; $('disconnect').hidden = !has; }
 
   function toast(text) {
     var t = $('toast'); t.textContent = text; t.classList.add('on');
@@ -80,8 +84,16 @@
     $('result').classList.toggle('done', !!done);
   }
 
-  function remove(code) {
+  async function remove(code) {
     if (!confirm('למחוק את הקישור ' + code + '?')) return;
+    var token = getToken();
+    if (token) {
+      try {
+        var r = await L.updateLinks(token, function (all) { delete all[code]; }, 'Remove short link: ' + code);
+        links = r.links; render(); toast('נמחק ✓');
+      } catch (e) { alert(e.message); }
+      return;
+    }
     window.open(L.issueUrl('delete: ' + code, 'מחיקת הקישור הקצר ' + shortUrl(code)), '_blank', 'noopener');
     toast('אשרו את המחיקה בלשונית של GitHub');
     waitFor(function (l) { return !l[code]; }, function () { toast('נמחק ✓'); });
@@ -102,7 +114,7 @@
     $('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  $('form').addEventListener('submit', function (ev) {
+  $('form').addEventListener('submit', async function (ev) {
     ev.preventDefault();
     var msg = $('msg'); msg.textContent = '';
     var long = $('long').value.trim();
@@ -123,6 +135,23 @@
 
     var code = slug;
     if (!code) { do { code = randomCode(); } while (links[code] || L.RESERVED.indexOf(code) >= 0); }
+
+    var token = getToken();
+    if (token) {
+      $('go').disabled = true; $('go').textContent = 'שומר…';
+      try {
+        var r = await L.updateLinks(token, function (all) {
+          if (all[code] && urlOf(all[code]) !== long) throw new Error('הסיומת "' + code + '" כבר בשימוש לקישור אחר.');
+          if (!all[code]) all[code] = { url: long, created: new Date().toISOString() };
+        }, 'Add short link: ' + code);
+        links = r.links; render();
+        showResult(code, false);
+        $('long').value = ''; $('slug').value = '';
+      } catch (e) { msg.textContent = e.message; }
+      finally { $('go').disabled = false; $('go').textContent = 'קצרו לי'; }
+      return;
+    }
+
     var href = L.issueUrl('link: ' + code, long);
     window.open(href, '_blank', 'noopener');
     showResult(code, true, href);
@@ -145,6 +174,31 @@
     box.hidden = false;
   };
   $('search').addEventListener('input', render);
+
+  $('tokenLink').href = 'https://github.com/settings/personal-access-tokens/new?' + [
+    'name=' + encodeURIComponent('Tirat Carmel links ' + new Date().toISOString().slice(0, 10)),
+    'description=' + encodeURIComponent('Tirat Carmel link shortener'),
+    'target_name=' + encodeURIComponent(L.CFG.owner),
+    'expires_in=366',
+    'contents=write'
+  ].join('&');
+  $('saveToken').onclick = async function () {
+    var t = $('token').value.trim(), m = $('tokMsg');
+    m.textContent = '';
+    if (!t) { m.textContent = 'הדביקו את המפתח שהעתקתם.'; return; }
+    $('saveToken').disabled = true;
+    try {
+      var ok = await L.checkToken(t);
+      if (!ok) throw new Error('למפתח הזה אין הרשאת כתיבה למאגר. ודאו שבחרתם את המאגר "-" ו-Contents: Read and write.');
+      setToken(t); $('token').value = ''; showConnect(); toast('מחובר ✓ מעכשיו בלי GitHub');
+    } catch (e) { m.textContent = e.message; }
+    finally { $('saveToken').disabled = false; }
+  };
+  $('disconnect').onclick = function () {
+    if (!confirm('לנתק את המכשיר הזה? הקישורים הקיימים לא יימחקו.')) return;
+    setToken(''); showConnect();
+  };
+  showConnect();
 
   $('basePreview').textContent = L.siteRoot().replace(/^https?:\/\//, '');
   refresh();

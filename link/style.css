@@ -82,3 +82,11 @@ input:focus { border-color: var(--cyan); }
 }
 @media (max-width: 380px) { .logo { height: 68px; } .top h1 { font-size: 1.15rem; } }
 @media (prefers-color-scheme: dark) { .top h1 { color: #035589; } }
+.connect { border: 2px solid var(--yellow); }
+.connect p { margin: 0 0 12px; }
+.connect ol { margin: 0; padding-inline-start: 20px; }
+.connect li { margin-bottom: 12px; }
+.connect a.btn { display: inline-block; text-decoration: none; }
+.tokrow { display: flex; gap: 8px; margin-top: 8px; }
+.top__side { text-align: left; }
+.linkish { background: none; border: 0; color: var(--muted); font: inherit; font-size: .8rem; text-decoration: underline; cursor: pointer; padding: 4px 0 0; }

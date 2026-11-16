@@ -16,12 +16,32 @@
   <header class="top">
     <div class="wrap top__in">
       <img class="logo" src="logo.png" alt="עיריית טירת כרמל: סביבה טובה בין כרמל לים">
-      <h1>מקצר<br>קישורים</h1>
+      <div class="top__side">
+        <h1>מקצר<br>קישורים</h1>
+        <button class="linkish" id="disconnect" hidden>ניתוק המכשיר</button>
+      </div>
     </div>
     <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   </header>
 
   <main class="wrap">
+    <section class="card connect" id="connect" hidden>
+      <h2>חיבור חד-פעמי</h2>
+      <p>פעם אחת בכל מכשיר, ומאז הקישורים נשמרים ישר מכאן, בלי לשונית של GitHub.</p>
+      <ol>
+        <li><a class="btn btn--blue" id="tokenLink" href="#" target="_blank" rel="noopener">פתחו את GitHub ליצירת מפתח</a></li>
+        <li>בעמוד שנפתח בחרו את המאגר <bdi dir="ltr"><b>-</b></bdi>, ודאו שליד <bdi dir="ltr">Contents</bdi> כתוב <bdi dir="ltr"><b>Read and write</b></bdi>, לחצו על <bdi dir="ltr"><b>Generate token</b></bdi> והעתיקו את המפתח.</li>
+        <li>הדביקו כאן:
+          <div class="tokrow">
+            <input id="token" type="password" dir="ltr" placeholder="github_pat_…" autocomplete="off">
+            <button class="btn btn--main" id="saveToken" type="button">חיבור</button>
+          </div>
+        </li>
+      </ol>
+      <p class="msg" id="tokMsg"></p>
+      <p class="hint">בלי חיבור אפשר עדיין לקצר, אבל כל פעם תיפתח לשונית של GitHub לאישור.</p>
+    </section>
+
     <section class="card">
       <form id="form" autocomplete="off">
         <label for="long">הדביקו קישור ארוך</label>
