@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>מעביר… · טירת כרמל</title>
+  <style>
+    :root { --bg:#f5f7fb; --card:#fff; --ink:#14243d; --muted:#5b6b82; --blue:#1B4D89; --orange:#F47B20; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0f1724; --card:#172235; --ink:#e8eef8; --muted:#9fb0c8; --blue:#6fa3e8; } }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink);
+           font-family:"Varela Round", system-ui, -apple-system, "Segoe UI", Arial, sans-serif; padding:16px; }
+    .card { background:var(--card); border-radius:20px; padding:32px 24px; max-width:420px; width:100%; text-align:center;
+            box-shadow:0 10px 30px rgba(20,36,61,.08); }
+    .spin { width:42px; height:42px; border-radius:50%; border:4px solid rgba(27,77,137,.15); border-top-color:var(--orange);
+            margin:0 auto 16px; animation:s 0.8s linear infinite; }
+    @keyframes s { to { transform:rotate(360deg); } }
+    h1 { font-size:1.3rem; margin:0 0 8px; }
+    p { color:var(--muted); margin:0 0 20px; line-height:1.6; word-break:break-word; }
+    a.btn { display:inline-block; background:var(--blue); color:#fff; text-decoration:none; padding:12px 22px; border-radius:12px; font-weight:700; }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div id="loading"><div class="spin" aria-hidden="true"></div><h1>מעביר אתכם…</h1><p id="dest">מחפש את הקישור</p></div>
+    <div id="missing" hidden>
+      <h1>הקישור לא נמצא</h1>
+      <p>הכתובת <b id="code"></b> לא קיימת או שנמחקה.</p>
+      <a class="btn" id="home" href="./">לדף הבית</a>
+    </div>
+  </main>
+  <script>
+  (function () {
+    var REPO = '-';
+    var OWNER = 'tiratcarmel2026';
+    var BRANCH = 'claude/nicky-cleanup-game-g4cvvu';
+    var FILE = 'links.json';
+
+    var path = location.pathname;
+    var root = '/';
+    if (/\.github\.io$/.test(location.hostname)) root = '/' + REPO + '/';
+    if (path.indexOf(root) === 0) path = path.slice(root.length);
+    var code = decodeURIComponent(path.replace(/^\/+|\/+$/g, '')).toLowerCase();
+    document.getElementById('home').href = root;
+
+    function missing() {
+      document.getElementById('loading').hidden = true;
+      document.getElementById('missing').hidden = false;
+      document.getElementById('code').textContent = code || '(ריק)';
+      document.title = 'הקישור לא נמצא · טירת כרמל';
+    }
+    function go(links) {
+      var hit = links && links[code];
+      var url = hit && (typeof hit === 'string' ? hit : hit.url);
+      try { var p = new URL(url); if (p.protocol !== 'http:' && p.protocol !== 'https:') url = null; } catch (e) { url = null; }
+      if (!url) return missing();
+      document.getElementById('dest').textContent = url;
+      location.replace(url);
+    }
+    if (!/^[a-z0-9_-]{1,64}$/.test(code)) return missing();
+
+    var sources = [
+      ['https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE + '?ref=' + encodeURIComponent(BRANCH), { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' }],
+      ['https://raw.githubusercontent.com/' + OWNER + '/' + REPO + '/' + BRANCH + '/' + FILE + '?t=' + Date.now(), { cache: 'no-store' }],
+      [root + FILE + '?t=' + Date.now(), { cache: 'no-store' }]
+    ];
+    (function next(i) {
+      if (i >= sources.length) return missing();
+      fetch(sources[i][0], sources[i][1])
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (links) { if (links && links[code]) go(links); else if (i === sources.length - 1) missing(); else next(i + 1); })
+        .catch(function () { next(i + 1); });
+    })(0);
+  })();
+  </script>
+</body>
+</html>
