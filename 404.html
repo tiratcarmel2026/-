@@ -34,14 +34,16 @@
   </main>
   <script>
   (function () {
-    var REPO = '-';
-    var OWNER = 'tiratcarmel2026';
+    // On GitHub Pages the owner and repository come from the address itself.
+    var gh = /^([a-z0-9-]+)\.github\.io$/i.exec(location.hostname);
+    var OWNER = gh ? gh[1].toLowerCase() : 'tiratcarmel2026';
+    var REPO = gh ? (location.pathname.split('/')[1] || '-') : '-';
     var BRANCH = 'claude/nicky-cleanup-game-g4cvvu';
     var FILE = 'links.json';
 
     var path = location.pathname;
     var root = '/';
-    if (/\.github\.io$/.test(location.hostname)) root = '/' + REPO + '/';
+    if (gh) root = '/' + REPO + '/';
     if (path.indexOf(root) === 0) path = path.slice(root.length);
     var code = decodeURIComponent(path.replace(/^\/+|\/+$/g, '')).toLowerCase();
     document.getElementById('home').href = root;
