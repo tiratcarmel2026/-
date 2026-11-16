@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1B4D89">
+  <meta name="theme-color" content="#035589">
   <meta name="robots" content="noindex">
   <title>מקצר קישורים · טירת כרמל</title>
+  <link rel="icon" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
@@ -14,24 +15,13 @@
 <body>
   <header class="top">
     <div class="wrap top__in">
-      <div class="brand">
-        <span class="brand__mark" aria-hidden="true">🔗</span>
-        <div>
-          <h1>מקצר קישורים</h1>
-          <p>טירת כרמל</p>
-        </div>
-      </div>
-      <button class="icon-btn" id="openSettings" aria-label="הגדרות">⚙️</button>
+      <img class="logo" src="logo.png" alt="עיריית טירת כרמל: סביבה טובה בין כרמל לים">
+      <h1>מקצר<br>קישורים</h1>
     </div>
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   </header>
 
   <main class="wrap">
-    <section class="card" id="setupNote" hidden>
-      <h2>צעד אחד לפני שמתחילים</h2>
-      <p>כדי שהאתר יוכל לשמור קישורים חדשים, צריך לחבר אותו פעם אחת לחשבון ה-GitHub שלכם.</p>
-      <button class="btn btn--blue" id="openSettings2">לחיבור</button>
-    </section>
-
     <section class="card">
       <form id="form" autocomplete="off">
         <label for="long">הדביקו קישור ארוך</label>
@@ -40,17 +30,17 @@
         <label for="slug">סיומת משלכם <span class="opt">(לא חובה)</span></label>
         <div class="slug">
           <span class="slug__base" id="basePreview" dir="ltr"></span>
-          <input id="slug" type="text" placeholder="hanukkah" dir="ltr" maxlength="40" pattern="[A-Za-z0-9_\-]*">
+          <input id="slug" type="text" placeholder="hanukkah" dir="ltr" maxlength="40">
         </div>
-        <p class="hint">אותיות באנגלית, ספרות, מקף. אם תשאירו ריק, תיווצר סיומת קצרה אוטומטית.</p>
+        <p class="hint">אותיות באנגלית, ספרות ומקף. אם תשאירו ריק, תיווצר סיומת קצרה אוטומטית.</p>
 
-        <button class="btn btn--orange btn--big" type="submit" id="go">קצרו לי</button>
+        <button class="btn btn--main btn--big" type="submit" id="go">קצרו לי</button>
         <p class="msg" id="msg" role="status"></p>
       </form>
     </section>
 
     <section class="card result" id="result" hidden>
-      <h2>הקישור הקצר מוכן ✨</h2>
+      <div class="status" id="status"></div>
       <div class="short">
         <a id="shortUrl" href="#" target="_blank" rel="noopener" dir="ltr"></a>
       </div>
@@ -60,7 +50,6 @@
         <button class="btn btn--ghost" id="qrBtn">קוד QR</button>
       </div>
       <div class="qr" id="qr" hidden></div>
-      <p class="hint">הקישור פעיל תוך כמה שניות.</p>
     </section>
 
     <section class="card">
@@ -71,28 +60,6 @@
       <ul class="list" id="list"><li class="empty">טוען…</li></ul>
     </section>
   </main>
-
-  <dialog id="settings">
-    <form method="dialog" class="dlg">
-      <h2>חיבור ל-GitHub</h2>
-      <p>הקישורים נשמרים בקובץ במאגר שלכם ב-GitHub. כדי לשמור, צריך "טוקן" (מפתח גישה) פעם אחת:</p>
-      <ol>
-        <li>היכנסו ל-<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">יצירת טוקן ב-GitHub</a>.</li>
-        <li>תנו שם (למשל "מקצר קישורים") ותוקף.</li>
-        <li>ב-Repository access בחרו <b>Only select repositories</b> ואת המאגר <b dir="ltr">tiratcarmel2026/-</b>.</li>
-        <li>ב-Permissions → Repository permissions → <b>Contents</b> בחרו <b>Read and write</b>.</li>
-        <li>לחצו Generate token, העתיקו והדביקו כאן.</li>
-      </ol>
-      <label for="token">טוקן</label>
-      <input id="token" type="password" dir="ltr" placeholder="github_pat_…">
-      <p class="hint">הטוקן נשמר רק בדפדפן הזה ולא נשלח לשום מקום חוץ מ-GitHub.</p>
-      <div class="row">
-        <button class="btn btn--blue" value="save" id="saveToken">שמירה</button>
-        <button class="btn btn--ghost" value="cancel">ביטול</button>
-        <button class="btn btn--danger" value="clear" id="clearToken" type="button">ניתוק</button>
-      </div>
-    </form>
-  </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

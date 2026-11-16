@@ -1,11 +1,8 @@
 (function () {
   var L = window.TCLinks, $ = function (id) { return document.getElementById(id); };
-  var TOKEN_KEY = 'tc-links-token';
   var links = {};
   var lastShort = '';
-
-  function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
-  function setToken(t) { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  var pollTimer = null;
 
   function toast(text) {
     var t = $('toast'); t.textContent = text; t.classList.add('on');
@@ -61,30 +58,51 @@
 
   async function refresh() {
     var data = await L.loadLinks();
-    links = data || {};
+    if (data) links = data;
     render();
+    return links;
   }
 
-  async function remove(code) {
-    var token = getToken();
-    if (!token) return $('settings').showModal();
+  // Check every few seconds until done(links) is true, for up to 3 minutes.
+  function waitFor(done, onDone, onTimeout) {
+    clearInterval(pollTimer);
+    var tries = 0;
+    pollTimer = setInterval(async function () {
+      tries++;
+      var l = await refresh();
+      if (done(l)) { clearInterval(pollTimer); onDone(); }
+      else if (tries >= 36) { clearInterval(pollTimer); onTimeout && onTimeout(); }
+    }, 5000);
+  }
+
+  function setStatus(html, done) {
+    $('status').innerHTML = html;
+    $('result').classList.toggle('done', !!done);
+  }
+
+  function remove(code) {
     if (!confirm('למחוק את הקישור ' + code + '?')) return;
-    try {
-      var r = await L.updateLinks(token, function (all) { delete all[code]; }, 'Remove short link: ' + code);
-      links = r.links; render(); toast('נמחק');
-    } catch (e) { alert(e.message); }
+    window.open(L.issueUrl('delete: ' + code, 'מחיקת הקישור הקצר ' + shortUrl(code)), '_blank', 'noopener');
+    toast('אשרו את המחיקה בלשונית של GitHub');
+    waitFor(function (l) { return !l[code]; }, function () { toast('נמחק ✓'); });
   }
 
-  function showResult(url) {
-    lastShort = url;
-    $('shortUrl').textContent = url.replace(/^https?:\/\//, '');
-    $('shortUrl').href = url;
+  function showResult(code, pending, issueHref) {
+    lastShort = shortUrl(code);
+    $('shortUrl').textContent = lastShort.replace(/^https?:\/\//, '');
+    $('shortUrl').href = lastShort;
     $('qr').hidden = true; $('qr').innerHTML = '';
+    if (pending) {
+      setStatus('⏳ נפתחה לשונית של GitHub. לחצו שם על הכפתור הירוק <b>Create</b> (או <b>Submit new issue</b>) וחזרו לכאן.' +
+        '<small>לא נפתחה לשונית? <a href="' + issueHref + '" target="_blank" rel="noopener">לחצו כאן</a>. הקישור יהיה פעיל תוך כחצי דקה מהאישור.</small>');
+    } else {
+      setStatus('✅ הקישור הקצר מוכן ופעיל', true);
+    }
     $('result').hidden = false;
     $('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  $('form').addEventListener('submit', async function (ev) {
+  $('form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var msg = $('msg'); msg.textContent = '';
     var long = $('long').value.trim();
@@ -93,34 +111,25 @@
     var slug = $('slug').value.trim().toLowerCase();
     if (slug && !/^[a-z0-9_-]{1,40}$/.test(slug)) { msg.textContent = 'בסיומת מותר רק אותיות באנגלית, ספרות, מקף וקו תחתון.'; return; }
     if (slug && L.RESERVED.indexOf(slug) >= 0) { msg.textContent = 'הסיומת הזו תפוסה על ידי האתר. בחרו אחרת.'; return; }
-    var token = getToken();
-    if (!token) { $('settings').showModal(); return; }
 
-    $('go').disabled = true; $('go').textContent = 'שומר…';
-    try {
-      var r = await L.updateLinks(token, function (all) {
-        // Same long link already shortened (and no custom ending asked)? Reuse it.
-        if (!slug) {
-          for (var k in all) if (urlOf(all[k]) === long) return { code: k, existing: true };
-        }
-        var code = slug;
-        if (code && all[code]) {
-          if (urlOf(all[code]) === long) return { code: code, existing: true };
-          throw new Error('הסיומת "' + code + '" כבר בשימוש לקישור אחר.');
-        }
-        if (!code) { do { code = randomCode(); } while (all[code] || L.RESERVED.indexOf(code) >= 0); }
-        all[code] = { url: long, created: new Date().toISOString() };
-        return { code: code };
-      }, 'Add short link');
-      links = r.links; render();
-      showResult(shortUrl(r.result.code));
-      if (r.result.existing) toast('הקישור הזה כבר קוצר בעבר');
-      $('long').value = ''; $('slug').value = '';
-    } catch (e) {
-      msg.textContent = e.message;
-    } finally {
-      $('go').disabled = false; $('go').textContent = 'קצרו לי';
+    // Already shortened?
+    if (slug && links[slug]) {
+      if (urlOf(links[slug]) === long) { showResult(slug, false); return; }
+      msg.textContent = 'הסיומת "' + slug + '" כבר בשימוש לקישור אחר. בחרו אחרת.'; return;
     }
+    if (!slug) {
+      for (var k in links) if (urlOf(links[k]) === long) { showResult(k, false); toast('הקישור הזה כבר קוצר בעבר'); return; }
+    }
+
+    var code = slug;
+    if (!code) { do { code = randomCode(); } while (links[code] || L.RESERVED.indexOf(code) >= 0); }
+    var href = L.issueUrl('link: ' + code, long);
+    window.open(href, '_blank', 'noopener');
+    showResult(code, true, href);
+    $('long').value = ''; $('slug').value = '';
+    waitFor(function (l) { return l[code] && urlOf(l[code]) === long; },
+      function () { setStatus('✅ הקישור הקצר מוכן ופעיל', true); toast('הקישור פעיל ✓'); },
+      function () { setStatus('⌛ עוד לא קיבלנו אישור מ-GitHub. ודאו שלחצתם על Create בלשונית של GitHub, ורעננו את הדף בעוד דקה.'); });
   });
 
   $('copy').onclick = function () { copy(lastShort); };
@@ -137,21 +146,6 @@
   };
   $('search').addEventListener('input', render);
 
-  function openSettings() { $('token').value = getToken(); $('settings').showModal(); }
-  $('openSettings').onclick = openSettings;
-  $('openSettings2').onclick = openSettings;
-  $('settings').addEventListener('close', function () {
-    if ($('settings').returnValue === 'save') {
-      setToken($('token').value.trim());
-      $('setupNote').hidden = !!getToken();
-      if (getToken()) toast('נשמר ✓');
-    }
-  });
-  $('clearToken').onclick = function () {
-    setToken(''); $('token').value = ''; $('settings').close(); $('setupNote').hidden = false; toast('נותק');
-  };
-
   $('basePreview').textContent = L.siteRoot().replace(/^https?:\/\//, '');
-  $('setupNote').hidden = !!getToken();
   refresh();
 })();
