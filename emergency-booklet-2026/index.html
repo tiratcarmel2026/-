@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>חוברת חירום 2026 | טירת כרמל</title>
+<meta name="theme-color" content="#022D62">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: official-warm municipal booklet – calm, clear, trustworthy
+   IDEA: a printed A4 civil-defence booklet, colour-coded chapters, flipped page by page
+   PICTURE: brand arcs (sea, Carmel, community) sweeping over a deep-navy cover with the city logo and emblem
+   COLOUR and TYPE: Tirat Carmel brand palette, one colour per chapter on white paper; Assistant (brand fallback for RaananSuper)
+   LAYOUT: one portrait page at a time, full-bleed chapter bands, page-turn from the spine, toolbar under the book */
+:root{--cyan:#00BFDD;--yellow:#F5BD17;--lime:#BFD330;--blue:#00A8CB;--dark:#005589;--navy:#0F1C70;--deep:#022D62;--coral:#F26649;--red:#FE2310;--green:#00A887;--pink:#FF4676;--sky:#0074CB;--ink:#10243a;--muted:#5a6b7d;--line:#dde7ee;--paper:#fff;--soft:#f3f7fa}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%}
+body{font-family:"RaananSuper","Assistant",system-ui,sans-serif;font-weight:300;color:var(--ink);background:#dfe9f0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:100svh;padding:10px}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 100% 0%,rgba(0,191,221,.25),transparent 70%),radial-gradient(50% 45% at 0% 100%,rgba(191,211,48,.25),transparent 70%),radial-gradient(40% 40% at 0% 0%,rgba(245,189,23,.18),transparent 70%);pointer-events:none}
+b,strong{font-weight:700}
+.stage{perspective:2400px;position:relative}
+.book{position:relative;width:min(94vw,calc((100svh - 104px)/1.414),640px);aspect-ratio:1/1.414}
+.book:before{content:"";position:absolute;inset:7px -7px -7px 7px;background:#c9d6df;border-radius:6px 16px 16px 6px;box-shadow:0 30px 60px rgba(2,45,98,.35)}
+.book:after{content:"";position:absolute;inset:3px -3px -3px 3px;background:#eef3f7;border-radius:6px 14px 14px 6px}
+.pg{position:absolute;inset:0;background:var(--paper);border-radius:4px 12px 12px 4px;overflow:hidden;container-type:size;transform-origin:right center;transition:transform .8s cubic-bezier(.3,.7,.2,1),opacity .2s .6s;backface-visibility:hidden;z-index:1}
+.pg:after{content:"";position:absolute;inset:0 auto 0 0;width:6%;background:linear-gradient(90deg,rgba(0,0,0,.07),transparent);pointer-events:none;z-index:8}
+.pg.turned{transform:rotateY(-178deg);opacity:0;pointer-events:none}
+.pg.turning:before{content:"";position:absolute;inset:0;background:linear-gradient(270deg,rgba(0,0,0,0),rgba(0,0,0,.22));z-index:9;pointer-events:none}
+.in{position:absolute;inset:0 0 7.5cqw 0;overflow-y:auto;scrollbar-width:thin;font-size:3.25cqw;line-height:1.5}
+.body{padding:5cqw 7cqw 4cqw}
+.pno{position:absolute;bottom:0;left:0;right:0;height:7.5cqw;display:flex;align-items:center;justify-content:space-between;padding:0 7cqw;font-size:2.4cqw;color:var(--muted);font-weight:400;background:#fff;border-top:.3cqw solid var(--line);z-index:7}
+.pno i{font-style:normal;font-weight:800;color:#fff;background:var(--c,var(--dark));border-radius:99px;min-width:6cqw;height:4.6cqw;display:inline-grid;place-items:center;padding:0 1.4cqw}
+h1,h2,h3{margin:0;line-height:1.08;font-weight:800}
+h3{font-size:4.1cqw;color:var(--c,var(--dark));margin-bottom:1cqw}
+p{margin:0 0 2.2cqw}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* chapter band */
+.band{position:relative;background:var(--c);color:#fff;padding:7cqw 7cqw 6cqw;overflow:hidden}
+.band.sm{padding:5cqw 7cqw 4.4cqw}
+.band .no{position:absolute;left:4cqw;top:-3cqw;font-size:34cqw;font-weight:800;line-height:1;color:transparent;-webkit-text-stroke:.45cqw rgba(255,255,255,.35)}
+.band.sm .no{font-size:20cqw;top:-2cqw}
+.band .lbl{display:inline-block;font-size:2.7cqw;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.2);padding:.6cqw 2.4cqw;border-radius:99px;margin-bottom:2cqw;position:relative}
+.band h2{font-size:8.4cqw;position:relative;max-width:78%}
+.band.sm h2{font-size:6.4cqw;max-width:72%}
+.band p{position:relative;margin:2cqw 0 0;font-size:3.4cqw;max-width:80%;opacity:.95}
+.band svg.arcs{position:absolute;left:-6cqw;bottom:-14cqw;width:40cqw;opacity:.5}
+.band.dark-t{color:var(--navy)} .band.dark-t .lbl{background:rgba(15,28,112,.1)} .band.dark-t .no{-webkit-text-stroke-color:rgba(15,28,112,.22)}
+
+/* cover */
+.cover{background:var(--deep);color:#fff}
+.cover .in{inset:0;overflow:hidden}
+.cover .lg{position:absolute;top:0;left:0;width:76cqw;background:var(--deep);border-bottom-right-radius:12cqw;padding:4cqw 4cqw 3cqw;z-index:4}
+.cover .lg img{width:100%;display:block}
+.cover .lg:after{content:"";position:absolute;left:0;right:0;bottom:-1.8cqw;height:1.8cqw;background:var(--yellow);border-bottom-right-radius:12cqw}
+.cover .em{position:absolute;top:5cqw;right:6cqw;width:12cqw;z-index:4;filter:drop-shadow(0 1cqw 2cqw rgba(0,0,0,.35))}
+.cover .t{position:absolute;right:7cqw;left:7cqw;bottom:13cqw;z-index:4}
+.cover .yr{display:inline-block;font-size:3.2cqw;font-weight:700;color:var(--deep);background:var(--yellow);padding:.8cqw 3cqw;border-radius:99px}
+.cover h1{font-size:17cqw;margin:3cqw 0 1cqw;letter-spacing:-.01em}
+.cover h1 span{display:block;font-size:7.4cqw;color:var(--cyan);margin-top:1.5cqw;font-weight:700}
+.cover .tag{font-size:3.5cqw;opacity:.9;max-width:82%;margin-top:3cqw}
+.cover .scrim{position:absolute;inset:40% 0 0 0;background:linear-gradient(0deg,var(--deep) 62%,rgba(2,45,98,0));z-index:3}
+.cover .strip{position:absolute;bottom:0;left:0;right:0;height:4cqw;display:flex;z-index:4}
+.cover .strip i{flex:1}
+.cover svg.big{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.cover .ring{position:absolute;z-index:2;top:40cqw;left:9cqw;width:40cqw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#1a5ea8,#022D62 70%);box-shadow:inset 0 0 0 1.4cqw rgba(255,255,255,.08),0 3cqw 6cqw rgba(0,0,0,.35);display:grid;place-items:center}
+.cover .ring b{font-size:15cqw;line-height:.9;color:var(--yellow);font-weight:800;text-align:center}
+.cover .ring small{display:block;font-size:3.2cqw;color:#fff;font-weight:700}
+
+/* toc */
+.toc a{display:flex;align-items:center;gap:3cqw;text-decoration:none;color:var(--ink);padding:1.7cqw 0;border-bottom:.3cqw dashed var(--line);font-size:3.6cqw;font-weight:400}
+.toc a b{width:8cqw;height:8cqw;border-radius:2.4cqw;display:grid;place-items:center;color:#fff;font-size:3.4cqw;flex:none}
+.toc a span{margin-inline-start:auto;color:var(--muted);font-size:2.9cqw}
+.toc a:focus-visible{outline:.6cqw solid var(--cyan)}
+
+/* mayor */
+.mayor-top{position:relative;height:56cqw;background:radial-gradient(70% 90% at 30% 20%,#5a6672,#2f3940 75%);overflow:hidden}
+.mayor-top img.ph{position:absolute;bottom:0;left:4cqw;height:100%;object-fit:cover;object-position:center top}
+.mayor-top .nm{position:absolute;right:7cqw;bottom:7cqw;color:#fff;z-index:2}
+.mayor-top .nm small{display:block;font-size:3cqw;color:var(--cyan);font-weight:700}
+.mayor-top .nm b{display:block;font-size:8.5cqw;font-weight:800;line-height:1}
+.mayor-top .nm span{font-size:3.2cqw;opacity:.85}
+.mayor-top .em{position:absolute;top:5cqw;right:7cqw;width:10cqw;z-index:2}
+.mayor-top:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1.6cqw;background:linear-gradient(90deg,var(--cyan) 0 25%,var(--yellow) 25% 50%,var(--lime) 50% 75%,var(--blue) 75%)}
+.mayor .body p{font-size:3.15cqw}
+.lead-q{font-size:4.1cqw;font-weight:700;color:var(--dark);line-height:1.35;border-inline-start:1.2cqw solid var(--yellow);padding-inline-start:3cqw;margin-bottom:3cqw}
+.sig{font-weight:700;color:var(--dark);font-size:3.4cqw;margin-top:2cqw}
+.sig small{display:block;font-weight:400;color:var(--muted);font-size:2.9cqw}
+
+/* components */
+.big{display:flex;align-items:center;gap:4cqw;background:var(--navy);color:#fff;border-radius:4cqw;padding:3.6cqw 5cqw;margin-bottom:3cqw}
+.big b{flex:none;font-size:19cqw;line-height:.9;color:var(--yellow);font-weight:800}
+.big p{margin:0;font-size:3.4cqw}
+.steps{display:grid;gap:2cqw}
+.st{display:flex;gap:3cqw;align-items:flex-start;border-radius:3.4cqw;padding:3cqw 3.6cqw;background:var(--soft)}
+.st .n{width:8.4cqw;height:8.4cqw;border-radius:50%;display:grid;place-items:center;font-size:4cqw;font-weight:800;flex:none;color:#fff;background:var(--c,var(--dark))}
+.st h3{font-size:3.9cqw;margin-bottom:.4cqw}
+.st p{margin:0;font-size:3cqw}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.4cqw}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.2cqw}
+.tile{background:var(--soft);border-radius:3.4cqw;padding:3cqw 3.2cqw}
+.tile .ic{width:10cqw;height:10cqw;border-radius:3cqw;display:grid;place-items:center;font-size:5.6cqw;color:#fff;background:var(--c,var(--dark));margin-bottom:1.6cqw}
+.tile h3{font-size:3.7cqw}
+.tile p{margin:0;font-size:2.85cqw}
+.tile ul{margin:0;padding-inline-start:3.4cqw;font-size:2.85cqw}
+.note{background:#fff7dd;border-inline-start:1.2cqw solid var(--yellow);border-radius:2.4cqw;padding:2.4cqw 3.2cqw;font-size:2.9cqw;margin-top:2.6cqw}
+.note.c{background:#e6f8fb;border-color:var(--cyan)}
+.call{display:block;text-align:center;background:var(--c,var(--dark));color:#fff;border-radius:2.6cqw;padding:2.4cqw;font-weight:800;font-size:3.4cqw;margin-top:2.6cqw}
+.rule{display:grid;gap:1.4cqw;margin-top:2cqw}
+.rule div{display:flex;gap:2cqw;align-items:flex-start;font-size:2.95cqw}
+.rule div:before{content:"";width:2.2cqw;height:2.2cqw;border-radius:50%;background:var(--c,var(--dark));flex:none;margin-top:1.2cqw}
+.acro{display:grid;gap:1.6cqw;margin:1cqw 0 2cqw}
+.acro div{display:flex;align-items:center;gap:3cqw;background:var(--soft);border-radius:3cqw;padding:2cqw 3cqw}
+.acro b{font-size:9cqw;line-height:1;color:var(--c);width:9cqw;text-align:center;flex:none;font-weight:800}
+.acro strong{display:block;font-size:3.6cqw;color:var(--ink)}
+.acro span{font-size:2.85cqw;color:var(--muted)}
+.tier{border-radius:3.4cqw;padding:3.2cqw 4cqw;margin-bottom:2.2cqw;color:#fff;display:flex;gap:3cqw;align-items:center}
+.tier .dot{width:9cqw;height:9cqw;border-radius:50%;background:rgba(255,255,255,.3);flex:none;display:grid;place-items:center;font-size:5cqw}
+.tier h3{color:inherit;font-size:4cqw}
+.tier p{margin:0;font-size:3cqw}
+.freq{background:var(--navy);color:#fff;border-radius:3.4cqw;padding:3cqw 3.6cqw;margin-top:2cqw}
+.freq h3{color:var(--yellow)}
+.freq table{width:100%;border-collapse:collapse;font-size:2.9cqw}
+.freq td{padding:1cqw 0;border-bottom:.25cqw solid rgba(255,255,255,.15)}
+.freq td:last-child{text-align:left;font-weight:700;direction:ltr}
+
+/* lists */
+.ls{display:grid;gap:1.3cqw}
+.it{display:flex;align-items:center;gap:2.6cqw;padding:1.4cqw 2.4cqw;border-radius:2.4cqw;background:var(--soft)}
+.it .k{width:6.6cqw;height:6.6cqw;border-radius:1.8cqw;display:grid;place-items:center;color:#fff;font-weight:800;font-size:3cqw;flex:none;background:var(--c)}
+.it .a{font-weight:700;font-size:3.15cqw;line-height:1.2}
+.it .d{font-size:2.55cqw;color:var(--muted);line-height:1.3}
+.it .r{display:inline-block;font-size:2.15cqw;font-weight:700;background:var(--cyan);color:#fff;border-radius:99px;padding:0 1.6cqw;margin-inline-start:1cqw;vertical-align:middle}
+.it a{margin-inline-start:auto;font-size:2.5cqw;font-weight:700;color:var(--dark);text-decoration:none;background:#fff;border:.3cqw solid var(--line);border-radius:2cqw;padding:1cqw 2cqw;white-space:nowrap}
+
+/* media */
+.vidwrap{display:flex;flex-direction:column;align-items:center}
+.vid{position:relative;background:#000;border-radius:3.6cqw;overflow:hidden;width:56cqw;aspect-ratio:9/16;box-shadow:0 2cqw 5cqw rgba(2,45,98,.25)}
+.vid video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
+.vid .err{position:absolute;inset:0;display:none;place-items:center;color:#fff;text-align:center;padding:5cqw;font-size:3cqw}
+.vid.bad .err{display:grid}
+.mapbox{position:relative;border-radius:3cqw;overflow:auto;border:.35cqw solid var(--line);height:104cqw;background:var(--soft)}
+.mapbox img{display:block;width:100%;transition:width .3s}
+.mapbox.z img{width:230%}
+.btn{display:inline-flex;align-items:center;gap:1.4cqw;font:inherit;font-size:2.9cqw;font-weight:700;color:#fff;background:var(--c,var(--dark));border:0;border-radius:99px;padding:1.6cqw 3.4cqw;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--c,var(--dark));border:.35cqw solid var(--c,var(--dark))}
+.btns{display:flex;gap:2cqw;flex-wrap:wrap;margin-bottom:2.4cqw}
+.poster{display:block;width:100%;border-radius:3cqw;border:.35cqw solid var(--line)}
+.legend{display:flex;gap:4cqw;font-size:2.8cqw;margin-bottom:2cqw;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:1.4cqw}
+.legend i{width:3.6cqw;height:3.6cqw;border-radius:50%;display:inline-block}
+
+/* phones */
+.ph{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2cqw}
+.ph a,.ph div{display:block;text-decoration:none;color:var(--ink);background:var(--soft);border-radius:3cqw;padding:2.4cqw 3.2cqw;font-size:2.8cqw;font-weight:400}
+.ph b{display:block;font-size:7cqw;line-height:1.05;color:var(--navy);font-weight:800;direction:ltr;text-align:right}
+.ph .hot{background:var(--navy);color:#fff}.ph .hot b{color:var(--yellow)}
+.mini{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4cqw 3cqw;font-size:2.8cqw}
+.mini div{display:flex;justify-content:space-between;gap:2cqw;border-bottom:.25cqw solid var(--line);padding:1cqw 0}
+.mini b{direction:ltr;font-weight:700;color:var(--navy);white-space:nowrap}
+
+.back{background:var(--deep);color:#fff;text-align:center}
+.back .in{inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3cqw;padding:8cqw}
+.back .em{width:22cqw}
+.back .lg{width:84cqw;border-radius:3cqw}
+.back h2{font-size:7cqw}
+.back svg.big{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.back .in>*{position:relative;z-index:1}
+
+/* toolbar */
+.bar{display:flex;align-items:center;gap:10px;width:min(94vw,640px);justify-content:space-between;position:relative}
+.bar button{font:inherit;font-weight:700;font-size:15px;color:#fff;background:var(--deep);border:0;border-radius:99px;min-width:44px;height:44px;padding:0 18px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.bar button:disabled{opacity:.3;cursor:default}
+.bar button:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.bar .mid{display:flex;align-items:center;gap:8px;color:var(--deep);font-size:15px;font-weight:700;white-space:nowrap}
+.bar .mid button{background:#fff;color:var(--deep);padding:0 12px;font-size:14px}
+.prog{position:absolute;top:-8px;left:0;right:0;height:4px;border-radius:99px;background:rgba(2,45,98,.12);overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--yellow),var(--lime));transition:width .4s}
+.hint{position:absolute;bottom:6cqw;left:5cqw;z-index:20;font-size:13px;color:var(--deep);background:var(--yellow);font-weight:700;padding:6px 12px;border-radius:99px;animation:pulse 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes pulse{50%{transform:translateX(-6px)}}
+@media(prefers-reduced-motion:reduce){.pg{transition:opacity .2s}.pg.turned{transform:none}.hint{animation:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/></symbol>
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol>
+  <symbol id="tree" viewBox="0 0 24 24"><path d="M12 3l6 9h-4l4 5H6l4-5H6z"/><path d="M12 17v4"/></symbol>
+  <symbol id="car" viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5z"/><path d="M5 11h14"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/></symbol>
+  <symbol id="bus" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 4v7M16 4v7"/><circle cx="8" cy="19" r="1.3"/><circle cx="16" cy="19" r="1.3"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="screen" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></symbol>
+  <symbol id="horn" viewBox="0 0 24 24"><path d="M3 10v4h4l6 4V6L7 10z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></symbol>
+  <symbol id="radio" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 8l10-5"/><circle cx="8" cy="14" r="2.5"/><path d="M14 12h4M14 15h4"/></symbol>
+  <symbol id="drop" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+  <symbol id="can" viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="15" rx="2"/><path d="M6 9h12M6 16h12"/></symbol>
+  <symbol id="aid" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M9 6V4h6v2M12 10v6M9 13h6"/></symbol>
+  <symbol id="torch" viewBox="0 0 24 24"><path d="M8 3h8l-1 6H9z"/><path d="M9 9h6v12H9z"/><path d="M12 13v3"/></symbol>
+  <symbol id="heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></symbol>
+  <symbol id="people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6M15 14c3 0 6 2 6 5"/></symbol>
+  <symbol id="chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></symbol>
+  <symbol id="door" viewBox="0 0 24 24"><path d="M6 21V3h12v18"/><path d="M4 21h16M14 12h.01"/></symbol>
+  <symbol id="stairs" viewBox="0 0 24 24"><path d="M3 20h5v-4h4v-4h4V8h5"/></symbol>
+  <symbol id="music" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></symbol>
+  <symbol id="hand" viewBox="0 0 24 24"><path d="M4 14l4-4 4 3 4-4 4 4"/><path d="M4 18h16"/></symbol>
+  <symbol id="zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5M11 8v6M8 11h6"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+  <symbol id="ear" viewBox="0 0 24 24"><path d="M7 10a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-6 0"/><path d="M10 10a2 2 0 0 1 4 0"/></symbol>
+  <symbol id="arcs" viewBox="0 0 200 200"><path d="M190 10C110 50 100 140 170 195" fill="none" stroke="#fff" stroke-width="22"/><path d="M150 0C70 50 60 150 120 200" fill="none" stroke="#fff" stroke-width="12" opacity=".7"/></symbol>
+</svg>
+
+<div class="stage">
+  <div class="book" id="book">
+
+    <!-- COVER -->
+    <article class="pg cover">
+      <div class="in">
+        <svg class="big" viewBox="0 0 400 566" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M470 -30 C260 100 240 340 430 620" fill="none" stroke="#00BFDD" stroke-width="70" opacity=".9"/>
+          <path d="M500 70 C340 200 320 410 470 610" fill="none" stroke="#F5BD17" stroke-width="44"/>
+          <path d="M440 -70 C210 40 160 280 280 620" fill="none" stroke="#BFD330" stroke-width="20" opacity=".9"/>
+          <path d="M-60 420 C80 380 200 430 260 566" fill="none" stroke="#00A8CB" stroke-width="30" opacity=".35"/>
+        </svg>
+        <div class="lg"><img src="media/logo-navy.jpg" alt="עיריית טירת כרמל – סביבה טובה בין כרמל לים"></div>
+        <div class="scrim"></div><div class="ring" aria-hidden="true"><b>90<small>שניות להתגוננות</small></b></div>
+        <div class="t">
+          <span class="yr">מהדורה מעודכנת · 2026</span>
+          <h1>חוברת חירום<span>מוכנים יחד, מוגנים יחד</span></h1>
+          <div class="tag">ההנחיות העדכניות של פיקוד העורף, 61 מרחבים מוגנים ציבוריים, מפה וסרטוני הסברה – לכל תושבת ותושב בטירת כרמל.</div>
+        </div>
+        <div class="strip"><i style="background:var(--cyan)"></i><i style="background:var(--yellow)"></i><i style="background:var(--lime)"></i><i style="background:var(--blue)"></i></div>
+      </div>
+      <span class="hint" id="hint">החליקו לדפדוף ←</span>
+    </article>
+
+    <!-- TOC -->
+    <article class="pg" style="--c:var(--deep)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--deep)"><span class="lbl">בחוברת</span><h2>תוכן העניינים</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body"><nav class="toc" id="toc" aria-label="תוכן העניינים"></nav></div>
+      </div>
+    </article>
+
+    <!-- MAYOR -->
+    <article class="pg mayor" data-t="דבר ראש העיר" style="--c:var(--cyan)">
+      <div class="in">
+        <div class="mayor-top">
+          <img class="ph" src="media/mayor.webp" alt="ראש העיר דודו כהן">
+          <div class="nm"><small>דבר ראש העיר</small><b>דודו כהן</b><span>ראש עיריית טירת כרמל</span></div>
+        </div>
+        <div class="body">
+          <div class="lead-q">מוכנות היא לא פחד. מוכנות היא ביטחון – לדעת מה עושים, לאן הולכים ואיך שומרים זה על זה.</div>
+          <p>תושבות ותושבים יקרים,</p>
+          <p>השנה האחרונה הציבה בפני כולנו אתגרים שלא הכרנו. ובכל פעם מחדש, טירת כרמל הוכיחה מה היא באמת: שכנים שדופקים בדלת לוודא שכולם בסדר, מתנדבים שמגיעים בלי שקוראים להם, וצוותי עירייה שלא עוזבים את השטח.</p>
+          <p>אנחנו בעירייה למדנו מכל אירוע ושיפרנו. הרחבנו את מערך המיגון הציבורי ל-33 מקלטים ומחסות ו-28 מיגוניות, הוספנו מקלטים שנפתחים מרחוק, והכנו עבורכם את החוברת הזו – מעודכנת להנחיות פיקוד העורף, עם מפה וסרטונים שיעזרו לכם להכיר את המרחב המוגן הקרוב אליכם עוד לפני שתצטרכו אותו.</p>
+          <p>הבקשה שלי פשוטה: הקדישו לחוברת עשר דקות, עם כל בני הבית. בדקו איפה מתגוננים בבית, בעבודה ובבית הספר, הכינו ערכת חירום, וחשבו על השכנים שזקוקים ליד מכוונת.</p>
+          <p>אני גאה בכם, ובטוח שיחד נמשיך לשמור על העיר שלנו – סביבה טובה ובטוחה בין כרמל לים.</p>
+          <div class="sig">בברכת ביטחון ובריאות,<br>דודו כהן<small>ראש עיריית טירת כרמל</small></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH1 ALERT -->
+    <article class="pg" data-t="כשמגיעה התרעה" style="--c:var(--coral)">
+      <div class="in">
+        <header class="band" style="--c:var(--coral)"><span class="no">01</span><span class="lbl">פרק 1</span><h2>כשמגיעה התרעה</h2><p>שלושה שלבים, 90 שניות, החלטה אחת: להיכנס למרחב המוגן.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="big"><b>90</b><p><strong>שניות</strong> – זמן ההתגוננות בטירת כרמל. זה כל הזמן שיש מרגע ההתרעה ועד שאתם בתוך המרחב המוגן.</p></div>
+          <div class="steps">
+            <div class="st" style="--c:var(--yellow)"><span class="n">1</span><div><h3 style="color:var(--navy)">הנחיה מקדימה</h3><p>הודעה שמגיעה דקות לפני ירי מזוהה – כ-10 דקות מאיראן, פחות מלבנון ("התקרבו למרחב המוגן"). זה הזמן להתקרב, לאסוף את הילדים ולוודא שהטלפון טעון.</p></div></div>
+            <div class="st" style="--c:var(--red)"><span class="n">2</span><div><h3 style="color:var(--red)">התרעה – צבע אדום</h3><p>נכנסים מיד למרחב המוגן, סוגרים דלת וחלונות. לא עוצרים לצלם ולא יוצאים "לראות מה קורה".</p></div></div>
+            <div class="st" style="--c:var(--green)"><span class="n">3</span><div><h3 style="color:var(--green)">יציאה מהמרחב המוגן</h3><p>רק כשמגיעה הודעה מפיקוד העורף שמותר לצאת. ההנחיה הישנה של "10 דקות והחוצה" כבר לא בתוקף.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH1b CHANNELS -->
+    <article class="pg" style="--c:var(--coral)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--coral)"><span class="no">01</span><h2>התרעה שמגיעה לכל אחד</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <p>פיקוד העורף משדר התרעות בשלושה ערוצים במקביל. כדאי להכיר את כולם – ולא לסמוך על אחד בלבד.</p>
+          <div class="grid3">
+            <div class="tile"><span class="ic"><svg class="i"><use href="#phone"/></svg></span><h3>אישי</h3><p>יישומון פיקוד העורף. הפעילו שירותי מיקום והגדירו גם את אזור העבודה והלימודים.</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#screen"/></svg></span><h3>ביתי</h3><p>פורטל החירום הלאומי באתר oref.org.il – מציג התרעות על מסך המחשב.</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#horn"/></svg></span><h3>ציבורי</h3><p>צופרי פיקוד העורף ברחבי העיר.</p></div>
+          </div>
+          <h3 style="margin-top:3cqw">בשבת ובחג – "הגל השקט"</h3>
+          <div class="rule">
+            <div><span><b>יישומון:</b> מפעיל התרעה גם במצב שקט כשיש איום באזור. באייפון בדקו שהמכשיר לא במצב השתקה מלא.</span></div>
+            <div><span><b>כבדי שמיעה:</b> אפשר להגדיר רטט והבהוב פנס בהגדרות היישומון והמכשיר.</span></div>
+            <div><span><b>רדיו:</b> תחנות "הגל השקט" שותקות בשבת ומשדרות רק כשיש התרעה.</span></div>
+          </div>
+          <div class="freq"><h3>תדרי הגל השקט</h3><table>
+            <tr><td>קול ברמה</td><td>105.7 · 104.3 · 92.1</td></tr>
+            <tr><td>רדיו קול חי</td><td>102.5 · 93 · 92.8</td></tr>
+            <tr><td>רדיו גלי ישראל</td><td>106.5 · 94 · 89.3</td></tr>
+            <tr><td>מורשת</td><td>100.7 · 92.5 · 90.8 · 90.5</td></tr>
+            <tr><td>קול פליי</td><td>107.6</td></tr>
+          </table></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH2 WHERE -->
+    <article class="pg" data-t="איפה מתגוננים" style="--c:var(--dark)">
+      <div class="in">
+        <header class="band" style="--c:var(--dark)"><span class="no">02</span><span class="lbl">פרק 2</span><h2>איפה מתגוננים</h2><p>בכל מקום שבו אתם נמצאים יש פעולה נכונה. כדאי לדעת אותה מראש.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="grid2">
+            <div class="tile" style="--c:var(--dark)"><span class="ic"><svg class="i"><use href="#home"/></svg></span><h3>בתוך מבנה</h3><p>למרחב המוגן הטוב ביותר שאפשר להגיע אליו בזמן. סוגרים דלתות וחלונות.</p></div>
+            <div class="tile" style="--c:var(--green)"><span class="ic"><svg class="i"><use href="#tree"/></svg></span><h3>בשטח פתוח</h3><p>לבניין או למיגונית הקרובים. אין? נשכבים על הקרקע ומגינים על הראש בידיים.</p></div>
+            <div class="tile" style="--c:var(--sky)"><span class="ic"><svg class="i"><use href="#car"/></svg></span><h3>ברכב</h3><p>עוצרים בצד בבטחה ונכנסים למבנה. אם אין – יוצאים, נשכבים ומגינים על הראש.</p></div>
+            <div class="tile" style="--c:var(--coral)"><span class="ic"><svg class="i"><use href="#bus"/></svg></span><h3>בתחבורה ציבורית</h3><p>באוטובוס עירוני – הנהג עוצר, יורדים למבנה קרוב. בבין-עירוני וברכבת – מתכופפים מתחת לקו החלונות.</p></div>
+          </div>
+          <h3 style="margin-top:3cqw">בדרך למרחב המוגן</h3>
+          <div class="rule">
+            <div><span>ממהרים – אבל לא רצים ולא דוחפים במדרגות.</span></div>
+            <div><span>משאירים את דלת הכניסה לבניין פתוחה, כדי שעוברים ושבים יוכלו להיכנס.</span></div>
+            <div><span>לא סומכים רק על מערכות ההגנה האווירית – נכנסים למרחב המוגן בכל מקרה.</span></div>
+            <div><span>לא מתקהלים באזור נפילה ולא נוגעים ברסיסים או בחפצים חשודים.</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH2b HIERARCHY -->
+    <article class="pg" style="--c:var(--dark)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--dark)"><span class="no">02</span><h2>המרחב המוגן הטוב ביותר</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <p>בחרו לפי סדר העדיפויות – הראשון שאפשר להגיע אליו בתוך 90 שניות.</p>
+          <div class="steps">
+            <div class="st"><span class="n">1</span><div><h3>ממ״ד, ממ״ק או ממ״מ</h3><p>סוגרים את חלון הפלדה ואת החלון הרגיל, סוגרים ונועלים את הדלת. בחלון כפול – פותחים את החלון החיצוני כדי שלא יתנפץ.</p></div></div>
+            <div class="st"><span class="n">2</span><div><h3>מקלט משותף או ציבורי</h3><p>ודאו מראש שהמקלט פנוי, נקי ונגיש. בכניסה – סוגרים את הדלת.</p></div></div>
+            <div class="st"><span class="n">3</span><div><h3>חדר מדרגות פנימי</h3><p>בלי קירות חיצוניים וחלונות, בבניין של שלוש קומות לפחות. עדיף בקומות האמצעיות – לא בעליונות ולא בקומת כניסה פתוחה.</p></div></div>
+            <div class="st"><span class="n">4</span><div><h3>חדר פנימי</h3><p>כמה שפחות קירות חיצוניים וחלונות. לא מטבח ולא שירותים. יושבים מתחת לקו החלונות, לא מול הדלת.</p></div></div>
+          </div>
+          <div class="note c"><b>יש בבית אדם עם מוגבלות ניידות?</b> תרגלו מראש את הדרך למרחב המוגן, ובחרו מרחב שאפשר להגיע אליו בזמן גם איתו.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH2c LONG STAY -->
+    <article class="pg" style="--c:var(--dark)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--dark)"><span class="no">02</span><h2>שהייה ממושכת במרחב המוגן</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <p>כשפיקוד העורף מורה על שהייה ממושכת, המרחב המוגן הופך לבית לכמה שעות. כך מתארגנים:</p>
+          <div class="rule">
+            <div><span>נכנסים עם כל מה שצריך: טלפון ומטען, מים, מזון, תרופות וציוד חיוני.</span></div>
+            <div><span>נשארים במרחב המוגן עד להודעה חדשה מפיקוד העורף, ויוצאים רק לצורך חיוני.</span></div>
+            <div><span><b>אוורור:</b> אם יש מערכת אוורור – הפעילו אותה. אם אין, פתחו את הדלת כל 4 שעות לכ-10 דקות.</span></div>
+            <div><span>עוקבים אחרי ההודעות בערוצים הרשמיים בלבד.</span></div>
+          </div>
+          <h3 style="margin-top:3cqw">מה מכינים מראש במרחב המוגן</h3>
+          <div class="grid3">
+            <div class="tile"><span class="ic"><svg class="i"><use href="#drop"/></svg></span><p>מים ומזון שלא דורש קירור</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#radio"/></svg></span><p>רדיו ופנס על סוללות</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#phone"/></svg></span><p>מטענים ניידים טעונים</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#aid"/></svg></span><p>תרופות ועזרה ראשונה</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#home"/></svg></span><p>מזרונים, שמיכות והיגיינה</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#music"/></svg></span><p>משחקים וספרים לילדים</p></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH3 TIERS -->
+    <article class="pg" data-t="מדרגי הפעילות" style="--c:var(--yellow)">
+      <div class="in">
+        <header class="band dark-t" style="--c:var(--yellow)"><span class="no">03</span><span class="lbl">פרק 3</span><h2>מדרגי הפעילות</h2><p>פיקוד העורף קובע לכל אזור מדרג לפי הערכת המצב – והוא קובע מה מותר ומה לא.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="tier" style="background:var(--green)"><span class="dot">✓</span><div><h3>פעילות מלאה</h3><p>שגרה מלאה, ללא מגבלות. זה הזמן להתכונן.</p></div></div>
+          <div class="tier" style="background:var(--yellow);color:var(--navy)"><span class="dot">!</span><div><h3>פעילות חלקית</h3><p>לימודים, עבודה והתקהלויות – רק במקום שממנו אפשר להגיע בזמן למרחב מוגן תקני, ובמגבלת משתתפים.</p></div></div>
+          <div class="tier" style="background:var(--coral)"><span class="dot">✕</span><div><h3>פעילות מצומצמת</h3><p>ללא פעילות חינוכית (למעט החרגות), התקהלויות מצומצמות מאוד ועבודה חיונית בלבד.</p></div></div>
+          <div class="note">ההנחיות משתנות לעיתים קרובות. את המדרג המחייב לאזור הכרמל בודקים ביישומון ובאתר פיקוד העורף ובערוצים הרשמיים של העירייה.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- VIDEO 1 -->
+    <article class="pg" data-t="סרטון: ערוכים לחירום" style="--c:var(--navy)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--navy)"><span class="lbl">צפו</span><h2>טירת כרמל ערוכה לחירום</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body vidwrap">
+          <p style="text-align:center">מערך המיגון העירוני – בדקה אחת.</p>
+          <div class="vid"><video controls playsinline preload="metadata" poster="media/poster-ready.jpg"><source src="media/video-ready.mp4" type="video/mp4"></video><div class="err">הסרטון לא נטען. נסו לרענן את העמוד.</div></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH4 LISTS -->
+    <article class="pg" data-t="מקלטים ומחסות" data-list="sh" data-from="0" data-to="17" style="--c:var(--blue)"><div class="in"><header class="band sm" style="--c:var(--blue)"><span class="no">04</span><span class="lbl">פרק 4</span><h2>מקלטים ומחסות</h2><p>33 מקלטים ומחסות ציבוריים · חלק א׳</p><svg class="arcs"><use href="#arcs"/></svg></header><div class="body"><div class="ls"></div></div></div></article>
+    <article class="pg" data-list="sh" data-from="17" data-to="33" style="--c:var(--blue)"><div class="in"><header class="band sm" style="--c:var(--blue)"><span class="no">04</span><h2>מקלטים ומחסות</h2><p>חלק ב׳ · "פתיחה מרחוק" – נפתח מרחוק בעת הצורך</p><svg class="arcs"><use href="#arcs"/></svg></header><div class="body"><div class="ls"></div></div></div></article>
+    <article class="pg" data-t="מיגוניות" data-list="mg" data-from="0" data-to="14" style="--c:var(--sky)"><div class="in"><header class="band sm" style="--c:var(--sky)"><span class="no">04</span><h2>מיגוניות</h2><p>28 מיגוניות ברחבי העיר · חלק א׳</p><svg class="arcs"><use href="#arcs"/></svg></header><div class="body"><div class="ls"></div></div></div></article>
+    <article class="pg" data-list="mg" data-from="14" data-to="28" style="--c:var(--sky)"><div class="in"><header class="band sm" style="--c:var(--sky)"><span class="no">04</span><h2>מיגוניות</h2><p>חלק ב׳ · לחצו "נווט" לניווט ב-Waze</p><svg class="arcs"><use href="#arcs"/></svg></header><div class="body"><div class="ls"></div></div></div></article>
+
+    <!-- SHELTERS MAP -->
+    <article class="pg" data-t="מפת המקלטים המעודכנת" style="--c:var(--blue)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--blue)"><span class="no">04</span><h2>מפת המקלטים והמיגוניות</h2><p>כל 61 המרחבים המוגנים הציבוריים, כולל המיגוניות החדשות.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="legend"><span><i style="background:#1f5fbf"></i>מקלט / מחסה (33)</span><span><i style="background:#f08a1c"></i>מיגונית (28)</span></div>
+          <div class="btns"><button class="btn zb" type="button" data-z="m1"><svg class="i"><use href="#zoom"/></svg>הגדלה</button><a class="btn ghost" href="media/shelters-map.jpg" target="_blank" rel="noopener">פתיחה בגודל מלא</a></div>
+          <div class="mapbox" id="m1"><img src="media/shelters-map.jpg" alt="מפת המקלטים והמיגוניות בטירת כרמל" loading="lazy"></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- VIDEO 2 -->
+    <article class="pg" data-t="סרטון: סיור במפת המקלטים" style="--c:var(--navy)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--navy)"><span class="lbl">צפו</span><h2>סיור במפת המקלטים</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body vidwrap">
+          <p style="text-align:center">רחוב אחר רחוב – כל המקלטים והמיגוניות בעיר.</p>
+          <div class="vid"><video controls playsinline preload="metadata" poster="media/poster-map.jpg"><source src="media/video-map.mp4" type="video/mp4"></video><div class="err">הסרטון לא נטען. נסו לרענן את העמוד.</div></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CITY MAP -->
+    <article class="pg" data-t="מפת העיר" style="--c:var(--green)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--green)"><span class="lbl">מפה</span><h2>מפת העיר טירת כרמל</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="btns"><button class="btn zb" type="button" data-z="m2"><svg class="i"><use href="#zoom"/></svg>הגדלה</button><a class="btn ghost" href="media/city-map.jpg" target="_blank" rel="noopener">פתיחה בגודל מלא</a></div>
+          <div class="mapbox" id="m2"><img src="media/city-map.jpg" alt="מפת העיר טירת כרמל עם שכונות ורחובות" loading="lazy"></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- OFFICIAL LIST -->
+    <article class="pg" data-t="הרשימה הרשמית" style="--c:var(--blue)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--blue)"><span class="lbl">אגף ביטחון וחירום</span><h2>הרשימה הרשמית</h2><p>שמרו צילום מסך בטלפון – למקרה שאין קליטה.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body"><a href="media/shelters-list.jpg" target="_blank" rel="noopener"><img class="poster" src="media/shelters-list.jpg" alt="רשימת מקלטים, מחסות ומיגוניות – עיריית טירת כרמל" loading="lazy"></a></div>
+      </div>
+    </article>
+
+    <!-- CH5 FAMILY -->
+    <article class="pg" data-t="משפחה מוכנה" style="--c:var(--green)">
+      <div class="in">
+        <header class="band" style="--c:var(--green)"><span class="no">05</span><span class="lbl">פרק 5</span><h2>משפחה מוכנה בשלושה צעדים</h2><p>הרגע הכי טוב להתכונן הוא עכשיו, כשהכל שקט.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="steps">
+            <div class="st"><span class="n">1</span><div><h3>הכירו</h3><p>התקינו את יישומון פיקוד העורף, דעו איך פועלים בכל מקום, ובדקו כמה זמן לוקח לכם להגיע למרחב המוגן.</p></div></div>
+            <div class="st"><span class="n">2</span><div><h3>הכינו</h3><p>פנו את המרחב המוגן, הכינו ציוד חירום וסדרו פינה נעימה לילדים – משחק, בובה, ספר.</p></div></div>
+            <div class="st"><span class="n">3</span><div><h3>שתפו ותרגלו</h3><p>שבו לשיחה משפחתית, חלקו תפקידים (מי לוקח את התינוק, מי את התרופות) ותרגלו יחד הגעה בזמן.</p></div></div>
+          </div>
+          <div class="call" style="--c:var(--green)">מוכנים בשגרה – מוכנים בחירום</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH5b KIT -->
+    <article class="pg" data-t="ציוד לחירום" style="--c:var(--green)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--green)"><span class="no">05</span><h2>רשימת ציוד לחירום</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <h3>חובה</h3>
+          <div class="grid3">
+            <div class="tile"><span class="ic"><svg class="i"><use href="#drop"/></svg></span><h3>מים ומזון</h3><p>3 ליטר מים לאדם ליום ומזון יבש ומשומר – ל-3 ימים לפחות. כולל מזון מותאם לתינוקות ולמבוגרים.</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#radio"/></svg></span><h3>התרעה ותקשורת</h3><p>פנס, רדיו, סוללות ומטענים ניידים.</p></div>
+            <div class="tile"><span class="ic"><svg class="i"><use href="#aid"/></svg></span><h3>ציוד רפואי</h3><p>ערכת עזרה ראשונה, תרופות קבועות ומרשמים מודפסים.</p></div>
+          </div>
+          <h3 style="margin-top:3cqw">מומלץ</h3>
+          <div class="rule">
+            <div><span>סוללות גיבוי למכשירים רפואיים.</span></div>
+            <div><span>צילום של תעודות זהות, רישיונות ומסמכים חשובים.</span></div>
+            <div><span>מטף כיבוי אש וגלאי עשן.</span></div>
+            <div><span>חצי מיכל דלק לפחות ברכב.</span></div>
+            <div><span>משחקים ופעילויות לילדים, וציוד לחיות המחמד.</span></div>
+          </div>
+          <div class="note">חשוב לרענן את הציוד ולבדוק תוקף <b>פעם בשנה</b>.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH5c DISABILITY -->
+    <article class="pg" data-t="אנשים עם מוגבלות" style="--c:var(--green)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--green)"><span class="no">05</span><h2>ציוד חירום לאנשים עם מוגבלות</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <p>מעבר לערכה הבסיסית, כדאי להתאים את הציוד לצורך האישי:</p>
+          <div class="grid2">
+            <div class="tile"><h3>תרופות בקירור</h3><p>אם יש תרופות שדורשות קירור – הכינו צידנית או פתרון אחסון חלופי, וכתבו מה צריך לקחת ומאיפה.</p></div>
+            <div class="tile"><h3>מסמכים רפואיים</h3><p>תיק רפואי קצר: מצב רפואי, תרופות קבועות, אלרגיות ופרטי רופא – כדי שגם אחרים יידעו לעזור.</p></div>
+            <div class="tile"><h3>כבדי שמיעה וחירשים</h3><p>מכשירי שמיעה וסוללות, מטען, ורשימת מספרים לשליחת הודעות SMS ווטסאפ בחירום.</p></div>
+            <div class="tile"><h3>מוגבלות בתנועה</h3><p>ציוד עזר לניידות, מטען לכיסא ממונע, ותכנון מראש של הדרך למרחב המוגן.</p></div>
+            <div class="tile"><h3>מתקשים בדיבור</h3><p>לוח תקשורת, כלי כתיבה וסוללות למכשירי עזר.</p></div>
+            <div class="tile"><h3>כלבי שירות</h3><p>מזון ומים ל-72 שעות, רצועה, מסמכים ותעודת חיסונים.</p></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH5d POWER -->
+    <article class="pg" data-t="הפסקות חשמל" style="--c:var(--sky)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--sky)"><span class="no">05</span><h2>היערכות להפסקות חשמל</h2><p>בחירום הפסקת חשמל יכולה להימשך ימים. תזכרו מילה אחת: מנתק״ת.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="acro">
+            <div><b>מ</b><div><strong>מזון</strong><span>מזון יבש ושימורים ל-3 ימים לפחות.</span></div></div>
+            <div><b>נ</b><div><strong>נוזלים</strong><span>3 ליטר מים ליום לכל אחד מבני הבית.</span></div></div>
+            <div><b>ת</b><div><strong>תאורת חירום</strong><span>פנסים ומנורות שפועלים על סוללות.</span></div></div>
+            <div><b>ק</b><div><strong>קבלת התרעה</strong><span>רדיו על סוללות – פיקוד העורף יפעל דרך תחנות הרדיו.</span></div></div>
+            <div><b>ת</b><div><strong>תקשורת</strong><span>טלפונים טעונים ומטענים ניידים מלאים.</span></div></div>
+          </div>
+          <div class="note">בהפסקה ממושכת – חוסכים בסוללות ומשתמשים בטלפון רק לצורך.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH6 BUILDING SHELTER -->
+    <article class="pg" data-t="המקלט בבניין המשותף" style="--c:var(--navy)">
+      <div class="in">
+        <header class="band" style="--c:var(--navy)"><span class="no">06</span><span class="lbl">פרק 6</span><h2>המקלט בבניין המשותף</h2><p>המקלט שייך לכל הדיירים – והאחריות להכין אותו היא של כולם, באמצעות ועד הבית.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <h3>כללים לתחזוקה</h3>
+          <div class="rule">
+            <div><span>המקלט אינו מחסן. שימוש כפול מותר רק אם אפשר לפנות את הציוד בתוך 4 שעות מרגע ההנחיה.</span></div>
+            <div><span>אסור לאחסן בו חומרים דליקים, מסוכנים או רעילים.</span></div>
+            <div><span>לא תולים פריטי זכוכית או קרמיקה שעלולים להתנפץ.</span></div>
+            <div><span>בודקים שדלת המקלט ופתח המילוט נסגרים ונפתחים כראוי, ושהמכסה של פתח האוורור קיים.</span></div>
+          </div>
+          <div class="note c"><b>דייר השתלט על המקלט ומונע את השימוש בו?</b> אם ועד הבית לא הצליח לטפל, אפשר לפנות לעירייה דרך <b>מוקד 106</b> – לעירייה יש סמכות לחייב את פינוי המקלט.</div>
+          <div class="call" style="--c:var(--navy)">תחזקו את המקלט כבר בשגרה</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH7 STRESS -->
+    <article class="pg" data-t="חוסן ותמיכה" style="--c:var(--pink)">
+      <div class="in">
+        <header class="band" style="--c:var(--pink)"><span class="no">07</span><span class="lbl">פרק 7</span><h2>חשים מתח? זה טבעי</h2><p>פחד, עייפות ועצב הם תגובות רגילות למצב לא רגיל. יש דרכים להקל.</p><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="grid3">
+            <div class="tile" style="--c:var(--pink)"><span class="ic"><svg class="i"><use href="#bell"/></svg></span><p>להכיר את ההנחיות – ידע מוריד חרדה</p></div>
+            <div class="tile" style="--c:var(--pink)"><span class="ic"><svg class="i"><use href="#list"/></svg></span><p>לעשות משהו: להכין, לסדר, לתכנן</p></div>
+            <div class="tile" style="--c:var(--pink)"><span class="ic"><svg class="i"><use href="#music"/></svg></span><p>מוזיקה, קריאה ונשימות עמוקות</p></div>
+            <div class="tile" style="--c:var(--pink)"><span class="ic"><svg class="i"><use href="#chat"/></svg></span><p>לדבר עם קרובים ולשתף בתחושות</p></div>
+            <div class="tile" style="--c:var(--pink)"><span class="ic"><svg class="i"><use href="#heart"/></svg></span><p>לאכול, לשתות ולישון ככל האפשר</p></div>
+            <div class="tile" style="--c:var(--pink)"><span class="ic"><svg class="i"><use href="#people"/></svg></span><p>לעזור למי שזקוק – זה מחזק גם אותנו</p></div>
+          </div>
+          <div class="note"><b>מידע הוא כוח – אבל רק ממקור רשמי.</b> הימנעו משמועות ומהודעות לא מאומתות. מקורות מהימנים: פיקוד העורף, צה״ל, משטרה, כבאות והצלה, מד״א והעירייה.</div>
+          <div class="call" style="--c:var(--pink)">ער״ן – עזרה נפשית ראשונה: 1201</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH8 PHONES -->
+    <article class="pg" data-t="למי פונים בחירום" style="--c:var(--deep)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--deep)"><span class="no">08</span><span class="lbl">פרק 8</span><h2>למי פונים בחירום</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <div class="ph">
+            <a class="hot" href="tel:106"><b>106</b>המוקד העירוני טירת כרמל</a>
+            <a class="hot" href="tel:104"><b>104</b>פיקוד העורף</a>
+            <a href="tel:101"><b>101</b>מגן דוד אדום</a>
+            <a href="tel:100"><b>100</b>משטרת ישראל</a>
+            <a href="tel:102"><b>102</b>כבאות והצלה</a>
+            <a href="tel:103"><b>103</b>חברת החשמל</a>
+            <a href="tel:110"><b>110</b>מוקד מידע משטרה</a>
+            <a href="tel:105"><b>105</b>פגיעה בילדים ברשת</a>
+          </div>
+          <div class="note c">גזרו ושמרו ליד המקרר, או צלמו את העמוד ושמרו בטלפון. אתר פיקוד העורף: oref.org.il</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH8b SUPPORT -->
+    <article class="pg" style="--c:var(--deep)">
+      <div class="in">
+        <header class="band sm" style="--c:var(--deep)"><span class="no">08</span><h2>מוקדי סיוע ותמיכה</h2><svg class="arcs"><use href="#arcs"/></svg></header>
+        <div class="body">
+          <h3>רגשי וחברתי</h3>
+          <div class="mini">
+            <div><span>ער״ן – עזרה נפשית</span><b>1201</b></div>
+            <div><span>משרד הרווחה</span><b>118</b></div>
+            <div><span>נט״ל – טראומה</span><b>1-800-363-363</b></div>
+            <div><span>מוקד אזרחים ותיקים</span><b>*8840</b></div>
+            <div><span>ביטוח לאומי</span><b>*9696</b></div>
+            <div><span>סיוע לעובדים זרים</span><b>1-700-707-889</b></div>
+          </div>
+          <h3 style="margin-top:3cqw"><svg class="i"><use href="#ear"/></svg> לכבדי שמיעה וחירשים – הודעות SMS ווטסאפ</h3>
+          <div class="mini">
+            <div><span>משטרה</span><b>052-2020100</b></div>
+            <div><span>מד״א</span><b>052-7000101</b></div>
+            <div><span>כבאות והצלה</span><b>050-5960735</b></div>
+            <div><span>חברת החשמל</span><b>055-7000103</b></div>
+            <div><span>פיקוד העורף</span><b>052-9104104</b></div>
+            <div><span>ער״ן</span><b>052-8451201</b></div>
+          </div>
+          <div class="note">המספרים עודכנו לפי חוברת החירום העירונית הקודמת. ודאו את המספרים מול האתרים הרשמיים.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- BACK -->
+    <article class="pg back">
+      <div class="in">
+        <svg class="big" viewBox="0 0 400 566" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M-70 -30 C140 100 160 340 -30 620" fill="none" stroke="#00BFDD" stroke-width="60" opacity=".45"/>
+          <path d="M-100 70 C60 200 80 410 -70 610" fill="none" stroke="#F5BD17" stroke-width="34" opacity=".6"/>
+        </svg>
+        <img class="lg" src="media/logo-navy.jpg" alt="עיריית טירת כרמל">
+        <h2>ביחד נשמור על העיר</h2>
+        <p style="font-size:3.1cqw;opacity:.9">אגף ביטחון וחירום · מחלקת הדוברות, הדיגיטל, יחסי הציבור וההסברה<br>עיריית טירת כרמל · הרצל 6 · tirat-carmel.muni.il · מוקד 106</p>
+        <p style="font-size:2.5cqw;opacity:.65">המידע בחוברת אינו מחליף את הנחיות פיקוד העורף העדכניות. עודכן: נובמבר 2026.</p>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<div class="bar">
+  <div class="prog"><i id="prog"></i></div>
+  <button id="prev" type="button" aria-label="העמוד הקודם">→ הקודם</button>
+  <div class="mid"><button id="home" type="button" aria-label="לתוכן העניינים">תוכן</button><span id="cnt"></span></div>
+  <button id="next" type="button" aria-label="העמוד הבא">הבא ←</button>
+</div>
+
+<script>
+{
+const S=[
+["ביאליק 4","מועדונית פרחים",1],["ביאליק 13","בית כנסת שאגת אריה"],["ביאליק 29","מקלט, שיטור עירוני"],
+["בן צבי 7","מקלט"],["בן צבי 10","מחסה"],["בן צבי 24","מחסה"],["בן צבי 38","מחסה"],["גיורא 55","מקלט"],
+["האלה 14","בית כנסת יד אליהו ומרדכי"],["הורדים 11","מקלט"],["הכלניות 20","בי״ס אפרים צמח, מקלט אולם הספורט"],
+["הרב וינרוב 9","מועדונית בן צבי",1],["הרב וינרוב 28","מקלט, מרכז הפעלה"],["הרב וינרוב 39","מקלט"],
+["הרב זרביב 23","בית כנסת שיר למעלות"],["הרב קוק 6","מקלט, בי״ס זבולון"],["הרב קוק 31","מקלט"],
+["הרצל 39","מקלט, קניון לב העיר, קומת קרקע"],["ויצמן 19","מקלט, בי״ס יגאל אלון"],["ויצמן 71","מקלט אגף הרווחה והשירותים החברתיים"],
+["ז׳בוטינסקי 7","בית כנסת מעיין חיים"],["ז׳בוטינסקי 43","מקלט, מתנ״ס"],["ירושלים 3","מועדונית פרפרים",1],
+["ירושלים 18","בית כנסת משכן אליף"],["כרמל אליאס 18","בית כנסת בית חב״ד, בחניה האחורית של המרכז המסחרי"],
+["לוי אשכול 6","מקלט, מוקד עירוני"],["רזיאל 8","מחסה"],["רזיאל 28","מחסה"],["רזיאל 40","מקלט"],
+["רמב״ם 15","מועדונית רמב״ם",1],["רמב״ם 22","בית כנסת חלב חיטים"],["ש״י עגנון 12","מועדונית מורשה (מתחם מורשה)",1],
+["ששת הימים 56","מקלט, מקווה גברים"]];
+const M=[
+["ביאליק 36","בסמוך למרכזי יזמות וחדשנות בטכנולוגיה"],["גיורא 5","מיגונית רווחה, הבית החם לנערה",1],
+["האלה 17","מול בית העלמין הישן"],["הגל 2","גני ילדים נוגה, שמש וייהל"],["העצמאות 4","מרכז מסחרי, ליד האנדרטה"],
+["הרב קוק 12","בחניה הגדולה, לפני הכניסה לבי״ס דגניה"],["הרב וינרוב 17","מיגונית"],
+["הרב משה מרדכי 7","בסמוך לאצטדיון הכדורגל העירוני"],["השריון 14","גן נועם"],["ויצמן 13","בסמוך למגרשי המתנ״ס"],
+["ויצמן 19","בי״ס יגאל אלון, חצר מגרש ספורט 2X"],["ויצמן 28","ליד מתחם העסקים, בחניה"],
+["ז׳בוטינסקי 39","מול מס׳ 39, רחבת הסקייטפארק"],["ירושלים 6","בתוך החניה"],["כ״ג יורדי הסירה 2","מיגונית"],
+["מוצקין 6","בתוך החניה"],["מוצקין 13","מיגונית"],["נתן אלבז 22","צומת נתן אלבז–הארז, ברחבת החניה"],
+["נתן אלבז 23","בצמוד לגן ילדים"],["נתן אלבז 36","צומת נתן אלבז–גורדון, סמוך לתיבות הדואר"],
+["הצנחנים 2","בסמוך לגן התותח"],["רמב״ם 4","צמוד לבית הכנסת רבי חי טייב"],["רמב״ם 8","מיגונית"],
+["ש״י עגנון 2","מיגונית"],["ש״י עגנון 11","מיגונית"],["ש״י עגנון 12","מיגונית רווחה, מתחם מורשה – מרכז נוצ״ץ",1],
+["ש״י עגנון 14","מיגונית רווחה, מתחם מורשה – מרכז תפנית",1],["ששת הימים 3","קופת חולים כללית"]];
+
+const pages=[...document.querySelectorAll('.pg')];
+const N=pages.length;
+
+pages.forEach(p=>{
+  if(!p.dataset.list) return;
+  const t=p.dataset.list, src=t==='sh'?S:M;
+  p.querySelector('.ls').innerHTML=src.slice(+p.dataset.from,+p.dataset.to).map(x=>{
+    const q=encodeURIComponent(x[0]+', טירת כרמל');
+    return `<div class="it"><span class="k">${t==='sh'?'מ':'מג'}</span><div><div class="a">${x[0]}${x[2]?'<span class="r">פתיחה מרחוק</span>':''}</div><div class="d">${x[1]}</div></div><a href="https://waze.com/ul?q=${q}&navigate=yes" target="_blank" rel="noopener">נווט</a></div>`;
+  }).join('');
+});
+
+pages.forEach((p,i)=>{
+  p.style.zIndex=N-i;
+  if(i>0&&i<N-1){
+    const s=document.createElement('div');s.className='pno';
+    s.innerHTML=`<span>חוברת חירום 2026 · עיריית טירת כרמל</span><i>${i+1}</i>`;p.appendChild(s);
+  }
+});
+
+document.getElementById('toc').innerHTML=pages.map((p,i)=>p.dataset.t?`<a href="#page-${i+1}" data-go="${i}"><b style="background:${p.style.getPropertyValue('--c')||'var(--dark)'}">${i+1}</b>${p.dataset.t}<span>עמ׳ ${i+1}</span></a>`:'').join('');
+
+document.querySelectorAll('video').forEach(v=>{
+  v.addEventListener('error',()=>v.closest('.vid').classList.add('bad'),true);
+  const s=v.querySelector('source'); if(s) s.addEventListener('error',()=>v.closest('.vid').classList.add('bad'));
+});
+
+let cur=0;
+const cnt=document.getElementById('cnt'),prev=document.getElementById('prev'),next=document.getElementById('next'),prog=document.getElementById('prog');
+function go(n,instant){
+  n=Math.max(0,Math.min(N-1,n));
+  if(n===cur&&!instant) return;
+  document.querySelectorAll('video').forEach(v=>v.pause());
+  pages.forEach((p,i)=>{
+    const was=p.classList.contains('turned'),be=i<n;
+    if(was!==be&&!instant){p.classList.add('turning');setTimeout(()=>p.classList.remove('turning'),800)}
+    p.classList.toggle('turned',be);
+  });
+  cur=n;
+  cnt.textContent=`${n+1} / ${N}`;
+  prog.style.width=((n+1)/N*100)+'%';
+  prev.disabled=n===0;next.disabled=n===N-1;
+  const h=document.getElementById('hint'); if(n>0&&h) h.remove();
+  try{history.replaceState(null,'',n?`#page-${n+1}`:location.pathname)}catch(e){}
+}
+prev.addEventListener('click',()=>go(cur-1));
+next.addEventListener('click',()=>go(cur+1));
+document.getElementById('home').addEventListener('click',()=>go(1));
+document.getElementById('toc').addEventListener('click',e=>{const a=e.target.closest('a[data-go]');if(a){e.preventDefault();go(+a.dataset.go)}});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(cur+1);if(e.key==='ArrowRight')go(cur-1)});
+let x0=null,y0=0;
+const book=document.getElementById('book');
+book.addEventListener('touchstart',e=>{if(e.target.closest('video,.mapbox.z'))return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+book.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)go(dx>0?cur+1:cur-1)});
+document.querySelectorAll('.zb').forEach(b=>b.addEventListener('click',()=>{const m=document.getElementById(b.dataset.z);m.classList.toggle('z');b.lastChild.textContent=m.classList.contains('z')?'הקטנה':'הגדלה'}));
+const m=/^#page-(\d+)$/.exec(location.hash);
+go(m?(+m[1]-1):0,true);
+window.addEventListener('hashchange',()=>{const k=/^#page-(\d+)$/.exec(location.hash);if(k)go(+k[1]-1)});
+}
+</script>
+</body>
+</html>
