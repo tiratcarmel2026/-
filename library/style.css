@@ -1,0 +1,37 @@
+.intro { border: 2px solid var(--yellow); }
+.intro p { margin: 0; }
+input[type=date] {
+  width: 100%; font: inherit; color: var(--ink); background: var(--field); border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 12px 14px; outline: none; min-width: 0; min-height: 50px;
+}
+input[type=date]:focus { border-color: var(--cyan); }
+#books, #who { margin-bottom: 14px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip { font: inherit; font-size: .92rem; background: var(--field); color: var(--ink); border: 1.5px solid var(--line);
+  border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.chip:hover, .chip:focus-visible { border-color: var(--cyan); }
+.chip.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.step { font-weight: 700; margin: 4px 0 8px; }
+.stack { display: grid; gap: 8px; }
+.stack a.btn { display: block; text-align: center; text-decoration: none; }
+.loans { list-style: none; margin: 0; padding: 0; }
+.loans li { border-top: 1px solid var(--line); padding: 12px 0; display: flex; gap: 10px; align-items: center; }
+.loans li:first-child { border-top: 0; }
+.loans .empty { color: var(--muted); justify-content: center; }
+.loan__body { flex: 1; min-width: 0; }
+.loan__title { font-weight: 700; overflow-wrap: anywhere; }
+.loan__date { color: var(--muted); font-size: .88rem; }
+.badge { flex-shrink: 0; font-weight: 700; font-size: .85rem; border-radius: 999px; padding: 6px 10px; white-space: nowrap; }
+.badge--ok { background: rgba(145, 183, 61, .18); color: #4d6b12; }
+.badge--soon { background: rgba(248, 190, 17, .25); color: #6b4e00; }
+.badge--late { background: rgba(201, 55, 44, .14); color: var(--red); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .badge--ok { color: #c7e07f; }
+  :root:not([data-theme="light"]) .badge--soon { color: #ffd863; }
+  :root:not([data-theme="light"]) .badge--late { color: #ff8a80; }
+}
+.faq details { border-top: 1px solid var(--line); padding: 10px 0; }
+.faq details:first-of-type { border-top: 0; }
+.faq summary { font-weight: 700; cursor: pointer; }
+.faq details p { margin: 8px 0 0; color: var(--muted); }
+.toast { white-space: nowrap; }
