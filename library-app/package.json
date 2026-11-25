@@ -1,0 +1,10 @@
+{
+  "name": "tirat-carmel-library",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "22.x" },
+  "dependencies": {
+    "@vercel/blob": "2.9.0",
+    "web-push": "3.6.7"
+  }
+}

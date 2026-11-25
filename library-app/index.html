@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e3007a">
+  <title>תזכורת ספרייה · טירת כרמל</title>
+  <meta name="description" content="שואלים ספר? הגדירו תזכורת ביומן בטלפון ולא תפספסו את מועד ההחזרה.">
+  <link rel="icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="תזכורת ספרייה">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top__in">
+      <img class="logo" src="city-logo.png" alt="עיריית טירת כרמל: סביבה טובה בין כרמל לים">
+      <img class="logo logo--lib" src="library-logo.jpg" alt="הספרייה העירונית טירת כרמל: ספר, תרבות, מפגשים">
+    </div>
+    <div class="wrap">
+      <h1 class="page-title">תזכורת החזרת ספרים</h1>
+    </div>
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </header>
+
+  <main class="wrap">
+    <section class="card intro">
+      <h2>📚 שאלתם ספרים? שתי שניות ולא תשכחו להחזיר</h2>
+      <p>מכניסים את תאריך ההחזרה, ומקבלים <b>התראה בטלפון</b>: <b>3 ימים לפני</b> וגם <b>בבוקר של יום ההחזרה</b>. בלי הרשמה, בלי מספר טלפון.</p>
+    </section>
+
+    <section class="card">
+      <form id="form" autocomplete="off">
+        <label for="due">עד מתי צריך להחזיר?</label>
+        <div class="chips" role="group" aria-label="קיצורים">
+          <button type="button" class="chip" data-days="14">עוד שבועיים</button>
+          <button type="button" class="chip" data-days="21">עוד 3 שבועות</button>
+          <button type="button" class="chip" data-days="30">עוד חודש</button>
+        </div>
+        <input id="due" type="date" required>
+        <p class="hint">התאריך כתוב בקבלה או בחותמת בספר. לא בטוחים? שאלו בדלפק.</p>
+
+        <label for="books">אילו ספרים? <span class="opt">(לא חובה)</span></label>
+        <input id="books" type="text" placeholder="למשל: הארי פוטר 3, ספר מתכונים">
+
+        <label for="who">של מי הכרטיס? <span class="opt">(לא חובה)</span></label>
+        <input id="who" type="text" placeholder="למשל: נועה, הכרטיס של אמא">
+
+        <button class="btn btn--main btn--big" type="submit">שמרו לי תזכורת</button>
+        <p class="msg" id="msg" role="status"></p>
+      </form>
+    </section>
+
+    <section class="card result" id="result" hidden>
+      <div class="status" id="summary"></div>
+      <div class="push" id="pushBox">
+        <button class="btn btn--main btn--big" id="pushBtn" type="button">🔔 שלחו לי התראה לטלפון</button>
+        <p class="push__ok" id="pushOk" hidden>🔔 מעולה! ההתראות פעילות. שלחנו לך עכשיו התראת בדיקה.</p>
+        <div class="ios" id="iosBox" hidden>
+          <b>באייפון צריך עוד צעד קטן:</b>
+          <ol>
+            <li>לוחצים על כפתור השיתוף <span aria-hidden="true">⬆️</span> בתחתית ספארי</li>
+            <li>בוחרים <b>"הוספה למסך הבית"</b></li>
+            <li>פותחים את "תזכורת ספרייה" מהמסך הראשי, ולוחצים שוב על הפעמון</li>
+          </ol>
+        </div>
+        <p class="msg" id="pushMsg" role="status"></p>
+      </div>
+      <details class="cal">
+        <summary>או: הוספה ליומן</summary>
+        <div class="stack">
+          <button class="btn btn--blue btn--big" id="ics" type="button">📅 הוספה ליומן בטלפון</button>
+          <a class="btn btn--ghost btn--big" id="gcal" target="_blank" rel="noopener">יומן Google</a>
+          <a class="btn btn--ghost btn--big" id="wa" target="_blank" rel="noopener">שליחה לעצמי בוואטסאפ</a>
+        </div>
+        <p class="hint">"הוספה ליומן" פותחת קובץ שהאייפון, אנדרואיד ו-Outlook מכירים. מאשרים "הוסף", ושתי ההתראות כבר בפנים.</p>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>הספרים שאצלי</h2>
+      <ul class="loans" id="loans"></ul>
+      <p class="hint">הרשימה נשמרת במכשיר הזה. 🔔 ליד ספר = יש לו התראה. כשמחזירים, לוחצים ✓ וההתראות נעצרות.</p>
+    </section>
+
+    <section class="card faq">
+      <h2>טוב לדעת</h2>
+      <details>
+        <summary>אפשר להאריך את ההשאלה?</summary>
+        <p>בדרך כלל כן, אם אף אחד אחר לא הזמין את הספר. התקשרו לספרייה או עברו בדלפק לפני תאריך ההחזרה, ואז עדכנו כאן את התאריך החדש.</p>
+      </details>
+      <details>
+        <summary>לא מגיעות התראות?</summary>
+        <p>בדקו שההתראות מותרות להגדרות הדפדפן (או לאפליקציה במסך הבית באייפון), ושמצב "ריכוז" או "נא לא להפריע" כבוי. באייפון זה עובד מגרסה 16.4 ומעלה, רק מהאייקון במסך הבית. אפשר תמיד גם להוסיף ליומן.</p>
+      </details>
+      <details>
+        <summary>מה נשמר עליי?</summary>
+        <p>רק תאריך ההחזרה, שמות הספרים אם כתבתם, וכתובת טכנית שהדפדפן נותן לשליחת התראות. בלי שם, טלפון או מייל. אחרי יום ההחזרה, או כשלוחצים ✓, הכול נמחק.</p>
+      </details>
+      <details>
+        <summary>מה קורה אם מאחרים?</summary>
+        <p>הספרייה גובה קנס איחור לפי התקנון שלה. בדיוק בשביל זה העמוד הזה קיים: תזכורת אחת ביומן חוסכת את הקנס.</p>
+      </details>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
