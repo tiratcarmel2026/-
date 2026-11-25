@@ -35,3 +35,26 @@ input[type=date]:focus { border-color: var(--cyan); }
 .faq summary { font-weight: 700; cursor: pointer; }
 .faq details p { margin: 8px 0 0; color: var(--muted); }
 .toast { white-space: nowrap; }
+
+/* Municipal library palette: magenta, lime, blue (from the library logo) */
+:root { --magenta: #e3007a; --lib-lime: #b5d335; --lib-blue: #2589cc; --navy: #1d6fa8; --cyan: #2589cc; --yellow: #e3007a; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --navy: #5fb3ea; --cyan: #5fb3ea; --magenta: #ff4fa8; --yellow: #ff4fa8; }
+}
+.top__in { justify-content: space-between; }
+.logo--lib { height: 112px; margin: -12px 0; }
+.top .page-title { margin: 0 auto; padding: 0 16px 12px; text-align: center; color: var(--magenta); font-size: 1.3rem; }
+@media (prefers-color-scheme: dark) { .top .page-title { color: #e3007a; } }
+.stripe i:nth-child(1) { background: var(--magenta); }
+.stripe i:nth-child(2) { background: var(--lib-lime); }
+.stripe i:nth-child(3) { background: var(--lib-blue); }
+.stripe i:nth-child(4) { background: var(--magenta); }
+.btn--main { background: var(--magenta); color: #fff; }
+.btn--blue { background: var(--lib-blue); color: #fff; }
+.intro { border: 1px solid var(--line); border-inline-start: 6px solid var(--magenta); }
+.intro h2 { color: var(--lib-blue); }
+.result { border-color: var(--lib-blue); }
+.chip.on { background: var(--magenta); border-color: var(--magenta); }
+.faq summary::marker { color: var(--magenta); }
+.badge--ok { background: rgba(181, 211, 53, .25); }
+@media (max-width: 380px) { .logo--lib { height: 80px; } }
