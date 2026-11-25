@@ -17,6 +17,23 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a class="skip" href="#main">דילוג לתוכן הראשי</a>
+  <button class="a11y-btn" id="a11yBtn" type="button" aria-expanded="false" aria-controls="a11yPanel" aria-label="תפריט נגישות">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><circle cx="12" cy="4" r="2" fill="currentColor"/><path d="M4 7.5l8 1.5 8-1.5M12 9v5m0 0l-3.5 7M12 14l3.5 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="a11y-panel" id="a11yPanel" role="dialog" aria-label="אפשרויות נגישות" hidden>
+    <div class="a11y-head"><b>נגישות</b><button type="button" id="a11yClose" class="a11y-x" aria-label="סגירת תפריט הנגישות">✕</button></div>
+    <div class="a11y-grid">
+      <button type="button" data-a11y="bigger"><span aria-hidden="true">A+</span> הגדלת טקסט</button>
+      <button type="button" data-a11y="smaller"><span aria-hidden="true">A−</span> הקטנת טקסט</button>
+      <button type="button" data-a11y="contrast" aria-pressed="false"><span aria-hidden="true">◐</span> ניגודיות גבוהה</button>
+      <button type="button" data-a11y="gray" aria-pressed="false"><span aria-hidden="true">▒</span> גווני אפור</button>
+      <button type="button" data-a11y="links" aria-pressed="false"><span aria-hidden="true">🔗</span> הדגשת קישורים</button>
+      <button type="button" data-a11y="font" aria-pressed="false"><span aria-hidden="true">Aa</span> גופן קריא</button>
+      <button type="button" data-a11y="still" aria-pressed="false"><span aria-hidden="true">⏸</span> עצירת אנימציות</button>
+      <button type="button" data-a11y="reset"><span aria-hidden="true">↺</span> איפוס</button>
+    </div>
+  </div>
   <header class="top">
     <div class="wrap top__in">
       <img class="logo" src="city-logo.png" alt="עיריית טירת כרמל: סביבה טובה בין כרמל לים">
@@ -28,7 +45,7 @@
     <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="main" tabindex="-1">
     <section class="card intro">
       <h2>📚 שאלתם ספרים? שתי שניות ולא תשכחו להחזיר</h2>
       <p>מכניסים את תאריך ההחזרה, ומקבלים <b>התראה בטלפון</b>: <b>3 ימים לפני</b> וגם <b>בבוקר של יום ההחזרה</b>. בלי הרשמה, בלי מספר טלפון.</p>
@@ -109,7 +126,31 @@
     </section>
   </main>
 
+  <footer class="foot">
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="wrap foot__in">
+      <img class="foot__logo" src="library-logo.jpg" alt="">
+      <h2 class="foot__title">הספרייה העירונית טירת כרמל</h2>
+      <ul class="foot__info">
+        <li><span aria-hidden="true">📍</span> <b>כתובת הספרייה:</b> <a href="https://waze.com/ul?q=%D7%94%D7%A4%D7%9C%D7%9E%22%D7%97%206%20%D7%98%D7%99%D7%A8%D7%AA%20%D7%9B%D7%A8%D7%9E%D7%9C&navigate=yes" target="_blank" rel="noopener">רח׳ הפלמ״ח 6, טירת כרמל</a></li>
+        <li><span aria-hidden="true">📞</span> <b>טלפון:</b> <a href="tel:+97248574860" dir="ltr">04-8574860</a></li>
+      </ul>
+      <h3 class="foot__sub">שעות פעילות</h3>
+      <table class="hours">
+        <tbody>
+          <tr><th scope="row">ראשון, שני, רביעי, חמישי</th><td>10:00–14:00<br>15:30–19:30</td></tr>
+          <tr><th scope="row">שלישי</th><td>10:00–14:00</td></tr>
+          <tr><th scope="row">שישי</th><td>09:00–13:00</td></tr>
+          <tr><th scope="row">שבת וחג</th><td>סגור</td></tr>
+        </tbody>
+      </table>
+      <p class="foot__note">השעות עשויות להשתנות בחגים ובחופשות. מומלץ לוודא בטלפון לפני ההגעה.</p>
+      <p class="foot__copy">© כל הזכויות שמורות לעיריית טירת כרמל 2026</p>
+    </div>
+  </footer>
+
   <div class="toast" id="toast" role="status"></div>
+  <script src="a11y.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
